@@ -1,0 +1,33 @@
+{
+  "schema": "english-unit-audio-catalog/v1",
+  "catalogVersion": 1,
+  "updatedAt": "2026-09-04T01:18:00+08:00",
+  "units": [
+    {
+      "unitId": "4A-Starter",
+      "order": 0,
+      "title": "起步单元",
+      "subtitle": "Our families and our friends",
+      "audioVersion": 1,
+      "size": 3877657,
+      "sha256": "3f6e8c04d2db08ad4adf0f39c85579994e5ffecb4b6cf1f23304bb98c9ce5564",
+      "mirrors": {
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/releases/download/audio-v1/4A-Starter-audio-v1.zip",
+        "github": "https://github.com/rerbin/english-unit-practice-resources/releases/download/audio-v1/4A-Starter-audio-v1.zip"
+      }
+    },
+    {
+      "unitId": "4A-U1",
+      "order": 1,
+      "title": "Unit 1",
+      "subtitle": "My school",
+      "audioVersion": 1,
+      "size": 4783454,
+      "sha256": "e6ec13167e20d947c1071ff94343a55793279f6625acdd3d218d9f3abf2df92c",
+      "mirrors": {
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/releases/download/audio-v1/4A-U1-audio-v1.zip",
+        "github": "https://github.com/rerbin/english-unit-practice-resources/releases/download/audio-v1/4A-U1-audio-v1.zip"
+      }
+    }
+  ]
+}
