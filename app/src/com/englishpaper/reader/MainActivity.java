@@ -15,6 +15,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebChromeClient;
+import android.webkit.JsResult;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -68,6 +70,16 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(false);
         settings.setDefaultTextEncodingName("UTF-8");
         web.setWebViewClient(new WebViewClient());
+        web.setWebChromeClient(new WebChromeClient() {
+            @Override public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
+                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("确定", (d, w) -> result.confirm()).setCancelable(false).show();
+                return true;
+            }
+            @Override public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
+                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("确定", (d, w) -> result.confirm()).setNegativeButton("取消", (d, w) -> result.cancel()).setCancelable(false).show();
+                return true;
+            }
+        });
         web.addJavascriptInterface(new Bridge(), "Android");
         web.loadUrl("file:///android_res/raw/home.html");
     }
