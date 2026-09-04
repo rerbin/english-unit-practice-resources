@@ -7,26 +7,36 @@
       "unitId": "4A-Starter",
       "order": 0,
       "title": "起步单元",
-      "subtitle": "Our families and our friends",
-      "audioVersion": 1,
-      "size": 3877657,
-      "sha256": "3f6e8c04d2db08ad4adf0f39c85579994e5ffecb4b6cf1f23304bb98c9ce5564",
+      "subtitle": "我们的家人和朋友",
+      "audioVersion": 2,
+      "minAppVersionCode": 26,
+      "size": 4015976,
+      "sha256": "1f4c268a2f79642a31a46c6c229b9d0c6d2474809d4c018231397a24747be119",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v1.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v1.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v2.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v2.zip"
+      },
+      "manifestUrl": {
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-Starter/manifest.json"
       }
     },
     {
       "unitId": "4A-U1",
-      "order": 1,
-      "title": "Unit 1",
-      "subtitle": "My school",
-      "audioVersion": 1,
-      "size": 4783454,
-      "sha256": "e6ec13167e20d947c1071ff94343a55793279f6625acdd3d218d9f3abf2df92c",
+      "order": 999,
+      "title": "4A Unit 1 · My school",
+      "subtitle": "",
+      "audioVersion": 2,
+      "minAppVersionCode": 26,
+      "size": 4772307,
+      "sha256": "18acc8d303f00ad620c19741adce143b9566008d1d6054196b70d7bab54c36b0",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v1.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v1.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v2.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v2.zip"
+      },
+      "manifestUrl": {
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-U1/manifest.json"
       }
     }
   ]
