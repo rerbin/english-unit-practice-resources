@@ -32,8 +32,7 @@ import java.util.zip.ZipOutputStream;
 
 public class MainActivity extends Activity {
     private static final int PICK_JSON = 41;
-    private static final int CREATE_BACKUP = 42;
-    private static final int RESTORE_BACKUP = 43;
+    private static final int EXPORT_WRONG = 44;
     private static final String PREFS = "reader_settings";
     private static final String KEY_SPEECH_RATE = "speech_rate";
 
@@ -146,30 +145,30 @@ public class MainActivity extends Activity {
         runOnUiThread(() -> web.evaluateJavascript("window." + function + "(" + org.json.JSONObject.quote(payload) + ")", null));
     }
 
-    private void chooseBackupDestination() {
-        Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/zip");i.putExtra(Intent.EXTRA_TITLE,"英语单元练-完整备份.zip");startActivityForResult(i,CREATE_BACKUP);
-    }
-    private void chooseBackupToRestore() {
-        Intent i=new Intent(Intent.ACTION_OPEN_DOCUMENT);i.addCategory(Intent.CATEGORY_OPENABLE);i.setType("application/zip");startActivityForResult(i,RESTORE_BACKUP);
-    }
-    private void writeBackup(Uri uri) {
-        dbExecutor.execute(() -> { try {
-            org.json.JSONObject dataRoot=new org.json.JSONObject(wrongDb.backup());dataRoot.put("contentTables",contentDb.backupTables());dataRoot.put("backupKind","complete");
-            try(ZipOutputStream zip=new ZipOutputStream(getContentResolver().openOutputStream(uri,"wt"))){zip.putNextEntry(new ZipEntry("data.json"));zip.write(dataRoot.toString(2).getBytes("UTF-8"));zip.closeEntry();zipDirectory(zip,privateFiles.contentRoot(),"files/");}
-            js("backupFinished","完整备份已保存");
-        } catch(Exception e){js("backupFinished","备份失败："+e.getMessage());} });
-    }
-    private static void zipDirectory(ZipOutputStream zip,File dir,String prefix)throws IOException{File[] files=dir.listFiles();if(files==null)return;for(File file:files){String name=prefix+file.getName();if(file.isDirectory())zipDirectory(zip,file,name+"/");else{zip.putNextEntry(new ZipEntry(name));try(InputStream in=new FileInputStream(file)){byte[] b=new byte[16384];int n;while((n=in.read(b))!=-1)zip.write(b,0,n);}zip.closeEntry();}}}
 
-    private void restoreBackup(Uri uri) {
-        dbExecutor.execute(() -> {File stage=null;try{
-            stage=new File(privateFiles.importStagingRoot(),"restore-"+System.currentTimeMillis());if(!stage.exists()&&!stage.mkdirs())throw new IOException("无法创建还原目录");File dataFile=new File(stage,"data.json");
-            try(ZipInputStream zip=new ZipInputStream(getContentResolver().openInputStream(uri))){ZipEntry entry;byte[] b=new byte[16384];while((entry=zip.getNextEntry())!=null){String name=entry.getName();if(name.startsWith("/")||name.contains(".."))throw new SecurityException("备份包含非法路径");File out=new File(stage,name).getCanonicalFile();if(!out.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("备份路径越界");if(entry.isDirectory()){out.mkdirs();continue;}File parent=out.getParentFile();if(!parent.exists()&&!parent.mkdirs())throw new IOException("无法创建还原目录");try(OutputStream os=new FileOutputStream(out)){int n;while((n=zip.read(b))!=-1)os.write(b,0,n);}}}
-            String raw=readFile(dataFile);org.json.JSONObject root=new org.json.JSONObject(raw);org.json.JSONArray content=root.getJSONArray("contentTables");contentDb.restoreTables(content);int count=wrongDb.restoreBackup(raw);File payload=new File(stage,"files");if(payload.exists())privateFiles.copyTreeIntoStore(payload);js("restoreFinished","已还原 "+count+" 条错题、全部单元和离线文件");
-        }catch(Exception e){js("restoreFinished","还原失败："+e.getMessage());}finally{privateFiles.cleanupStaging();}});
-    }
-    private static String readFile(File file)throws IOException{try(InputStream in=new FileInputStream(file);ByteArrayOutputStream out=new ByteArrayOutputStream()){byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1)out.write(b,0,n);return out.toString("UTF-8");}}
 
+
+    private String buildWrongBookHtml() throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><head><meta charset=\"UTF-8\"><style>td,th{border:1px solid #999;padding:6px 10px;font-size:14px}th{background:#dce8f7}h1{font-size:18px}</style></head><body>");
+        sb.append("<h1>英语单元练 · 错题本</h1><table><tr><th>序号</th><th>单元</th><th>状态</th><th>错误类型</th><th>内容（英）</th><th>错误单词</th><th>中文</th></tr>");
+        android.database.Cursor c = appDatabase.getReadableDatabase().rawQuery("SELECT m.id,m.unit_id,m.stage,m.pronunciation_error,m.writing_error,m.text_en,m.translation FROM mistakes m ORDER BY m.unit_id,m.id", null);
+        int n = 0;
+        while (c.moveToNext()) {
+            n++;
+            String id = String.valueOf(c.getLong(0));
+            StringBuilder words = new StringBuilder();
+            android.database.Cursor w = appDatabase.getReadableDatabase().rawQuery("SELECT word_text FROM mistake_words WHERE mistake_id=? ORDER BY word_index", new String[]{id});
+            while (w.moveToNext()) { if (words.length() > 0) words.append("、"); words.append(w.getString(0)); }
+            w.close();
+            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "+" : "") + (c.getInt(4) == 1 ? "书写" : "");
+            sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(1))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已经掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(5))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(6))).append("</td></tr>");
+        }
+        c.close();
+        sb.append("</table></body></html>");
+        return sb.toString();
+    }
+    private static String esc(String x) { if (x == null) return ""; return x.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"); }
 
     public class Bridge {
         @JavascriptInterface public void play(String unitId, String resource, String text, String id, boolean next) { MainActivity.this.play(unitId, resource, text, id, next); }
@@ -177,7 +176,7 @@ public class MainActivity extends Activity {
         private String packJson(String unitId,int percent,Boolean ok,String message){ try{ org.json.JSONObject o=new org.json.JSONObject(); o.put("unitId",unitId); if(percent>=0)o.put("percent",percent); if(ok!=null)o.put("ok",ok); if(message!=null)o.put("message",message); return o.toString(); }catch(Exception e){ return "{\"unitId\":\""+unitId+"\"}"; } }
         @JavascriptInterface public void requestPackState(String unitId) { dbExecutor.execute(() -> { try { js("packState", packs.state(unitId, getAppVersionCode()).toString()); } catch (Exception e) { js("packState", "{\"ready\":false}"); } }); }
         @JavascriptInterface public String getAudioState(String unitId) { try { org.json.JSONObject o=new org.json.JSONObject(); o.put("ready",packs.isReady(unitId)); o.put("version",packs.installedVersion(unitId)); o.put("size",packs.packSize(unitId)); return o.toString(); } catch(Exception e){ return "{\"ready\":false}"; } }
-        @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase().getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ js("audioDeleted",unitId); } }); }
+        @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ js("audioDeleted",unitId); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }
@@ -195,8 +194,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已放入已经掌握":"请先标记为已掌握"); }); }
         @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已放回正在练习"); }); }
         @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { wrongDb.spellResult(id,correct,entered);js("spellSaved",correct?"correct":"wrong"); }); }
-        @JavascriptInterface public void backupData() { runOnUiThread(() -> chooseBackupDestination()); }
-        @JavascriptInterface public void restoreData() { runOnUiThread(() -> chooseBackupToRestore()); }
+        @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); i.putExtra(Intent.EXTRA_TITLE,"错题本.xls"); startActivityForResult(i, EXPORT_WRONG); }); }
         @JavascriptInterface public void importPaper() {
             runOnUiThread(() -> {
                 Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -212,8 +210,7 @@ public class MainActivity extends Activity {
         if (result != RESULT_OK || data == null || data.getData() == null) return;
         if (request == PICK_JSON) {
             final Uri uri=data.getData();dbExecutor.execute(() -> {try{String id=contentDb.importUnit(read(uri));js("unitImported",id);}catch(Exception e){js("contentError","导入失败："+e.getMessage());}});
-        } else if (request == CREATE_BACKUP) writeBackup(data.getData());
-        else if (request == RESTORE_BACKUP) restoreBackup(data.getData());
+        } else if (request == EXPORT_WRONG) { final Uri uri=data.getData(); dbExecutor.execute(() -> { try { String html=buildWrongBookHtml(); OutputStream out=getContentResolver().openOutputStream(uri); out.write(html.getBytes("UTF-8")); out.close(); js("exportFinished","错题已导出，可用 Excel 打开打印"); } catch (Exception e) { js("exportFinished","导出失败："+e.getMessage()); } }); }
     }
 
     @Override public void onBackPressed() {
