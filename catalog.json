@@ -8,13 +8,13 @@
       "order": 0,
       "title": "Starter",
       "subtitle": "我们的家人和朋友",
-      "audioVersion": 3,
+      "audioVersion": 4,
       "minAppVersionCode": 26,
-      "size": 4116998,
-      "sha256": "e1743b05ac435ee981a7893e884f67d224ad66fadddb5ee3be8286589ed5551b",
+      "size": 4345766,
+      "sha256": "0013d0cb61b1563300f205b2c5276b6f21eef3740934aa011b7ae988dbee9fe6",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v3.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v3.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v4.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v4.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
@@ -26,13 +26,13 @@
       "order": 999,
       "title": "4A Unit 1 · My school",
       "subtitle": "",
-      "audioVersion": 3,
+      "audioVersion": 4,
       "minAppVersionCode": 26,
-      "size": 4784207,
-      "sha256": "a2bc7e75250269377ed0e20d4c4f48e439da31a1eb1e9369cd6f879dafdff5f6",
+      "size": 4817976,
+      "sha256": "57e21d7b5eede405d6bbb6e2c06eac7ab35d883faed8f1be1dce8e5634cf0d96",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v3.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v3.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v4.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v4.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",

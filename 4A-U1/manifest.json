@@ -1,6 +1,6 @@
 {
   "schema": "english-unit-audio/v1",
-  "packageVersion": 3,
+  "packageVersion": 4,
   "textbookId": "shanghai-4a",
   "unitId": "4A-U1",
   "contentVersion": 1,
@@ -18,9 +18,9 @@
       "itemId": "4A-U1-000",
       "textHash": "fcb5f40df9be6bae66c1d77a6c15968866a9e6cbd7314ca432b019d17392f6f4",
       "audioKey": "u_000",
-      "file": "audio/60e378ab38ab80c558aaa291871c8282300010f58e6dbf909a72e92beb8f30f6.wav",
-      "sha256": "60e378ab38ab80c558aaa291871c8282300010f58e6dbf909a72e92beb8f30f6",
-      "size": 12332,
+      "file": "audio/01c36ae76353f7943b142e93f1b40c32f2496d92d5f7f17a50455d2dc96070cf.wav",
+      "sha256": "01c36ae76353f7943b142e93f1b40c32f2496d92d5f7f17a50455d2dc96070cf",
+      "size": 50650,
       "mime": "audio/wav"
     },
     {
