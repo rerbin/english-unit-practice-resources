@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+ <path android:fillColor="#FFFFFF" android:pathData="M18,22h72a12,12 0,0 1,12 12v46a12,12 0,0 1,-12 12H18A12,12 0,0 1,6 80V34A12,12 0,0 1,18 22z"/>
+ <path android:fillColor="#DCEFFF" android:pathData="M16,66c12,-3 24,-1 38,7v13c-13,-8 -25,-10 -38,-7zM92,66c-12,-3 -24,-1 -38,7v13c13,-8 25,-10 38,-7z"/>
+ <!-- stylised 沪: water dots + household radical -->
+ <path android:fillColor="#1E67AE" android:pathData="M25,36l7,4l-3,6l-7,-4zM23,49l8,3l-2,7l-8,-3zM24,63l7,-1c0,7 -2,13 -5,18l-7,-3c3,-4 4,-9 5,-14zM39,32h29v7H47v10h22v7H47v5c0,9 -3,16 -9,22l-6,-5c5,-5 7,-10 7,-18zM49,44h7v38h-7z"/>
+ <path android:fillColor="#F4AD32" android:pathData="M78,42l8,-6v19l-8,-6zM88,39c5,4 5,10 0,14l-3,-4c2,-2 2,-4 0,-6zM93,34c9,8 9,17 0,25l-3,-4c6,-6 6,-11 0,-17z"/>
+</vector>

@@ -1,0 +1,281 @@
+package com.englishpaper.reader;
+
+import android.content.Context;
+import org.json.*;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.security.MessageDigest;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+/** Downloads, verifies and serves per-unit offline audio packs. */
+public final class AudioPackManager {
+    public interface Listener { void onProgress(int percent); void onFinished(boolean ok, String message); }
+
+    private static final String[] CATALOG_URLS = {
+        "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/catalog.json",
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/catalog.json"
+    };
+
+    private final Context context;
+    private final PrivateFileStore files;
+    private final File packsRoot;
+    private final Map<String, Map<String,String>> manifestCache = new ConcurrentHashMap<>();
+
+    public AudioPackManager(Context context, PrivateFileStore files) {
+        this.context = context.getApplicationContext();
+        this.files = files;
+        packsRoot = files.packsRoot();
+        if (!packsRoot.exists()) packsRoot.mkdirs();
+    }
+
+    public File packDir(String unitId) { return new File(packsRoot, safe(unitId)); }
+
+    public boolean isReady(String unitId) { return new File(packDir(unitId), "manifest.json").isFile(); }
+
+    public int installedVersion(String unitId) {
+        try { return manifestRoot(unitId).optInt("packageVersion", 0); } catch (Exception e) { return 0; }
+    }
+
+    public long packSize(String unitId) { return dirSize(packDir(unitId)); }
+
+    /** Resolve an audio key to an absolute playable file, or null. */
+    public File fileFor(String unitId, String audioKey) {
+        if (audioKey == null || audioKey.isEmpty()) return null;
+        Map<String,String> m;
+        try { m = keyMap(unitId); } catch (Exception e) { return null; }
+        String rel = m.get(audioKey);
+        if (rel == null) return null;
+        File f = new File(packDir(unitId), rel);
+        return f.isFile() ? f : null;
+    }
+
+    public synchronized Map<String,String> keyMap(String unitId) throws Exception {
+        Map<String,String> cached = manifestCache.get(unitId);
+        if (cached != null) return cached;
+        File mf = new File(packDir(unitId), "manifest.json");
+        JSONObject root = new JSONObject(readAll(new FileInputStream(mf)));
+        Map<String,String> map = new HashMap<>();
+        JSONArray items = root.getJSONArray("items");
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject it = items.getJSONObject(i);
+            map.put(it.getString("audioKey"), it.getString("file"));
+        }
+        manifestCache.put(unitId, map);
+        return map;
+    }
+    private JSONObject manifestRoot(String unitId) throws Exception {
+        File mf = new File(packDir(unitId), "manifest.json");
+        return new JSONObject(readAll(new FileInputStream(mf)));
+    }
+
+    public void delete(String unitId, Set<String> keepAudioKeys) {
+        Map<String,String> map = manifestCache.remove(unitId);
+        File dir = packDir(unitId);
+        if (map == null) { try { map = keyMap(unitId); } catch (Exception e) { map = new HashMap<>(); } }
+        Set<String> keepFiles = new HashSet<>();
+        if (keepAudioKeys != null) for (String k : keepAudioKeys) { String f = map.get(k); if (f != null) keepFiles.add(f); }
+        File audioDir = new File(dir, "audio");
+        File[] fs = audioDir.listFiles();
+        if (fs != null) for (File f : fs) { String rel = "audio/" + f.getName(); if (!keepFiles.contains(rel)) f.delete(); }
+        new File(dir, "manifest.json").delete();
+        new File(packsRoot, safe(unitId) + ".part").delete();
+    }
+
+    private JSONObject catalogCache; private long catalogCacheAt;
+    public JSONObject fetchCatalog() {
+        if (catalogCache != null && System.currentTimeMillis() - catalogCacheAt < 300_000) return catalogCache;
+        for (String url : CATALOG_URLS) { JSONObject c = fetchJson(url); if (c != null) { catalogCache = c; catalogCacheAt = System.currentTimeMillis(); return c; } }
+        return null;
+    }
+    private static JSONObject catalogUnit(JSONObject catalog, String unitId) throws Exception {
+        JSONArray units = catalog.getJSONArray("units");
+        for (int i = 0; i < units.length(); i++) { JSONObject u = units.getJSONObject(i); if (unitId.equals(u.getString("unitId"))) return u; }
+        return null;
+    }
+    /** Local + catalog state for the UI banner. */
+    public JSONObject state(String unitId, int appVersionCode) {
+        JSONObject o = new JSONObject();
+        try {
+            int installed = installedVersion(unitId);
+            o.put("ready", isReady(unitId)); o.put("installedVersion", installed);
+            JSONObject catalog = fetchCatalog();
+            if (catalog != null) {
+                JSONObject unit = catalogUnit(catalog, unitId);
+                if (unit != null) {
+                    int latest = unit.optInt("audioVersion", 1);
+                    o.put("latestVersion", latest);
+                    o.put("updateAvailable", latest > installed);
+                    o.put("needsAppUpdate", unit.optInt("minAppVersionCode", 0) > appVersionCode);
+                    o.put("size", unit.optLong("size", 0));
+                }
+            }
+        } catch (Exception e) { }
+        return o;
+    }
+
+    public void download(String unitId, Listener listener) {
+        new Thread(() -> {
+            try {
+                JSONObject catalog = fetchCatalog();
+                if (catalog == null) { listener.onFinished(false, "无法获取语音目录，请检查网络"); return; }
+                JSONObject unit = catalogUnit(catalog, unitId);
+                if (unit == null) { listener.onFinished(false, "目录中没有该单元的语音包"); return; }
+                String sha = unit.getString("sha256"); long size = unit.optLong("size", -1);
+                int installed = installedVersion(unitId); int latest = unit.optInt("audioVersion", 1);
+                if (installed > 0 && latest > installed) {
+                    JSONObject nm = null; JSONObject mu = unit.optJSONObject("manifestUrl");
+                    if (mu != null) for (String k : new String[]{"gitee", "github"}) { nm = fetchJson(mu.optString(k)); if (nm != null) break; }
+                    if (nm != null) {
+                        JSONArray items = nm.getJSONArray("items");
+                        java.util.List<JSONObject> missing = new java.util.ArrayList<>(); long missingBytes = 0;
+                        for (int i = 0; i < items.length(); i++) { JSONObject it = items.getJSONObject(i); File f = new File(packDir(unitId), it.getString("file")); if (!f.isFile()) { missing.add(it); missingBytes += it.optLong("size", 0); } }
+                        if (missingBytes <= 1_500_000 && downloadMissing(unitId, mu, missing, listener)) {
+                            writeManifest(unitId, nm);
+                            listener.onFinished(true, "语音已更新到 v" + nm.optInt("packageVersion", latest));
+                            return;
+                        }
+                    }
+                }
+                JSONObject mirrors = unit.getJSONObject("mirrors");
+                String[] urls = { mirrors.optString("gitee"), mirrors.optString("github") };
+                File part = new File(packsRoot, safe(unitId) + ".part");
+                boolean got = false;
+                for (String u : urls) {
+                    if (u == null || u.isEmpty()) continue;
+                    got = downloadResumable(u, part, size, listener);
+                    if (got) break;
+                }
+                if (!got) { listener.onFinished(false, "下载未完成，稍后可继续下载"); return; }
+                String actual = sha256(part);
+                if (!actual.equalsIgnoreCase(sha)) { part.delete(); listener.onFinished(false, "文件校验失败，请重试"); return; }
+                install(part, unitId);
+                part.delete();
+                listener.onFinished(true, "语音已下载，可离线使用");
+            } catch (Exception e) {
+                listener.onFinished(false, "下载失败：" + e.getMessage());
+            }
+        }, "audio-pack-download").start();
+    }
+
+    /** Incremental: fetch only missing audio files (small updates like a new letter sound). */
+    private boolean downloadMissing(String unitId, JSONObject manifestUrls, java.util.List<JSONObject> missing, Listener listener) throws Exception {
+        if (manifestUrls == null) return false;
+        String baseG = manifestUrls.optString("github", "").replace("manifest.json", "");
+        String baseC = manifestUrls.optString("gitee", "").replace("manifest.json", "");
+        int done = 0;
+        for (JSONObject it : missing) {
+            String rel = it.getString("file"); String want = it.optString("sha256", "");
+            File dest = new File(packDir(unitId), rel);
+            File parent = dest.getParentFile(); if (!parent.exists()) parent.mkdirs();
+            boolean got = false;
+            for (String base : new String[]{baseC, baseG}) {
+                if (base.isEmpty()) continue;
+                try {
+                    java.net.HttpURLConnection con = (java.net.HttpURLConnection) new java.net.URL(base + rel).openConnection();
+                    con.setConnectTimeout(10000); con.setReadTimeout(30000);
+                    if (con.getResponseCode() / 100 != 2) { con.disconnect(); continue; }
+                    File tmp = new File(parent, dest.getName() + ".tmp");
+                    try (java.io.InputStream in = con.getInputStream(); java.io.OutputStream out = new java.io.FileOutputStream(tmp)) {
+                        byte[] b = new byte[32768]; int n; while ((n = in.read(b)) != -1) out.write(b, 0, n);
+                    }
+                    con.disconnect();
+                    if (want.isEmpty() || sha256(tmp).equalsIgnoreCase(want)) { if (dest.exists()) dest.delete(); tmp.renameTo(dest); got = true; } else tmp.delete();
+                } catch (Exception e) { }
+                if (got) break;
+            }
+            if (!got) return false;
+            done++; listener.onProgress(done * 100 / missing.size());
+        }
+        return true;
+    }
+    private void writeManifest(String unitId, JSONObject nm) throws Exception {
+        File mf = new File(packDir(unitId), "manifest.json");
+        File parent = mf.getParentFile(); if (!parent.exists()) parent.mkdirs();
+        java.io.FileWriter w = new java.io.FileWriter(mf); w.write(nm.toString(2)); w.close();
+        manifestCache.remove(unitId);
+    }
+
+    /** Range-based resumable download; keeps partial file for later continuation. */
+    private boolean downloadResumable(String url, File part, long expectedSize, Listener listener) {
+        HttpURLConnection con = null;
+        try {
+            long have = part.isFile() ? part.length() : 0;
+            if (expectedSize > 0 && have >= expectedSize) have = 0;
+            con = (HttpURLConnection) new URL(url).openConnection();
+            con.setConnectTimeout(10000); con.setReadTimeout(30000);
+            con.setInstanceFollowRedirects(true);
+            if (have > 0) con.setRequestProperty("Range", "bytes=" + have + "-");
+            int code = con.getResponseCode();
+            if (code / 100 != 2) return false;
+            boolean append = code == 206;
+            if (!append) have = 0;
+            try (InputStream in = con.getInputStream(); OutputStream out = new FileOutputStream(part, append)) {
+                byte[] b = new byte[32768]; int n; long done = have; int last = -1;
+                while ((n = in.read(b)) != -1) {
+                    out.write(b, 0, n); done += n;
+                    int pct = expectedSize > 0 ? (int) (done * 100 / expectedSize) : -1;
+                    if (pct != last) { last = pct; listener.onProgress(pct); }
+                }
+            }
+            return expectedSize <= 0 || part.length() == expectedSize;
+        } catch (Exception e) {
+            return false;
+        } finally { if (con != null) con.disconnect(); }
+    }
+
+    private void install(File zip, String unitId) throws IOException {
+        File dir = packDir(unitId);
+        if (!dir.exists() && !dir.mkdirs()) throw new IOException("无法创建目录");
+        File stage = new File(files.importStagingRoot(), "extract-" + safe(unitId));
+        if (stage.exists()) deleteTree(stage);
+        if (!stage.mkdirs()) throw new IOException("无法创建解压目录");
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(zip))) {
+            ZipEntry e; byte[] b = new byte[32768];
+            while ((e = zin.getNextEntry()) != null) {
+                if (e.isDirectory()) continue;
+                File out = new File(stage, e.getName()).getCanonicalFile();
+                if (!out.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
+                File parent = out.getParentFile(); if (!parent.exists()) parent.mkdirs();
+                try (OutputStream os = new FileOutputStream(out)) { int n; while ((n = zin.read(b)) != -1) os.write(b, 0, n); }
+            }
+        }
+        File mf = new File(stage, "manifest.json");
+        if (!mf.isFile()) { deleteTree(stage); throw new IOException("语音包缺少清单"); }
+        copyTree(stage, dir);
+        deleteTree(stage);
+        manifestCache.remove(unitId);
+    }
+
+    private JSONObject fetchJson(String url) {
+        HttpURLConnection con = null;
+        try {
+            con = (HttpURLConnection) new URL(url).openConnection();
+            con.setConnectTimeout(8000); con.setReadTimeout(15000);
+            if (con.getResponseCode() / 100 != 2) return null;
+            return new JSONObject(readAll(con.getInputStream()));
+        } catch (Exception e) { return null; } finally { if (con != null) con.disconnect(); }
+    }
+
+    private static String readAll(InputStream in) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(); byte[] b = new byte[8192]; int n;
+        while ((n = in.read(b)) != -1) out.write(b, 0, n);
+        in.close(); return out.toString("UTF-8");
+    }
+    private static String sha256(File f) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        try (InputStream in = new FileInputStream(f)) { byte[] b = new byte[65536]; int n; while ((n = in.read(b)) != -1) md.update(b, 0, n); }
+        StringBuilder s = new StringBuilder(); for (byte x : md.digest()) s.append(String.format(Locale.US, "%02x", x));
+        return s.toString();
+    }
+    private static String safe(String x) { return x.replaceAll("[^A-Za-z0-9._-]", "_"); }
+    private static long dirSize(File d) { File[] fs = d.listFiles(); long t = 0; if (fs != null) for (File f : fs) t += f.isDirectory() ? dirSize(f) : f.length(); return t; }
+    private static void deleteTree(File d) { File[] fs = d.listFiles(); if (fs != null) for (File f : fs) { if (f.isDirectory()) deleteTree(f); f.delete(); } d.delete(); }
+    private static void copyTree(File src, File dst) throws IOException {
+        if (src.isDirectory()) { if (!dst.exists()) dst.mkdirs(); File[] fs = src.listFiles(); if (fs != null) for (File f : fs) copyTree(f, new File(dst, f.getName())); }
+        else { try (InputStream in = new FileInputStream(src); OutputStream out = new FileOutputStream(dst)) { byte[] b = new byte[65536]; int n; while ((n = in.read(b)) != -1) out.write(b, 0, n); } }
+    }
+}
