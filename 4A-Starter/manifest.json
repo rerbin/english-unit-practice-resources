@@ -1,6 +1,6 @@
 {
   "schema": "english-unit-audio/v1",
-  "packageVersion": 2,
+  "packageVersion": 3,
   "textbookId": "shanghai-4a",
   "unitId": "4A-Starter",
   "contentVersion": 1,
@@ -18,9 +18,9 @@
       "itemId": "4A-Starter-000",
       "textHash": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
       "audioKey": "u_000",
-      "file": "audio/ec400ca111675d432a3f781d5edb6170f23f8a43ee7314ceaed045be57766d15.wav",
-      "sha256": "ec400ca111675d432a3f781d5edb6170f23f8a43ee7314ceaed045be57766d15",
-      "size": 26668,
+      "file": "audio/74f4f909bce422c85a7aa80e09243043ccb9bb80fb17e4e908893838e6acd8fe.wav",
+      "sha256": "74f4f909bce422c85a7aa80e09243043ccb9bb80fb17e4e908893838e6acd8fe",
+      "size": 10284,
       "mime": "audio/wav"
     },
     {
@@ -81,9 +81,9 @@
       "itemId": "4A-Starter-007",
       "textHash": "08c85bd37cdd0ffce8c39ecd7c7f0ff94e6f45af2aa986673b0c9f1a8a2fffea",
       "audioKey": "u_007",
-      "file": "audio/dea0eb705159026633774902a26940554163ab849071c47c5bed546c6e8384c4.wav",
-      "sha256": "dea0eb705159026633774902a26940554163ab849071c47c5bed546c6e8384c4",
-      "size": 26668,
+      "file": "audio/2eb04808c0a064d10772bdb1c16f1e6d2e72aac15b9088455b0178e5f9d62662.wav",
+      "sha256": "2eb04808c0a064d10772bdb1c16f1e6d2e72aac15b9088455b0178e5f9d62662",
+      "size": 30764,
       "mime": "audio/wav"
     },
     {
@@ -144,9 +144,9 @@
       "itemId": "4A-Starter-014",
       "textHash": "4cd8cf8e48cfb313c2c5136ab40bd2b5f43de704542db49b85c0a2006a47832e",
       "audioKey": "u_014",
-      "file": "audio/dfdd9f219a7beb3090f697c851043b0375a32c6c095b9bd02b0d7ccaf70f1ba1.wav",
-      "sha256": "dfdd9f219a7beb3090f697c851043b0375a32c6c095b9bd02b0d7ccaf70f1ba1",
-      "size": 24108,
+      "file": "audio/66b459443022851279e60eebbe6684a3fc5c3ce9bab90ffef7403b068734fc78.wav",
+      "sha256": "66b459443022851279e60eebbe6684a3fc5c3ce9bab90ffef7403b068734fc78",
+      "size": 31276,
       "mime": "audio/wav"
     },
     {
@@ -198,9 +198,9 @@
       "itemId": "4A-Starter-020",
       "textHash": "ab5b62081b1d305e78d0daadb2cd23470b3faeb65af7370627798b7219ea2061",
       "audioKey": "u_020",
-      "file": "audio/9d662eff2f14e9f151ce239e542ea592a6bcc45cdaa865be770ff297b30294f1.wav",
-      "sha256": "9d662eff2f14e9f151ce239e542ea592a6bcc45cdaa865be770ff297b30294f1",
-      "size": 24620,
+      "file": "audio/d909f67a44dd419eda18655668504b06482bee4575596bc4d8fbfc642e86e977.wav",
+      "sha256": "d909f67a44dd419eda18655668504b06482bee4575596bc4d8fbfc642e86e977",
+      "size": 14892,
       "mime": "audio/wav"
     },
     {
@@ -261,9 +261,9 @@
       "itemId": "4A-Starter-027",
       "textHash": "7175517a370b5cd2e664e3fd29c4ea9db5ce17058eb9772fe090a5485e49dad6",
       "audioKey": "u_027",
-      "file": "audio/9631ac14ec69d45e643cffe812106684f66ad24f54db98a3ed0b21e7950713b8.wav",
-      "sha256": "9631ac14ec69d45e643cffe812106684f66ad24f54db98a3ed0b21e7950713b8",
-      "size": 22060,
+      "file": "audio/7baba2e9db2e527fea3ace3aba86b00096fce816be7ec179669bebdec5792feb.wav",
+      "sha256": "7baba2e9db2e527fea3ace3aba86b00096fce816be7ec179669bebdec5792feb",
+      "size": 31276,
       "mime": "audio/wav"
     },
     {
