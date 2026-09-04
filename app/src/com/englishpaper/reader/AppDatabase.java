@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** The single owner of the application's SQLite connection and schema. */
 public final class AppDatabase extends SQLiteOpenHelper {
     private static final String NAME = "english_unit_practice_v2.db";
-    private static final int VERSION = 3;
+    private static final int VERSION = 4;
     private static volatile AppDatabase instance;
 
     public static AppDatabase get(Context context) {

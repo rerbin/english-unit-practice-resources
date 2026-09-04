@@ -5,15 +5,11 @@ import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.provider.Settings;
 import android.media.PlaybackParams;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.speech.tts.TextToSpeech;
-import android.speech.tts.UtteranceProgressListener;
-import android.speech.tts.Voice;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -31,29 +27,19 @@ import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-import java.util.Locale;
-import java.util.Set;
 
-public class MainActivity extends Activity implements TextToSpeech.OnInitListener {
+public class MainActivity extends Activity {
     private static final int PICK_JSON = 41;
     private static final int CREATE_BACKUP = 42;
     private static final int RESTORE_BACKUP = 43;
     private static final String PREFS = "reader_settings";
-    private static final String KEY_VOICE_MODE = "voice_mode";
     private static final String KEY_SPEECH_RATE = "speech_rate";
-    private static final String MODE_OFFLINE = "offline";
-    private static final String MODE_UK = "system_uk";
-    private static final String MODE_US = "system_us";
 
     private WebView web;
-    private TextToSpeech tts;
     private MediaPlayer player;
     private SharedPreferences prefs;
-    private boolean ttsReady = false;
-    private boolean continueAfterSpeech = false;
-    private String voiceMode = MODE_OFFLINE;
     private float speechRate = 1.0f;
-    private String lastStatus = "离线发音已就绪";
+    private String lastStatus = "离线发音";
     private AppDatabase appDatabase;
     private WrongBookDb wrongDb;
     private ContentDb contentDb;
@@ -72,8 +58,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         wrongDb = new WrongBookDb(appDatabase);
         contentDb = new ContentDb(this,appDatabase,privateFiles);
         dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("contentReady","ready"); } catch(Exception e){js("contentError",e.getMessage());} });
-        voiceMode = prefs.getString(KEY_VOICE_MODE, MODE_OFFLINE);
-        if ("online".equals(voiceMode)) voiceMode = MODE_OFFLINE;
         speechRate = prefs.getFloat(KEY_SPEECH_RATE, 1.0f);
 
         web = new WebView(this);
@@ -83,113 +67,27 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         settings.setDomStorageEnabled(true);
         settings.setAllowFileAccess(false);
         settings.setDefaultTextEncodingName("UTF-8");
-        web.setWebViewClient(new WebViewClient() {
-            @Override public void onPageFinished(WebView view, String url) {
-                pushVoiceState();
-            }
-        });
+        web.setWebViewClient(new WebViewClient());
         web.addJavascriptInterface(new Bridge(), "Android");
         web.loadUrl("file:///android_res/raw/home.html");
-        tts = new TextToSpeech(this, this);
     }
 
-    @Override public void onInit(int result) {
-        ttsReady = result == TextToSpeech.SUCCESS;
-        if (ttsReady) {
-            tts.setSpeechRate(speechRate);
-            tts.setPitch(1.0f);
-            tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
-                @Override public void onStart(String id) { mark(id); }
-                @Override public void onDone(String id) {
-                    if (continueAfterSpeech) {
-                        continueAfterSpeech = false;
-                        runOnUiThread(() -> web.evaluateJavascript("window.nextAudio()", null));
-                    }
-                }
-                @Override public void onError(String id) {
-                    continueAfterSpeech = false;
-                    status("系统 TTS 播放失败，请检查系统文字转语音设置");
-                }
-            });
-            configureSystemVoice(false);
-        } else if (!MODE_OFFLINE.equals(voiceMode)) {
-            status("系统 TTS 不可用，请切换为内置离线发音");
-        }
-        pushVoiceState();
-    }
 
-    private boolean configureSystemVoice(boolean announce) {
-        if (!ttsReady) {
-            if (announce) status("系统 TTS 尚未就绪");
-            return false;
-        }
-        Locale target = MODE_US.equals(voiceMode) ? Locale.US : Locale.UK;
-        int result = tts.setLanguage(target);
-        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-            if (announce) status(MODE_US.equals(voiceMode) ? "系统未安装美式英语语音" : "系统未安装英式英语语音");
-            return false;
-        }
 
-        // Prefer a matching voice that is already installed and does not require a network.
-        try {
-            Set<Voice> voices = tts.getVoices();
-            Voice best = null;
-            if (voices != null) {
-                for (Voice voice : voices) {
-                    Locale locale = voice.getLocale();
-                    if (locale == null || !"en".equalsIgnoreCase(locale.getLanguage())) continue;
-                    if (!target.getCountry().equalsIgnoreCase(locale.getCountry())) continue;
-                    if (best == null || (best.isNetworkConnectionRequired() && !voice.isNetworkConnectionRequired())) best = voice;
-                }
-            }
-            if (best != null) {
-                int voiceResult = tts.setVoice(best);
-                if (voiceResult == TextToSpeech.ERROR) return false;
-            }
-            tts.setSpeechRate(speechRate);
-        } catch (Exception ignored) { }
-
-        if (announce) status(MODE_US.equals(voiceMode) ? "已选择系统美式英语" : "已选择系统英式英语");
-        return true;
-    }
-
-    private void setVoiceMode(String mode) {
-        if (!MODE_OFFLINE.equals(mode) && !MODE_UK.equals(mode) && !MODE_US.equals(mode)) return;
-        stopPlayback();
-        voiceMode = mode;
-        prefs.edit().putString(KEY_VOICE_MODE, mode).apply();
-        if (MODE_OFFLINE.equals(mode)) status("已选择内置离线发音");
-        else configureSystemVoice(true);
-        pushVoiceState();
-    }
 
     private void setSpeechRate(float rate) {
         if (rate < 0.6f) rate = 0.6f;
         if (rate > 1.4f) rate = 1.4f;
         speechRate = rate;
         prefs.edit().putFloat(KEY_SPEECH_RATE, rate).apply();
-        if (ttsReady) tts.setSpeechRate(rate);
+        applyRate();
         status("语速已设为 " + Math.round(rate * 100) + "%");
-        pushVoiceState();
+    }
+    private void applyRate() {
+        if (player != null) { try { PlaybackParams pp = player.getPlaybackParams(); pp.setSpeed(speechRate); pp.setPitch(1.0f); player.setPlaybackParams(pp); } catch (Exception ignored) { } }
     }
 
-    private void openTtsSettings() {
-        try {
-            Intent intent = new Intent("com.android.settings.TTS_SETTINGS");
-            startActivity(intent);
-        } catch (Exception first) {
-            try { startActivity(new Intent(Settings.ACTION_SETTINGS)); }
-            catch (Exception ignored) { status("无法打开系统语音设置"); }
-        }
-    }
 
-    private void pushVoiceState() {
-        if (web == null) return;
-        String label = MODE_UK.equals(voiceMode) ? "系统英式英语" : MODE_US.equals(voiceMode) ? "系统美式英语" : "内置离线发音";
-        runOnUiThread(() -> web.evaluateJavascript(
-            "window.updateVoiceState(" + org.json.JSONObject.quote(voiceMode) + "," +
-            org.json.JSONObject.quote(label) + "," + org.json.JSONObject.quote(lastStatus) + "," + speechRate + ")", null));
-    }
 
     private void status(String message) {
         lastStatus = message;
@@ -203,38 +101,19 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
     private void play(String unitId, String resourceName, String text, String id, boolean next) {
         File packFile = packs.fileFor(unitId, resourceName);
         if (packFile != null) { playFile(packFile, id, next); return; }
-        speakSystem(text, id, next);
+        status("本单元语音未下载，请先在顶部下载语音");
     }
     private void playFile(File f, String id, boolean next) { runOnUiThread(() -> { try {
         stopPlayback(); player=new MediaPlayer(); player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
         player.setDataSource(f.getAbsolutePath());
-        player.setOnPreparedListener(mp->{mark(id);mp.start();status("正在播放离线语音");});
+        player.setOnPreparedListener(mp->{try{PlaybackParams pp=mp.getPlaybackParams();pp.setSpeed(speechRate);pp.setPitch(1.0f);mp.setPlaybackParams(pp);}catch(Exception ignored){}mark(id);mp.start();status("正在播放离线语音");});
         player.setOnCompletionListener(mp->{mp.release();player=null;if(next)web.evaluateJavascript("window.nextAudio()",null);});
         player.setOnErrorListener((mp,w,e)->{mp.release();player=null;status("离线语音播放失败");return true;});
         player.prepareAsync();
     } catch(Exception e){ status("离线语音播放失败："+e.getMessage()); } }); }
 
-    private void speakSystem(String text, String id, boolean next) {
-        runOnUiThread(() -> {
-            stopPlayback();
-            if (!configureSystemVoice(false)) {
-                status(MODE_US.equals(voiceMode) ? "系统没有可用的美式英语语音" : "系统没有可用的英式英语语音");
-                return;
-            }
-            continueAfterSpeech = next;
-            Bundle params = new Bundle();
-            params.putString(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, id);
-            int result = tts.speak(text, TextToSpeech.QUEUE_FLUSH, params, id);
-            if (result == TextToSpeech.ERROR) {
-                continueAfterSpeech = false;
-                status("系统 TTS 未能开始播放");
-            } else status("正在使用系统 TTS 播放");
-        });
-    }
 
     private void stopPlayback() {
-        continueAfterSpeech = false;
-        if (tts != null) tts.stop();
         if (player != null) {
             try { player.stop(); } catch (Exception ignored) { }
             player.release();
@@ -290,10 +169,8 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }
-        @JavascriptInterface public void setVoiceMode(String mode) { runOnUiThread(() -> MainActivity.this.setVoiceMode(mode)); }
         @JavascriptInterface public void setSpeechRate(float rate) { runOnUiThread(() -> MainActivity.this.setSpeechRate(rate)); }
-        @JavascriptInterface public void openTtsSettings() { runOnUiThread(() -> MainActivity.this.openTtsSettings()); }
-        @JavascriptInterface public String getVoiceMode() { return voiceMode; }
+        @JavascriptInterface public String getSpeechRate() { return String.valueOf(speechRate); }
         @JavascriptInterface public void requestCatalog() { dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("receiveCatalog",contentDb.catalog()); } catch(Exception e){js("contentError",e.getMessage());} }); }
         @JavascriptInterface public void requestUnit(String unitId) { dbExecutor.execute(() -> { try { contentDb.setState("last_unit_id",unitId);js("receiveUnit",contentDb.unit(unitId)); } catch(Exception e){js("contentError",e.getMessage());} }); }
         @JavascriptInterface public void requestLastUnit() { dbExecutor.execute(() -> js("receiveLastUnit",contentDb.getState("last_unit_id","4A-Starter"))); }
@@ -331,7 +208,6 @@ public class MainActivity extends Activity implements TextToSpeech.OnInitListene
 
     @Override protected void onDestroy() {
         stopPlayback();
-        if (tts != null) tts.shutdown();
         dbExecutor.shutdown();
         
         if (web != null) web.destroy();
