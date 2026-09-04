@@ -16,8 +16,8 @@ public final class AudioPackManager {
     public interface Listener { void onProgress(int percent); void onFinished(boolean ok, String message); }
 
     private static final String[] CATALOG_URLS = {
-        "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/catalog.json",
-        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/catalog.json"
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/catalog.json",
+        "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/catalog.json"
     };
 
     private final Context context;
