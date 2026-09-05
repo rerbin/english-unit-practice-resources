@@ -88,15 +88,15 @@ public final class AudioPackManager {
     public boolean isTrialReady(String variant) { return new File(trialPackDir(variant, "4A-Starter"), "manifest.json").isFile() && new File(trialPackDir(variant, "4A-U1"), "manifest.json").isFile(); }
     public JSONObject trialState() {
         JSONObject o = new JSONObject();
-        try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","kokoro","sonia"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
+        try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","kokoro","sonia","cori"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
         return o;
     }
     private String trialUrl(String variant) { return "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/voice-trial-" + variant + "-v1.zip"; }
-    private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("kokoro".equals(variant)) return 9252066L; if ("sonia".equals(variant)) return 2120307L; return -1L; }
+    private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("kokoro".equals(variant)) return 9252066L; if ("sonia".equals(variant)) return 2120307L; if ("cori".equals(variant)) return 9236968L; return -1L; }
     public void downloadTrial(String variant, Listener listener) {
         new Thread(() -> {
             try {
-                if (!"piper".equals(variant) && !"kokoro".equals(variant) && !"sonia".equals(variant)) throw new IOException("未知语音方案");
+                if (!"piper".equals(variant) && !"kokoro".equals(variant) && !"sonia".equals(variant) && !"cori".equals(variant)) throw new IOException("未知语音方案");
                 File part = new File(packsRoot, "trial-" + safe(variant) + ".part");
                 if (!downloadResumable(trialUrl(variant), part, trialSize(variant), listener)) { listener.onFinished(false, "下载未完成，稍后可继续下载"); return; }
                 installTrial(part, variant); part.delete(); listener.onFinished(true, "语音方案下载成功，可用于试听");

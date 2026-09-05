@@ -8,13 +8,13 @@
       "order": 0,
       "title": "Starter",
       "subtitle": "我们的家人和朋友",
-      "audioVersion": 5,
+      "audioVersion": 6,
       "minAppVersionCode": 26,
-      "size": 8432495,
-      "sha256": "c38b353dc618f4c0313648133a056a33150c6eca7c66caefc614827db4947b81",
+      "size": 9408131,
+      "sha256": "53e2ded746283974dc9c5b01ac25237e8ae70f7ad00f6e3f4a9797ed4219168c",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v5.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v5.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v6.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v6.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
@@ -26,13 +26,13 @@
       "order": 999,
       "title": "Unit 1",
       "subtitle": "",
-      "audioVersion": 5,
+      "audioVersion": 6,
       "minAppVersionCode": 26,
-      "size": 9657205,
-      "sha256": "a78f9ca3b750839c96d0716f39727db4800b440d92cb8d83365a27f7a1f04e70",
+      "size": 10606900,
+      "sha256": "97479bab89dffdbd6fcb94db0f82dfe8f37903f03b5daf442e4961431110ed25",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v5.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v5.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v6.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v6.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",
