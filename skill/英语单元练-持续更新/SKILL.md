@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.17.0
+version: 1.18.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,12 @@ version: 1.17.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.39.0 掌握规则与统计文案盘
+
+- 掌握自动标记规则收紧：拼写通过仅当“纯书写错误（writing=1 且 pronunciation=0）”才自动 mastered；含发音错误的错题即使拼写正确也只记录成绩，掌握必须手动点（用户定规）；
+- 拼写成功提示按类型区分：含发音错误→“拼写正确！发音错误仍需手动点‘掌握’。”；
+- 统计胶囊文案改“X项待练习/X项已掌握”，胶囊整体 13px 与“导出错题”字号一致（playwright 断言三处 fontSize 相等）。
 
 ## 1.38.0 单元面板全尺寸下拉盘
 
@@ -342,3 +348,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.36.0（code40）。错题本头部统计胶囊+导出最右；双站 Release 机制（GitHub 附件/Gitee target_commitish）入 skill v1.15.0；release：GitHub 383109124、Gitee 1124398。
 - 2026-09-05：APK 1.37.0（code41）。去加载占位+平板单元面板锚定；release：GitHub 383111980、Gitee 1124473；skill v1.16.0。
 - 2026-09-05：APK 1.38.0（code42）。单元面板全尺寸下拉锚定、点选即切换、去完成按钮；release：GitHub 383114726、Gitee 1124505；skill v1.17.0。
+- 2026-09-05：APK 1.39.0（code43）。掌握自动标记仅限纯书写错误；统计“X项待练习”+13px 字号一致；release：GitHub 383116543、Gitee 1124570；skill v1.18.0。
