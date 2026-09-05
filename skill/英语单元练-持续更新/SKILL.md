@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.14.0
+version: 1.15.0
 ---
 
 # 英语单元练-持续更新
@@ -107,6 +107,19 @@ version: 1.14.0
 - 底部 tab：active 浅蓝底、图标+文字；设置入列；
 - 单元卡：选中渐变数字徽标+绿勾；
 - 单元简称统一：4au1 JSON/种子/目录/发布单元 JSON 均 shortTitle=Unit 1，顶部框与列表一致。
+
+## 双站 Release 发布规则（1.15.0 起）
+
+每个对外版本必须：
+1. 两站推送代码+apk/ 目录，并打 annotated tag `v<version>` 推送两站；
+2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
+3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
+4. 台账记录两站 release id。
+
+## 1.36.0 错题本头部盘
+
+- 头部右侧改“统计胶囊+导出最右”：statpill（数字 16px tabular-nums+min-width，三位数不挤）、导出错题橙色胶囊置行最右；wronghead 允许 wrap 防窄屏溢出；
+- 数字随当前 stage 切换（待练习/已掌握）。
 
 ## Skill 同步规则（1.9.0 起）
 
@@ -314,3 +327,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.33.0（code37）。数据结构审查：删 audio_assets/normalized_word/四冗余索引；UNIQUE+CHECK 补强；N+1 清零；DB v6；sqlite3 约束门禁入 skill v1.12.0。
 - 2026-09-05：APK 1.34.0（code38）。“停止连读”文案；设置“使用说明”独立页（六分区卡片）；skill v1.13.0。
 - 2026-09-05：APK 1.35.0（code39）。状态行状态机（空闲/播放/下载成功语义）+下载进度条；playwright 状态断言入 skill v1.14.0。
+- 2026-09-05：APK 1.36.0（code40）。错题本头部统计胶囊+导出最右；双站 Release 机制（GitHub 附件/Gitee target_commitish）入 skill v1.15.0；release：GitHub 383109124、Gitee 1124398。
