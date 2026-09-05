@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.11.0
+version: 1.12.0
 ---
 
 # 英语单元练-持续更新
@@ -48,6 +48,24 @@ version: 1.11.0
 2. `playwright` + 系统 `/usr/bin/chromium`（--no-sandbox）以 390x844 截四页：学习、错题本、设置、单元选择；
 3. 逐图检查：对齐/折行/留白/层级/选中态；headless 无 emoji 字体出现方框属环境差异，真机正常；
 4. 发现不一致（如简称回退全名）当场修数据或 CSS，再构建。
+
+## 1.33.0 数据结构审查盘（DB v6）
+
+删除（只写不读/无查询对应）：
+- audio_assets 表及其写入（音频实体走语音包 manifest，ref_count 只增不减属误导）；
+- mistake_words.normalized_word（Web 即时归一化）；
+- idx_units_recent / idx_mistakes_unit / idx_items_audio / 与 UNIQUE 重复的 idx_units_book_order。
+
+约束补强：
+- units UNIQUE(textbook_id,sort_order) 防排序冲突；short_title/title NOT NULL；
+- mistakes CHECK(stage IN active/mastered)、CHECK(mastered/两错误位 IN 0/1)；
+- item_options.option_text / sections.title / learning_events.event_type / app_state.state_value NOT NULL。
+
+提效：
+- unit() 选项与 list() 错词改“单查询+内存分组”（消除 N+1）；
+- archive/restore 改 ContentValues.update（类型安全，自增字段先读后写）。
+
+验证门禁：新 DDL 用 sqlite3 复跑，断言 UNIQUE/CHECK/级联删除生效后才允许构建。
 
 ## 1.32.0 代码质量盘（清理+提效）
 
@@ -276,3 +294,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.30.0（code34）。按钮文案/nowrap 美观、导出错题 .xls、备份还原彻底移除；skill v1.9.0 起同步 GitHub（Gitee 不同步 skill，定策）。
 - 2026-09-05：APK 1.31.0（code35）。全页面视觉重写+playwright 四页截图自检流程入 skill v1.10.0；单元简称统一。
 - 2026-09-05：APK 1.32.0（code36）。代码质量盘：死代码清理、LEFT JOIN 提效、DB v5；skill v1.11.0。
+- 2026-09-05：APK 1.33.0（code37）。数据结构审查：删 audio_assets/normalized_word/四冗余索引；UNIQUE+CHECK 补强；N+1 清零；DB v6；sqlite3 约束门禁入 skill v1.12.0。
