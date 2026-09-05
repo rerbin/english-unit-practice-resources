@@ -113,14 +113,15 @@ public class MainActivity extends Activity {
     private void playFile(File f, String id, boolean next) { runOnUiThread(() -> { try {
         stopPlayback(); player=new MediaPlayer(); player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
         player.setDataSource(f.getAbsolutePath());
-        player.setOnPreparedListener(mp->{try{PlaybackParams pp=mp.getPlaybackParams();pp.setSpeed(speechRate);pp.setPitch(1.0f);mp.setPlaybackParams(pp);}catch(Exception ignored){}mark(id);mp.start();status("正在播放离线语音");});
-        player.setOnCompletionListener(mp->{mp.release();player=null;if(next)web.evaluateJavascript("window.nextAudio()",null);});
-        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;status("离线语音播放失败");return true;});
+        player.setOnPreparedListener(mp->{try{PlaybackParams pp=mp.getPlaybackParams();pp.setSpeed(speechRate);pp.setPitch(1.0f);mp.setPlaybackParams(pp);}catch(Exception ignored){}mark(id);mp.start();js0("playbackStarted");});
+        player.setOnCompletionListener(mp->{mp.release();player=null;js0("playbackEnded");if(next)web.evaluateJavascript("window.nextAudio()",null);});
+        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;js0("playbackEnded");status("离线语音播放失败");return true;});
         player.prepareAsync();
     } catch(Exception e){ status("离线语音播放失败："+e.getMessage()); } }); }
 
 
     private void stopPlayback() {
+        js0("playbackEnded");
         if (player != null) {
             try { player.stop(); } catch (Exception ignored) { }
             player.release();
@@ -129,6 +130,7 @@ public class MainActivity extends Activity {
     }
 
 
+    private void js0(String function) { runOnUiThread(() -> web.evaluateJavascript("window." + function + "()", null)); }
     private void js(String function, String payload) {
         runOnUiThread(() -> web.evaluateJavascript("window." + function + "(" + org.json.JSONObject.quote(payload) + ")", null));
     }
