@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.10.0
+version: 1.11.0
 ---
 
 # 英语单元练-持续更新
@@ -48,6 +48,20 @@ version: 1.10.0
 2. `playwright` + 系统 `/usr/bin/chromium`（--no-sandbox）以 390x844 截四页：学习、错题本、设置、单元选择；
 3. 逐图检查：对齐/折行/留白/层级/选中态；headless 无 emoji 字体出现方框属环境差异，真机正常；
 4. 发现不一致（如简称回退全名）当场修数据或 CSS，再构建。
+
+## 1.32.0 代码质量盘（清理+提效）
+
+清理（死代码归零，grep 门禁：package_imports/importUnit/copyTreeIntoStore/contentReady/unitImported/audioMap/currentMode 全 0）：
+- MainActivity：删 getAudioState/importPaper/read(Uri)/PICK_JSON/ZIP 导入/ByteArrayOutputStream；contentReady 调用移除；versionCode 改 getLongVersionCode。
+- ContentDb：删 importUnit/validate/log 与 package_imports 表（AppDatabase VERSION 4→5 开发期重建）。
+- PrivateFileStore：删 copyTreeIntoStore/copyTree（还原链路已废）。
+- Web：删 audioMap/currentMode/contentReady/unitImported；playText 仅用 metaById.audioResource。
+
+提效：
+- WrongBookDb.list 的 audio_key 由“每行一次查询”改为 LEFT JOIN content_items 一次取回；
+- 其余既有缓存（catalog 5 分钟、keyMap 内存缓存）保留。
+
+纪律：大段删除后必须立即编译+预览冒烟；单行方法删除用行锚，多行方法删除后 grep 调用点确认未误吞（本次 installUnit 曾被误吞，已恢复并加门禁）。
 
 ## 1.31.0 全面美化盘
 
@@ -261,3 +275,4 @@ ALWAYS use this exact template:
 - 2026-09-04：APK 1.29.0（code33）。WebChromeClient 补 JS 对话框（移出/移除/还原等 confirm 流程恢复）；拼写归一化加全角→半角与零宽清理，失败显示正确拼写。skill v1.8.0。
 - 2026-09-05：APK 1.30.0（code34）。按钮文案/nowrap 美观、导出错题 .xls、备份还原彻底移除；skill v1.9.0 起同步 GitHub（Gitee 不同步 skill，定策）。
 - 2026-09-05：APK 1.31.0（code35）。全页面视觉重写+playwright 四页截图自检流程入 skill v1.10.0；单元简称统一。
+- 2026-09-05：APK 1.32.0（code36）。代码质量盘：死代码清理、LEFT JOIN 提效、DB v5；skill v1.11.0。
