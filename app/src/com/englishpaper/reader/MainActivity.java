@@ -151,7 +151,7 @@ public class MainActivity extends Activity {
             android.database.Cursor w = appDatabase.getReadableDatabase().rawQuery("SELECT word_text FROM mistake_words WHERE mistake_id=? ORDER BY word_index", new String[]{id});
             while (w.moveToNext()) { if (words.length() > 0) words.append("、"); words.append(w.getString(0)); }
             w.close();
-            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "+" : "") + (c.getInt(4) == 1 ? "书写" : "");
+            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "+" : "") + (c.getInt(4) == 1 ? "拼写" : "");
             sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(1))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已经掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(5))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(6))).append("</td></tr>");
         }
         c.close();
