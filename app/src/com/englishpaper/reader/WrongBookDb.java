@@ -184,8 +184,13 @@ public class WrongBookDb {
 
     public synchronized void spellResult(long id, boolean correct, String entered) {
         SQLiteDatabase db = getWritableDatabase();
-        if (correct) db.execSQL("UPDATE mistakes SET mastered=1,mastered_at=?,last_correct_at=?,updated_at=?,attempts=attempts+1,correct_count=correct_count+1 WHERE id=?", new Object[]{now(), now(), now(), id});
-        else db.execSQL("UPDATE mistakes SET writing_error=1,updated_at=?,attempts=attempts+1,wrong_count=wrong_count+1 WHERE id=?", new Object[]{now(), id});
+        int pe = 0, we = 0;
+        try (Cursor c = db.rawQuery("SELECT pronunciation_error,writing_error FROM mistakes WHERE id=?", new String[]{String.valueOf(id)})) { if (c.moveToFirst()) { pe = c.getInt(0); we = c.getInt(1); } }
+        if (correct) {
+            // 只有纯书写错误才允许拼写通过后自动掌握；含发音错误必须手工点“掌握”
+            if (we == 1 && pe == 0) db.execSQL("UPDATE mistakes SET mastered=1,mastered_at=?,last_correct_at=?,updated_at=?,attempts=attempts+1,correct_count=correct_count+1 WHERE id=?", new Object[]{now(), now(), now(), id});
+            else db.execSQL("UPDATE mistakes SET last_correct_at=?,updated_at=?,attempts=attempts+1,correct_count=correct_count+1 WHERE id=?", new Object[]{now(), now(), id});
+        } else db.execSQL("UPDATE mistakes SET writing_error=1,updated_at=?,attempts=attempts+1,wrong_count=wrong_count+1 WHERE id=?", new Object[]{now(), id});
         event(db, id, correct ? "spelling_correct" : "spelling_wrong", entered);
     }
 
