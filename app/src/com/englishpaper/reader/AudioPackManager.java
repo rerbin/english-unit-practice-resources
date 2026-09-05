@@ -22,7 +22,7 @@ public final class AudioPackManager {
 
     private final Context context;
     private final PrivateFileStore files;
-    private final File packsRoot;
+    private final File packsRoot, baseRoot;
     private final android.content.SharedPreferences trialPrefs;
     private static final String TRIAL_PREF = "voice_trial_variant";
     private final Map<String, Map<String,String>> manifestCache = new ConcurrentHashMap<>();
@@ -30,7 +30,7 @@ public final class AudioPackManager {
     public AudioPackManager(Context context, PrivateFileStore files) {
         this.context = context.getApplicationContext();
         this.files = files;
-        packsRoot = files.packsRoot();
+        packsRoot = files.packsRoot(); baseRoot = new File(packsRoot, "phonics-base"); if (!baseRoot.exists()) baseRoot.mkdirs();
         trialPrefs = context.getSharedPreferences("voice_trial", 0);
         if (!packsRoot.exists()) packsRoot.mkdirs();
     }
@@ -48,6 +48,7 @@ public final class AudioPackManager {
     /** Resolve an audio key to an absolute playable file, or null. */
     public File fileFor(String unitId, String audioKey) {
         if (audioKey == null || audioKey.isEmpty()) return null;
+        if (audioKey.startsWith("phoneme:")) { try { String rel=keyMapFor(baseRoot,"phonics-base").get(audioKey); if(rel!=null){File f=new File(baseRoot,rel);if(f.isFile())return f;} } catch(Exception ignored){} }
         String variant = selectedVariant();
         if (!"default".equals(variant)) {
             try {
@@ -80,6 +81,9 @@ public final class AudioPackManager {
         File mf = new File(packDir(unitId), "manifest.json");
         return new JSONObject(readAll(new FileInputStream(mf)));
     }
+
+    public boolean baseReady(){return new File(baseRoot,"manifest.json").isFile();}
+    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");if(!downloadResumable("https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip",part,3127173L,listener)){listener.onFinished(false,"基础发音包下载未完成");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
 
     public String selectedVariant() { return trialPrefs.getString(TRIAL_PREF, "default"); }
     public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, variant).apply(); }
