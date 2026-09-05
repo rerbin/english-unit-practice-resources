@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.16.0
+version: 1.17.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,12 @@ version: 1.16.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.38.0 单元面板全尺寸下拉盘
+
+- 单元选择面板在手机上也锚定 unitBar 正下方（下拉列表形态），不再用底部抽屉；遮罩调淡、去 handle；
+- 去掉“完成”按钮：点选单元即 selectUnit+closeUnits 直接切换；mask 点击关闭保留；
+- 自检断言：手机视口锚定误差<2px、#closeUnits 计数 0、点选后面板关闭且标题切换。
 
 ## 1.37.0 加载占位与平板锚定盘
 
@@ -335,3 +341,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.35.0（code39）。状态行状态机（空闲/播放/下载成功语义）+下载进度条；playwright 状态断言入 skill v1.14.0。
 - 2026-09-05：APK 1.36.0（code40）。错题本头部统计胶囊+导出最右；双站 Release 机制（GitHub 附件/Gitee target_commitish）入 skill v1.15.0；release：GitHub 383109124、Gitee 1124398。
 - 2026-09-05：APK 1.37.0（code41）。去加载占位+平板单元面板锚定；release：GitHub 383111980、Gitee 1124473；skill v1.16.0。
+- 2026-09-05：APK 1.38.0（code42）。单元面板全尺寸下拉锚定、点选即切换、去完成按钮；release：GitHub 383114726、Gitee 1124505；skill v1.17.0。
