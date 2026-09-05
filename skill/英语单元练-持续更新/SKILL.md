@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.20.0
+version: 1.21.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,17 @@ version: 1.20.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.42.0 性能根因盘（错题列表慢的彻底排查）
+
+根因（与条数无关）：packs.state() 在共享单线程 dbExecutor 上同步做目录网络请求（每镜像 connect 8s+read 15s），错题列表/计数等所有 DB 任务排队等网络——3 条错题也慢。
+方案（缓存分层+线程分离+合并+预热，模式源自 TV 版 serveFromCacheOrFetch/warmStaticCache 经验）：
+1. 目录缓存三层：内存(5min)→磁盘(SharedPreferences)→网络；fetchCatalog 永不触网；refreshCatalogAsync 在独立 netExecutor 后台 revalidate（stale-while-revalidate）；download 无缓存时才在自己的线程同步拉网。
+2. requestPackState 先本地秒回，再异步补新。
+3. 错题列表+计数合并为单桥 requestWrongAll(stage,filter,offset)，payload 带 stage/filter 以区分预热响应；删除 requestWrongList/requestWrongCounts/requestCounts 全链路。
+4. 预热：receiveUnit 后后台拉 active|all 与 mastered|all 两缓存；进入错题本即缓存渲染。
+量化：模拟 400ms 桥延迟下首进渲染 98ms（改前 482ms），再进 103ms。
+纪律：任何网络 IO 禁止进入 DB/UI 数据线程；列表类数据必须缓存优先+合并桥+预热；改完用 playwright 量化首渲染时延。
 
 ## 1.41.0 拼写文案与列表缓存盘
 
@@ -364,3 +375,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.39.0（code43）。掌握自动标记仅限纯书写错误；统计“X项待练习”+13px 字号一致；release：GitHub 383116543、Gitee 1124570；skill v1.18.0。
 - 2026-09-05：APK 1.40.0（code44）。设置卡片化三组；单元列表去项数；release：GitHub 383119081、Gitee 1124590；skill v1.19.0。
 - 2026-09-05：APK 1.41.0（code45）。书写→拼写全文案；错题列表缓存即时渲染；release：GitHub 383121775、Gitee 1124648；skill v1.20.0。
+- 2026-09-05：APK 1.42.0（code46）。性能根因修复：缓存三层+线程分离+合并桥+预热；首进 98ms；release：GitHub 383127641、Gitee 1124684；skill v1.21.0。
