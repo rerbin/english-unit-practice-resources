@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.24.0
+version: 1.25.0
 ---
 
 # 英语单元练-持续更新
@@ -121,6 +121,11 @@ version: 1.24.0
 - 根因：通用 tab 切换绑定到全部 .navbtn，设置按钮无 data-view，switchView(undefined) 使 `undefined===undefined` 成立→设置 tab 被点亮且不恢复。
 - 修复：视图切换监听与 active 切换只作用于 `.navbtn[data-view]`；设置是弹层不是视图，永不参与 tab 高亮；打开/关闭设置不改变当前视图 tab。
 - 纪律：弹层触发器不得复用视图 tab 的绑定与高亮逻辑；无 data-view 的导航按钮必须排除在视图切换之外。
+
+## 1.45.0/1.46.0 交互净化盘
+
+- 1.45：设置 tab 无 data-view，switchView(undefined) 使 undefined===undefined 成立而错误高亮；绑定与高亮只作用于 .navbtn[data-view]，设置永不点亮、关闭后原 tab 保持。
+- 1.46：单元面板选中态仅保留高亮（蓝框+渐变徽标），去掉右侧 ✓（用户：高亮已足够，对号冗余）。纪律：选中态单一表达，不叠加重复指示符。
 
 ## 1.44.0 播放聚焦与刘海避让盘
 
@@ -396,4 +401,5 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.42.0（code46）。性能根因修复：缓存三层+线程分离+合并桥+预热；首进 98ms；release：GitHub 383127641、Gitee 1124684；skill v1.21.0。
 - 2026-09-05：APK 1.43.0（code47）。状态行事件化：就绪静默隐藏、下载成功仅 3 秒、未下载才警告；release：GitHub 383131671、Gitee 1124703；skill v1.22.0。
 - 2026-09-05：APK 1.44.0（code48）。播放行高亮配方+头部不显正在播放+刘海 NEVER 避让+状态栏同色；release：GitHub 383134217、Gitee 1124719；skill v1.23.0。
+- 2026-09-05：APK 1.45.0（code49）设置 tab 高亮修复（GitHub 383136982/Gitee 1124758）；APK 1.46.0（code50）单元面板去对号（GitHub 383138803/Gitee 1124765）；skill v1.25.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
