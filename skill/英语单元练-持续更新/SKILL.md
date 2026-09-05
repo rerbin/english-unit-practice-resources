@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.9.0
+version: 1.10.0
 ---
 
 # 英语单元练-持续更新
@@ -40,6 +40,24 @@ version: 1.9.0
 - 按钮美观：正在练习“已掌握”→“掌握”、“移出练习”→“移出”；已经掌握“移除”→“删除”；.smallbtn 加 white-space:nowrap+13px 杜绝折行。
 - 已经掌握页“导出错题”：原生生成 HTML 表格 .xls（Excel 直接打开、中文正常、带边框可打印），列：序号/单元/状态/错误类型/内容(英)/错误单词/中文；SAF 保存，默认名 错题本.xls。
 - 备份/还原彻底移除：Web 按钮、bridge、MainActivity 方法、WrongBookDb.backup/restoreBackup/fullRow、ContentDb.backupTables/restoreTables 全删。
+
+## UI 视觉自检流程（1.10.0 起，强制）
+
+任何界面改动交付前必须截图自检：
+1. 生成 /tmp/preview.html：home.html 注入 Android 桥 stub（requestLastUnit/requestCatalog/requestUnit/requestPackState/requestWrongList/requestWrongCounts/getSpeechRate/getAppVersion 等，目录为单元数组）；
+2. `playwright` + 系统 `/usr/bin/chromium`（--no-sandbox）以 390x844 截四页：学习、错题本、设置、单元选择；
+3. 逐图检查：对齐/折行/留白/层级/选中态；headless 无 emoji 字体出现方框属环境差异，真机正常；
+4. 发现不一致（如简称回退全名）当场修数据或 CSS，再构建。
+
+## 1.31.0 全面美化盘
+
+- 设计系统重写：统一色板（navy/blue/orange/green/red 各带浅底）、圆角 16、阴影两级、按压缩放 .96、sheet/dialog 入场动画、theme-color 状态栏；
+- 头部：渐变+单元选择器白卡阴影、chevron 靠右、连读/停止 44px；
+- 分区标题加蓝色竖条、说明文字改整幅浅蓝条带；
+- 错题卡：圆角胶囊标签、左色条（橙=练习/绿=掌握）、按钮 nowrap；
+- 底部 tab：active 浅蓝底、图标+文字；设置入列；
+- 单元卡：选中渐变数字徽标+绿勾；
+- 单元简称统一：4au1 JSON/种子/目录/发布单元 JSON 均 shortTitle=Unit 1，顶部框与列表一致。
 
 ## Skill 同步规则（1.9.0 起）
 
@@ -242,3 +260,4 @@ ALWAYS use this exact template:
 - 2026-09-04：APK 1.28.0（code32）。已掌握可移除（物理删除+级联）、箭头靠右、设置页版本号。skill v1.7.0。
 - 2026-09-04：APK 1.29.0（code33）。WebChromeClient 补 JS 对话框（移出/移除/还原等 confirm 流程恢复）；拼写归一化加全角→半角与零宽清理，失败显示正确拼写。skill v1.8.0。
 - 2026-09-05：APK 1.30.0（code34）。按钮文案/nowrap 美观、导出错题 .xls、备份还原彻底移除；skill v1.9.0 起同步 GitHub（Gitee 不同步 skill，定策）。
+- 2026-09-05：APK 1.31.0（code35）。全页面视觉重写+playwright 四页截图自检流程入 skill v1.10.0；单元简称统一。
