@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.15.0
+version: 1.16.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,12 @@ version: 1.15.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.37.0 加载占位与平板锚定盘
+
+- 错题本“正在读取错题…”占位删除：本地 SQLite 毫秒级返回，占位只会造成闪烁/卡留；requestWrong 重置只清数据不清 DOM，receiveWrongList 直达终态；receive 加 try/catch 防卡留。
+- 平板（≥720px）单元选择面板改“下拉锚定”：openUnits 用 unitBar.getBoundingClientRect() 设 sheet top/left/width，正好位于选择框正下方；media 里 .sheet 的右下卡片样式只作用于 #settings；#units 遮罩调淡、隐藏 handle。
+- 自检：playwright 双视口（390 手机空态即时、1024 平板锚定误差<2px）。
 
 ## 1.36.0 错题本头部盘
 
@@ -328,3 +334,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.34.0（code38）。“停止连读”文案；设置“使用说明”独立页（六分区卡片）；skill v1.13.0。
 - 2026-09-05：APK 1.35.0（code39）。状态行状态机（空闲/播放/下载成功语义）+下载进度条；playwright 状态断言入 skill v1.14.0。
 - 2026-09-05：APK 1.36.0（code40）。错题本头部统计胶囊+导出最右；双站 Release 机制（GitHub 附件/Gitee target_commitish）入 skill v1.15.0；release：GitHub 383109124、Gitee 1124398。
+- 2026-09-05：APK 1.37.0（code41）。去加载占位+平板单元面板锚定；release：GitHub 383111980、Gitee 1124473；skill v1.16.0。
