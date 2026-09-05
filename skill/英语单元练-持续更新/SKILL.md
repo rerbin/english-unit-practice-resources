@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.13.0
+version: 1.14.0
 ---
 
 # 英语单元练-持续更新
@@ -48,6 +48,17 @@ version: 1.13.0
 2. `playwright` + 系统 `/usr/bin/chromium`（--no-sandbox）以 390x844 截四页：学习、错题本、设置、单元选择；
 3. 逐图检查：对齐/折行/留白/层级/选中态；headless 无 emoji 字体出现方框属环境差异，真机正常；
 4. 发现不一致（如简称回退全名）当场修数据或 CSS，再构建。
+
+## 1.35.0 状态语义与下载进度盘
+
+- 顶部状态行改为状态机，禁止残留“正在播放”：
+  - 空闲且包就绪→“语音包已就绪，可离线使用”；未下载→“语音包未下载，点读前请先下载”；
+  - 下载成功→“语音包下载成功，可离线使用”（justDownloaded 标记优先）；
+  - 播放中→“正在播放…”（playbackStarted）；播放完成/停止/出错→playbackEnded 回空闲；
+  - 连读完成短暂提示后 1.2s 回空闲。
+- 注意：packState 在 ready 分支有 early return，setIdleStatus 必须放在 handler 头部（本次踩坑）。
+- 下载进度可视化：横幅内进度条（.packbar）+ 百分比文案；downloadFinished 隐藏并归零。
+- 交付前用 playwright 逐状态断言（ready/not ready/playing/ended/progress/after-download）。
 
 ## 1.34.0 使用说明页盘
 
@@ -302,3 +313,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.32.0（code36）。代码质量盘：死代码清理、LEFT JOIN 提效、DB v5；skill v1.11.0。
 - 2026-09-05：APK 1.33.0（code37）。数据结构审查：删 audio_assets/normalized_word/四冗余索引；UNIQUE+CHECK 补强；N+1 清零；DB v6；sqlite3 约束门禁入 skill v1.12.0。
 - 2026-09-05：APK 1.34.0（code38）。“停止连读”文案；设置“使用说明”独立页（六分区卡片）；skill v1.13.0。
+- 2026-09-05：APK 1.35.0（code39）。状态行状态机（空闲/播放/下载成功语义）+下载进度条；playwright 状态断言入 skill v1.14.0。
