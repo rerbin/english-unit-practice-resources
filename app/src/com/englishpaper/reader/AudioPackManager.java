@@ -126,7 +126,7 @@ public final class AudioPackManager {
                 if (unit != null) {
                     int latest = unit.optInt("audioVersion", 1);
                     o.put("latestVersion", latest);
-                    o.put("updateAvailable", latest > installed);
+                    o.put("updateAvailable", installed > 0 && latest > installed);
                     o.put("needsAppUpdate", unit.optInt("minAppVersionCode", 0) > appVersionCode);
                     o.put("size", unit.optLong("size", 0));
                 }
