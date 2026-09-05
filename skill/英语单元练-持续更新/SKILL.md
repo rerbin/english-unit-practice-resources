@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.27.0
+version: 1.28.0
 ---
 
 # 英语单元练-持续更新
@@ -121,6 +121,12 @@ version: 1.27.0
 - 根因：通用 tab 切换绑定到全部 .navbtn，设置按钮无 data-view，switchView(undefined) 使 `undefined===undefined` 成立→设置 tab 被点亮且不恢复。
 - 修复：视图切换监听与 active 切换只作用于 `.navbtn[data-view]`；设置是弹层不是视图，永不参与 tab 高亮；打开/关闭设置不改变当前视图 tab。
 - 纪律：弹层触发器不得复用视图 tab 的绑定与高亮逻辑；无 data-view 的导航按钮必须排除在视图切换之外。
+
+## 1.49.0 同行化盘
+
+- 警告与动作合并到同一行：状态行=圆点+文本(flex:1)+右侧橙色胶囊按钮(下载语音/更新语音)；进度条改贴行底 3px 细线；独立橙色横幅(packbanner)整体退役，packText/packBanner 引用清零。
+- setRow(text,btnLabel) 为状态行唯一写入点；setIdleStatus 按 packInfo 决策：ready隐藏/需更新App纯文本/有更新带按钮/未下载带按钮/下载成功3秒。
+- 视觉原则：告知与动作同行时，动作收缩为小胶囊靠右，文本占满剩余宽度，行高不跳。
 
 ## 1.48.0 提示去重盘
 
@@ -414,4 +420,5 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.45.0（code49）设置 tab 高亮修复（GitHub 383136982/Gitee 1124758）；APK 1.46.0（code50）单元面板去对号（GitHub 383138803/Gitee 1124765）；skill v1.25.0。
 - 2026-09-05：APK 1.47.0（code51）。首装不提示更新（installed>0 才算更新）；release：GitHub 383142740、Gitee 1124790；skill v1.26.0。
 - 2026-09-05：APK 1.48.0（code52）。未下载警告单出口（状态行），横幅只留按钮/进度；release：GitHub 383145971、Gitee 1124800；skill v1.27.0。
+- 2026-09-05：APK 1.49.0（code53）。警告+动作同行（内嵌胶囊按钮、行底进度细线），横幅退役；release：GitHub 383149537、Gitee 1124924；skill v1.28.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
