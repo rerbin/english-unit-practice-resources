@@ -1,0 +1,999 @@
+{
+  "schema": "english-unit-audio/v1",
+  "packageVersion": 5,
+  "textbookId": "shanghai-4a",
+  "unitId": "4A-Starter",
+  "contentVersion": 1,
+  "voice": {
+    "language": "en-GB",
+    "name": "Emma",
+    "engine": "Kokoro-82M bf_emma",
+    "license": "Apache-2.0"
+  },
+  "format": "wav",
+  "itemCount": 109,
+  "fileCount": 94,
+  "items": [
+    {
+      "itemId": "4A-Starter-000",
+      "textHash": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
+      "audioKey": "u_000",
+      "file": "audio/73ad83c41df9f00124210b9a3bfb0f39ef1c59ea939c908a5f4ddfe94dec5283.wav",
+      "sha256": "73ad83c41df9f00124210b9a3bfb0f39ef1c59ea939c908a5f4ddfe94dec5283",
+      "size": 75884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-001",
+      "textHash": "1057a9604e04b274da5a4de0c8f4b4868d9b230989f8c8c6a28221143cc5a755",
+      "audioKey": "u_001",
+      "file": "audio/a5ef606edc8c57207d42081a4740fef2d18b32538824d1784064e23ab3b19927.wav",
+      "sha256": "a5ef606edc8c57207d42081a4740fef2d18b32538824d1784064e23ab3b19927",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-002",
+      "textHash": "cf0622ef2a661cd2f11b0b644e40e4e00eb962918424a8c8ba53842fdf290235",
+      "audioKey": "u_002",
+      "file": "audio/bf36ceb5009f50c01e7059634b5d5e5e39abf0302f22b3a057a40b8fae693f80.wav",
+      "sha256": "bf36ceb5009f50c01e7059634b5d5e5e39abf0302f22b3a057a40b8fae693f80",
+      "size": 28204,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-003",
+      "textHash": "88a1881f0025cf7117501d07aefc5d4be6696656790d765678df8bc48ca52687",
+      "audioKey": "u_003",
+      "file": "audio/f02dea00984da1ccb9ded9847c5d2b15faa0c2ac77f51980d7c0ab97743ed84e.wav",
+      "sha256": "f02dea00984da1ccb9ded9847c5d2b15faa0c2ac77f51980d7c0ab97743ed84e",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-004",
+      "textHash": "1980d3927f07fec9c8d727f187ddde727da7e45247dbb71c7555e5ae0eca66d5",
+      "audioKey": "u_004",
+      "file": "audio/c055de15cb36cc5c2415b26aa2e4900dc5778745c682607016eb5def69068de6.wav",
+      "sha256": "c055de15cb36cc5c2415b26aa2e4900dc5778745c682607016eb5def69068de6",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-005",
+      "textHash": "0b4bd77cec705cf5df016344c0fc673fb3c2240078e6af572b2c5c6fa76114af",
+      "audioKey": "u_005",
+      "file": "audio/a1f65e1fc669126c70f1c44a4fa4bc62824b976f9040b603217f913e3a4d16c8.wav",
+      "sha256": "a1f65e1fc669126c70f1c44a4fa4bc62824b976f9040b603217f913e3a4d16c8",
+      "size": 31628,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-006",
+      "textHash": "12886f9d00055adf24c40579e22d31b2b45f2023f892954ffd5567beb60825f8",
+      "audioKey": "u_006",
+      "file": "audio/551ddf1724be1287d38dcdba7413cae96421e0de602014edbe7de5b207e847e9.wav",
+      "sha256": "551ddf1724be1287d38dcdba7413cae96421e0de602014edbe7de5b207e847e9",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-007",
+      "textHash": "08c85bd37cdd0ffce8c39ecd7c7f0ff94e6f45af2aa986673b0c9f1a8a2fffea",
+      "audioKey": "u_007",
+      "file": "audio/c1bc16edbabe8a2195953e47ae6137cd53e1b335b3d37b0a1e04b43f4ad25e16.wav",
+      "sha256": "c1bc16edbabe8a2195953e47ae6137cd53e1b335b3d37b0a1e04b43f4ad25e16",
+      "size": 24428,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-008",
+      "textHash": "aca5fb59db69e5dffeda36ff0bd65205f16720b7fa1893c4557e9216dfc276d5",
+      "audioKey": "u_008",
+      "file": "audio/2e9c962303917054b6f59a183a1b25351efd0834c1bb230618fecf798b0a822f.wav",
+      "sha256": "2e9c962303917054b6f59a183a1b25351efd0834c1bb230618fecf798b0a822f",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-009",
+      "textHash": "7a5179eecc0fe18760ba615f92603372ae3fe302860098a019e15927551fee3b",
+      "audioKey": "u_009",
+      "file": "audio/a995c4735106d75d1fe0dcc4f4f3e5da1114a1a80ab943e5f5df6b4e7ec54637.wav",
+      "sha256": "a995c4735106d75d1fe0dcc4f4f3e5da1114a1a80ab943e5f5df6b4e7ec54637",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-010",
+      "textHash": "431ba1c6936744f659289a8ff5292f004a51ba6a96dcecc65ef8f0783018dd5f",
+      "audioKey": "u_010",
+      "file": "audio/e0d7e5eb0219a1606cff2d046749db021d748cd9e9b802aaa8c6de27490784a2.wav",
+      "sha256": "e0d7e5eb0219a1606cff2d046749db021d748cd9e9b802aaa8c6de27490784a2",
+      "size": 26828,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-011",
+      "textHash": "a52514252adf86066966790e947f72ef6ea6690a6852d5bb5480ee2eeb663395",
+      "audioKey": "u_011",
+      "file": "audio/6a68ebe7ee4c12c1ad2dd3f929429e18bfdec93645f337c10e1504814c3eb292.wav",
+      "sha256": "6a68ebe7ee4c12c1ad2dd3f929429e18bfdec93645f337c10e1504814c3eb292",
+      "size": 30764,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-012",
+      "textHash": "a7937b64b8caa58f03721bb6bacf5c78cb235febe0e70b1b84cd99541461a08e",
+      "audioKey": "u_012",
+      "file": "audio/9dcded2cc0cbc85001511b811059c0c0e046771b6dac9c4c14c2e50602bc6d79.wav",
+      "sha256": "9dcded2cc0cbc85001511b811059c0c0e046771b6dac9c4c14c2e50602bc6d79",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-013",
+      "textHash": "9ecc81f0a4b6dfb0c30e78370c42a1e0c118d2b426ec4dd1ee06c9f62a832040",
+      "audioKey": "u_013",
+      "file": "audio/70d4041a1c7102b7a0174284769958a3ae4500d4ad4c9b145a46cae49dfce739.wav",
+      "sha256": "70d4041a1c7102b7a0174284769958a3ae4500d4ad4c9b145a46cae49dfce739",
+      "size": 38956,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-014",
+      "textHash": "4cd8cf8e48cfb313c2c5136ab40bd2b5f43de704542db49b85c0a2006a47832e",
+      "audioKey": "u_014",
+      "file": "audio/c1bc16edbabe8a2195953e47ae6137cd53e1b335b3d37b0a1e04b43f4ad25e16.wav",
+      "sha256": "c1bc16edbabe8a2195953e47ae6137cd53e1b335b3d37b0a1e04b43f4ad25e16",
+      "size": 24428,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-015",
+      "textHash": "fc2662062ffdef9610020183ea2b087c21d71150d78a7c7463be8a9050bd3ac9",
+      "audioKey": "u_015",
+      "file": "audio/5b4f22aa970e4a3bb961c8c2fa983369a52400fa555200f83dc005a1684fa960.wav",
+      "sha256": "5b4f22aa970e4a3bb961c8c2fa983369a52400fa555200f83dc005a1684fa960",
+      "size": 41004,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-016",
+      "textHash": "781e5116a1e14a34eada50159d589e690c81ec4c5063115ea1f10b99441d5b94",
+      "audioKey": "u_016",
+      "file": "audio/900afd67b12b5e62ef1de3e9b37bda0f1ce5efa516d3afbdc062fd2a8b751cef.wav",
+      "sha256": "900afd67b12b5e62ef1de3e9b37bda0f1ce5efa516d3afbdc062fd2a8b751cef",
+      "size": 33836,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-017",
+      "textHash": "9b473845f684444f80a26586ae298d2ba491752cc70b893cc653d943b6fa2ac2",
+      "audioKey": "u_017",
+      "file": "audio/702ded7b691dc9594646546ee293611f41bd1f58dfa940c7a49d579d2f61abcf.wav",
+      "sha256": "702ded7b691dc9594646546ee293611f41bd1f58dfa940c7a49d579d2f61abcf",
+      "size": 31788,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-018",
+      "textHash": "8e0a1b0ada42172886fd1297e25abf99f14396a9400acbd5f20da20289cff02f",
+      "audioKey": "u_018",
+      "file": "audio/55271aba1497b8da238c39de5b84aa611d1d79872542a3092c8ce75b9b384462.wav",
+      "sha256": "55271aba1497b8da238c39de5b84aa611d1d79872542a3092c8ce75b9b384462",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-019",
+      "textHash": "dbe35c7363c2f7ec747b902fb240907fc58ae00b98f107be2d4c7b9cd7f6226e",
+      "audioKey": "u_019",
+      "file": "audio/fda767d4a303a21860e61deb18b39733ad96ae70ddc663a1591c1b0e46ed2d80.wav",
+      "sha256": "fda767d4a303a21860e61deb18b39733ad96ae70ddc663a1591c1b0e46ed2d80",
+      "size": 42028,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-020",
+      "textHash": "ab5b62081b1d305e78d0daadb2cd23470b3faeb65af7370627798b7219ea2061",
+      "audioKey": "u_020",
+      "file": "audio/a51d3f98bbb94c0bc6a68fd6502b85ac7671a6d03f252777cae0f3270ccd073f.wav",
+      "sha256": "a51d3f98bbb94c0bc6a68fd6502b85ac7671a6d03f252777cae0f3270ccd073f",
+      "size": 27692,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-021",
+      "textHash": "4d3971de62245c94cd3dd8d4d3a72b8ff527d902832eedc8529a9717a969f1d1",
+      "audioKey": "u_021",
+      "file": "audio/e3a96b297232f13b4e5af2d548a44795f433f2317f30832ec2fb5bf637ac1738.wav",
+      "sha256": "e3a96b297232f13b4e5af2d548a44795f433f2317f30832ec2fb5bf637ac1738",
+      "size": 29740,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-022",
+      "textHash": "2b2961a431b23c9007efe270c1d7eb79c19d4192d7cd2d924176eb0b19e7d2a1",
+      "audioKey": "u_022",
+      "file": "audio/7d16c3cccdbaf6b89a703014d16b680bea5d5b8194c6ee6c97c860a5e0ce349d.wav",
+      "sha256": "7d16c3cccdbaf6b89a703014d16b680bea5d5b8194c6ee6c97c860a5e0ce349d",
+      "size": 28716,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-023",
+      "textHash": "8367cd66fdd136bba8ba23f8805bb050dd6289401c8ec3b0be44a3c233eef90d",
+      "audioKey": "u_023",
+      "file": "audio/73a8f05e0ba0a475e70764fd97a38d33567f0d1705903500d046d6bc51382a88.wav",
+      "sha256": "73a8f05e0ba0a475e70764fd97a38d33567f0d1705903500d046d6bc51382a88",
+      "size": 31788,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-024",
+      "textHash": "ddf7ff5ebd9d66ce161466c1c0262430fa04de32b0e420ee3f489e2e2112e386",
+      "audioKey": "u_024",
+      "file": "audio/3735d222f6310dc88b81ea429cdda4ce5504b55790a55cf9b2553fb866ef7bf6.wav",
+      "sha256": "3735d222f6310dc88b81ea429cdda4ce5504b55790a55cf9b2553fb866ef7bf6",
+      "size": 28028,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-025",
+      "textHash": "23eeb69c681dfdb8eacc7ce9e55ea007d41c2dd5273848c597f1b3e49dbd86e1",
+      "audioKey": "u_025",
+      "file": "audio/1d792b2972d326cac7f7c6dec311925a77430f09ff8705f8820b4dc24f36c72d.wav",
+      "sha256": "1d792b2972d326cac7f7c6dec311925a77430f09ff8705f8820b4dc24f36c72d",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-026",
+      "textHash": "1d0fea39ec33ff7543f345be85d1ccd34d6d864297d4151b737802cb294a338c",
+      "audioKey": "u_026",
+      "file": "audio/72111881b6b53e8793a4d0c3ce2614324e636f4c5922b60065be7697e8e2ad12.wav",
+      "sha256": "72111881b6b53e8793a4d0c3ce2614324e636f4c5922b60065be7697e8e2ad12",
+      "size": 36908,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-027",
+      "textHash": "7175517a370b5cd2e664e3fd29c4ea9db5ce17058eb9772fe090a5485e49dad6",
+      "audioKey": "u_027",
+      "file": "audio/cf4b76a96a6a3020ff8b86229235ca7d3c4c4cff2f7ffac0897f55775fbb086e.wav",
+      "sha256": "cf4b76a96a6a3020ff8b86229235ca7d3c4c4cff2f7ffac0897f55775fbb086e",
+      "size": 26668,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-028",
+      "textHash": "9cee2304bd633d42c35db17c1427a273668bd3166487f924216d807a566a8e73",
+      "audioKey": "u_028",
+      "file": "audio/05aede0a862a6ea5757390670c7953bfb69665d661d2e1c23b02fd23ac7fd794.wav",
+      "sha256": "05aede0a862a6ea5757390670c7953bfb69665d661d2e1c23b02fd23ac7fd794",
+      "size": 33836,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-029",
+      "textHash": "10c22bcf4c768b515be4e94bcafc71bf3e8fb5f70b2584bcc8c7533217f2e7f9",
+      "audioKey": "u_029",
+      "file": "audio/692d70cc098c61228f27f397a776574735892d01fe64e72e278c64b742ff1e5a.wav",
+      "sha256": "692d70cc098c61228f27f397a776574735892d01fe64e72e278c64b742ff1e5a",
+      "size": 27692,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-030",
+      "textHash": "ec450786e26a5154173545c402bcc03b20e2e0477d6086fa632a55c85bdcdd83",
+      "audioKey": "u_030",
+      "file": "audio/5f68a7c5b6473ab01ab7f64fc95253b9da67ad62072b22cf6418cf7c59961bbf.wav",
+      "sha256": "5f68a7c5b6473ab01ab7f64fc95253b9da67ad62072b22cf6418cf7c59961bbf",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-031",
+      "textHash": "c23b31a0179b550f8a18fb06bc52a26e32333540369073d646da5c84a4dc341f",
+      "audioKey": "u_031",
+      "file": "audio/5977220f218cff8bcd8fa6eb192a5dbd4c93772bb9be22876b19e191f6ca7423.wav",
+      "sha256": "5977220f218cff8bcd8fa6eb192a5dbd4c93772bb9be22876b19e191f6ca7423",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-032",
+      "textHash": "f9b0078b5df596d2ea19010c001bbd009e651de2c57e8fb7e355f31eb9d3f739",
+      "audioKey": "u_032",
+      "file": "audio/a10ec83157b34326353a9b09d42af323dcff04ac533e60f7bd5b8822f2d3fe61.wav",
+      "sha256": "a10ec83157b34326353a9b09d42af323dcff04ac533e60f7bd5b8822f2d3fe61",
+      "size": 30764,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-033",
+      "textHash": "fd62862b6dc213bee77c2badd6311528253c6cb3107e03c16051aa15584eca1c",
+      "audioKey": "u_033",
+      "file": "audio/8d0775d3e9614032c8a9e90b23abad1656692f5bcde6ec410074738e9ff2a136.wav",
+      "sha256": "8d0775d3e9614032c8a9e90b23abad1656692f5bcde6ec410074738e9ff2a136",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-034",
+      "textHash": "d34a569ab7aaa54dacd715ae64953455d86b768846cd0085ef4e9e7471489b7b",
+      "audioKey": "u_034",
+      "file": "audio/d794ae971198802820fb8950d765404d9dab219f507c602d181753cc3cfa8d98.wav",
+      "sha256": "d794ae971198802820fb8950d765404d9dab219f507c602d181753cc3cfa8d98",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-035",
+      "textHash": "88a1881f0025cf7117501d07aefc5d4be6696656790d765678df8bc48ca52687",
+      "audioKey": "u_003",
+      "file": "audio/f02dea00984da1ccb9ded9847c5d2b15faa0c2ac77f51980d7c0ab97743ed84e.wav",
+      "sha256": "f02dea00984da1ccb9ded9847c5d2b15faa0c2ac77f51980d7c0ab97743ed84e",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-036",
+      "textHash": "cf0622ef2a661cd2f11b0b644e40e4e00eb962918424a8c8ba53842fdf290235",
+      "audioKey": "u_002",
+      "file": "audio/bf36ceb5009f50c01e7059634b5d5e5e39abf0302f22b3a057a40b8fae693f80.wav",
+      "sha256": "bf36ceb5009f50c01e7059634b5d5e5e39abf0302f22b3a057a40b8fae693f80",
+      "size": 28204,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-037",
+      "textHash": "6fe8ecbc1deafa51c2ecf088cf364eba1ceba9032ffbe2621e771b90ea93153d",
+      "audioKey": "u_035",
+      "file": "audio/970fee79571fdd36e248d510abe85503cc5ca011478a1d0d50b98229cbbc1dcc.wav",
+      "sha256": "970fee79571fdd36e248d510abe85503cc5ca011478a1d0d50b98229cbbc1dcc",
+      "size": 28716,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-038",
+      "textHash": "f2d758f9e379babc91f1f5062e2d486a70008cccc3c5d47b75f645e588a0ea09",
+      "audioKey": "u_036",
+      "file": "audio/01b0a8c75aea0fc750e2cc5049b089ab76b48d8368386637bf547b25bd142fb0.wav",
+      "sha256": "01b0a8c75aea0fc750e2cc5049b089ab76b48d8368386637bf547b25bd142fb0",
+      "size": 28716,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-039",
+      "textHash": "1eb4d6a000efefe9aadbb4910424c708727d10c018bdb188fe09b4e07cdeed61",
+      "audioKey": "u_037",
+      "file": "audio/a8ca8f75cc2819674ead3d943c262a3ab5218ec1ef31d45ecf86e3642f3ca090.wav",
+      "sha256": "a8ca8f75cc2819674ead3d943c262a3ab5218ec1ef31d45ecf86e3642f3ca090",
+      "size": 38956,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-040",
+      "textHash": "ba8d3e6a2d8b5ed67ba21927de648785e0dccf8fdf6efacde32b8456f534f70b",
+      "audioKey": "u_038",
+      "file": "audio/b86e603c161781aa3a9f0ea994f8cfb1c2d85837d2549a3a6fda88ae4242c00e.wav",
+      "sha256": "b86e603c161781aa3a9f0ea994f8cfb1c2d85837d2549a3a6fda88ae4242c00e",
+      "size": 41004,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-041",
+      "textHash": "0b4bd77cec705cf5df016344c0fc673fb3c2240078e6af572b2c5c6fa76114af",
+      "audioKey": "u_005",
+      "file": "audio/a1f65e1fc669126c70f1c44a4fa4bc62824b976f9040b603217f913e3a4d16c8.wav",
+      "sha256": "a1f65e1fc669126c70f1c44a4fa4bc62824b976f9040b603217f913e3a4d16c8",
+      "size": 31628,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-042",
+      "textHash": "1980d3927f07fec9c8d727f187ddde727da7e45247dbb71c7555e5ae0eca66d5",
+      "audioKey": "u_004",
+      "file": "audio/c055de15cb36cc5c2415b26aa2e4900dc5778745c682607016eb5def69068de6.wav",
+      "sha256": "c055de15cb36cc5c2415b26aa2e4900dc5778745c682607016eb5def69068de6",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-043",
+      "textHash": "6ce834139509cc20a5b1b0e0e8007f46fb14ef72532e87c4f33894d150e997c0",
+      "audioKey": "u_039",
+      "file": "audio/88d3b6e138cdd4c13eb561d88b8df020f7d260b7dda71ea964c7b8baa7826574.wav",
+      "sha256": "88d3b6e138cdd4c13eb561d88b8df020f7d260b7dda71ea964c7b8baa7826574",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-044",
+      "textHash": "cde48537ca2c28084ff560826d0e6388b7c57a51497a6cb56f397289e52ff41b",
+      "audioKey": "u_040",
+      "file": "audio/a108bbb275d836e6dd57d89617c6821aa2f12389c30522a4f6cea3f81a65df17.wav",
+      "sha256": "a108bbb275d836e6dd57d89617c6821aa2f12389c30522a4f6cea3f81a65df17",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-045",
+      "textHash": "66f9b98dde76ccbacebabd344bf5244fd6bb4a6a5ac62ababfea82d3fcc650b1",
+      "audioKey": "u_041",
+      "file": "audio/a4a6e9eb419338b88c1a2365a1fd67c40e94551b358f8c41c2176b39b20b184a.wav",
+      "sha256": "a4a6e9eb419338b88c1a2365a1fd67c40e94551b358f8c41c2176b39b20b184a",
+      "size": 45100,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-046",
+      "textHash": "1057a9604e04b274da5a4de0c8f4b4868d9b230989f8c8c6a28221143cc5a755",
+      "audioKey": "u_001",
+      "file": "audio/a5ef606edc8c57207d42081a4740fef2d18b32538824d1784064e23ab3b19927.wav",
+      "sha256": "a5ef606edc8c57207d42081a4740fef2d18b32538824d1784064e23ab3b19927",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-047",
+      "textHash": "264c8c381bf16c982a4e59b0dd4c6f7808c51a05f64c35db42cc78a2a72875bb",
+      "audioKey": "u_042",
+      "file": "audio/150cc82f03eff419a08d9cd6468d09d475e723a10427a1ddc821f0e893f80051.wav",
+      "sha256": "150cc82f03eff419a08d9cd6468d09d475e723a10427a1ddc821f0e893f80051",
+      "size": 39980,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-048",
+      "textHash": "7820f1b6fd39bb5b0c5e597637fbdd1c08741651302f45e48116a18fda4b4f75",
+      "audioKey": "u_043",
+      "file": "audio/e942f6fa9e5b3f52f94d6dce9746f71c06988eefa434693bed77522fd9783e4a.wav",
+      "sha256": "e942f6fa9e5b3f52f94d6dce9746f71c06988eefa434693bed77522fd9783e4a",
+      "size": 33836,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-049",
+      "textHash": "0317c92ad78c13c7887310bac1e747e6c5b6da7f619ab9e7b66481c7cbab86cb",
+      "audioKey": "u_044",
+      "file": "audio/64707a6066d563dec45e9bb3d6a33c1e99ff27e9737c48140624b73605294bf6.wav",
+      "sha256": "64707a6066d563dec45e9bb3d6a33c1e99ff27e9737c48140624b73605294bf6",
+      "size": 29740,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-050",
+      "textHash": "7887043af41d6abec85ac089d5c4c0499224ad30449b33cceef4a34f83501d06",
+      "audioKey": "u_045",
+      "file": "audio/21e50dc5bacca64bedc1321a8cb46efd7b9b480f24fdd513179c654cdc6d9978.wav",
+      "sha256": "21e50dc5bacca64bedc1321a8cb46efd7b9b480f24fdd513179c654cdc6d9978",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-051",
+      "textHash": "6a00dfc1dc867e8454c2c8856e1512d9bf02a76710e3411c0972aec886c76c61",
+      "audioKey": "u_046",
+      "file": "audio/88136f41bca05296dfb1256fbefed55dea3ab5571c33c679ffc9f5b71de29028.wav",
+      "sha256": "88136f41bca05296dfb1256fbefed55dea3ab5571c33c679ffc9f5b71de29028",
+      "size": 36908,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-052",
+      "textHash": "7d8af1de1262f150187d5938bf649d6c35726970685f916d1ec6392a801b9762",
+      "audioKey": "u_047",
+      "file": "audio/b2364d0cf4648195fce6c0602d344e0cdac5341bd99ddd8d500e9d875a152911.wav",
+      "sha256": "b2364d0cf4648195fce6c0602d344e0cdac5341bd99ddd8d500e9d875a152911",
+      "size": 36908,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-053",
+      "textHash": "c0a6cc829cd08735294765c75938a7da2b0f222d52e98bff13cb237cd99deaac",
+      "audioKey": "u_048",
+      "file": "audio/922745720812b92fc9341fb77e2fc9587dc069a892afa98c2d36d711e6576681.wav",
+      "sha256": "922745720812b92fc9341fb77e2fc9587dc069a892afa98c2d36d711e6576681",
+      "size": 39980,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-054",
+      "textHash": "fc2662062ffdef9610020183ea2b087c21d71150d78a7c7463be8a9050bd3ac9",
+      "audioKey": "u_015",
+      "file": "audio/5b4f22aa970e4a3bb961c8c2fa983369a52400fa555200f83dc005a1684fa960.wav",
+      "sha256": "5b4f22aa970e4a3bb961c8c2fa983369a52400fa555200f83dc005a1684fa960",
+      "size": 41004,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-055",
+      "textHash": "e21f3f372a46d4be7b49f6809fc91baefeadae004af06485518e124a142c0271",
+      "audioKey": "u_049",
+      "file": "audio/1a846fbb06cf5d5d0ef19022cf0c5cdf76c91aac046907b1bfb70ea62af052bb.wav",
+      "sha256": "1a846fbb06cf5d5d0ef19022cf0c5cdf76c91aac046907b1bfb70ea62af052bb",
+      "size": 37932,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-056",
+      "textHash": "dbe35c7363c2f7ec747b902fb240907fc58ae00b98f107be2d4c7b9cd7f6226e",
+      "audioKey": "u_019",
+      "file": "audio/fda767d4a303a21860e61deb18b39733ad96ae70ddc663a1591c1b0e46ed2d80.wav",
+      "sha256": "fda767d4a303a21860e61deb18b39733ad96ae70ddc663a1591c1b0e46ed2d80",
+      "size": 42028,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-057",
+      "textHash": "873fef760e5d001ba0a843bf1846713fd92538699f323ef00d51f97a2ad2756c",
+      "audioKey": "u_050",
+      "file": "audio/2d7bca34895dc86f8872de780603c07eba9ce39c8873fcd8f477420804c4025c.wav",
+      "sha256": "2d7bca34895dc86f8872de780603c07eba9ce39c8873fcd8f477420804c4025c",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-058",
+      "textHash": "6df37daaa46ce714fa410768b63f415dfad094df33eb34ac1af332074fd15a1c",
+      "audioKey": "u_051",
+      "file": "audio/9b57beae79e8cbe34f0020bc6c9e6b1541a35edfcd27997a7ba37d81d005a0ac.wav",
+      "sha256": "9b57beae79e8cbe34f0020bc6c9e6b1541a35edfcd27997a7ba37d81d005a0ac",
+      "size": 27852,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-059",
+      "textHash": "12886f9d00055adf24c40579e22d31b2b45f2023f892954ffd5567beb60825f8",
+      "audioKey": "u_006",
+      "file": "audio/551ddf1724be1287d38dcdba7413cae96421e0de602014edbe7de5b207e847e9.wav",
+      "sha256": "551ddf1724be1287d38dcdba7413cae96421e0de602014edbe7de5b207e847e9",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-060",
+      "textHash": "7c2c4df740f720b0c861920dc27692c4d4b5daa65d6330a593c931d35f8ac737",
+      "audioKey": "u_052",
+      "file": "audio/2468d60a190e4111772a5115b8e163b96c0d978fd839c5ce6e300d2056bd9580.wav",
+      "sha256": "2468d60a190e4111772a5115b8e163b96c0d978fd839c5ce6e300d2056bd9580",
+      "size": 35884,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-061",
+      "textHash": "aca5fb59db69e5dffeda36ff0bd65205f16720b7fa1893c4557e9216dfc276d5",
+      "audioKey": "u_008",
+      "file": "audio/2e9c962303917054b6f59a183a1b25351efd0834c1bb230618fecf798b0a822f.wav",
+      "sha256": "2e9c962303917054b6f59a183a1b25351efd0834c1bb230618fecf798b0a822f",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-062",
+      "textHash": "9cee2304bd633d42c35db17c1427a273668bd3166487f924216d807a566a8e73",
+      "audioKey": "u_028",
+      "file": "audio/05aede0a862a6ea5757390670c7953bfb69665d661d2e1c23b02fd23ac7fd794.wav",
+      "sha256": "05aede0a862a6ea5757390670c7953bfb69665d661d2e1c23b02fd23ac7fd794",
+      "size": 33836,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-063",
+      "textHash": "f8d807ee15e983f8d185132ffb0e55d3075b220891aff58845e55a158c842798",
+      "audioKey": "u_053",
+      "file": "audio/680d8ccb1a5e4fbd3d9e159988af57f5d7488937d1c38ddf27fbbc3b3c659c91.wav",
+      "sha256": "680d8ccb1a5e4fbd3d9e159988af57f5d7488937d1c38ddf27fbbc3b3c659c91",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-064",
+      "textHash": "df41164e151227b31ca29bb188c936923a0afb26d9bd0a8e4ec6d05d4815c991",
+      "audioKey": "u_054",
+      "file": "audio/02d7e77c0506f043114d2fe47521499edeef63b5e7d739c91db7c824133323cd.wav",
+      "sha256": "02d7e77c0506f043114d2fe47521499edeef63b5e7d739c91db7c824133323cd",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-065",
+      "textHash": "ab0e4b1a7839571e0278fdb4c49d6ea632bc9df91968af197d539b2df976d4f9",
+      "audioKey": "u_055",
+      "file": "audio/59b5bf152dcc45e62a53df5bc7bd923d29e876a7479bbefdb1d28bd369c2a226.wav",
+      "sha256": "59b5bf152dcc45e62a53df5bc7bd923d29e876a7479bbefdb1d28bd369c2a226",
+      "size": 38956,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-066",
+      "textHash": "0dbc3407a7080e3d39871b66208636c038ed9ffbd082421b6ad6b80b22f447f1",
+      "audioKey": "u_056",
+      "file": "audio/2739b3ee37550b9d4e62e1e9ecd3138da1b1f12ab2332830332b6523698b0ba5.wav",
+      "sha256": "2739b3ee37550b9d4e62e1e9ecd3138da1b1f12ab2332830332b6523698b0ba5",
+      "size": 31788,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-067",
+      "textHash": "521c74a4d5824aba60ce4abaf48f951b11836b548de2f7f72af3bac37e70fc47",
+      "audioKey": "u_057",
+      "file": "audio/f50f7bbedf829626823b1a2eea96476afc57c16243bb446a949476d40a9ba73f.wav",
+      "sha256": "f50f7bbedf829626823b1a2eea96476afc57c16243bb446a949476d40a9ba73f",
+      "size": 36908,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-068",
+      "textHash": "a86a6a017586300cf9c2bc4fdd5719fafffe98be5b69a9db601477a78e19c53e",
+      "audioKey": "u_058",
+      "file": "audio/775bd80dde68236a2fcbfc42800418f5b38b069ec7c758a073f18752edcc0c62.wav",
+      "sha256": "775bd80dde68236a2fcbfc42800418f5b38b069ec7c758a073f18752edcc0c62",
+      "size": 50220,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-069",
+      "textHash": "d64debd942d7dc26a851231583b1721f43ea936fa41932b6dad7556e5f8cd24a",
+      "audioKey": "u_059",
+      "file": "audio/76bf2bce52cdf28fc1804cb2cd11995fa96184595535bd0ea2a25a281435a017.wav",
+      "sha256": "76bf2bce52cdf28fc1804cb2cd11995fa96184595535bd0ea2a25a281435a017",
+      "size": 33836,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-070",
+      "textHash": "ff53e7fd51c9c321e7e21efd1e2fffe052d23aa393d9ba0a37adf3313183a7cd",
+      "audioKey": "u_060",
+      "file": "audio/038956b98b55dbe1468bfaa515cb5c9488588196c0c5ec33300f899dc87ce414.wav",
+      "sha256": "038956b98b55dbe1468bfaa515cb5c9488588196c0c5ec33300f899dc87ce414",
+      "size": 78892,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-071",
+      "textHash": "0a9c1b69fb9cd906e1f05241f34d9b775d7f7624cd108bd9c38901c7b269335d",
+      "audioKey": "u_061",
+      "file": "audio/4925e0e166340db321b578d9399f39cf455941dcc687327ba834bdb57f1c2e94.wav",
+      "sha256": "4925e0e166340db321b578d9399f39cf455941dcc687327ba834bdb57f1c2e94",
+      "size": 39980,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-072",
+      "textHash": "0a473e835ded3809fc6aa7f7e7528cc7c62cd517354cd09586a2f8b81b2eb61b",
+      "audioKey": "u_062",
+      "file": "audio/8bd0fa1ac06915074ec247e2bbe92b889e4a805841e155f9f82ece9fa873182f.wav",
+      "sha256": "8bd0fa1ac06915074ec247e2bbe92b889e4a805841e155f9f82ece9fa873182f",
+      "size": 48172,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-073",
+      "textHash": "4ee80569fff3aaf979832285112aaf61793dde9ab311b419303035b85a7b4b98",
+      "audioKey": "u_063",
+      "file": "audio/09f1e5af75ee3d7a0c9c39a4ecf0f82d9232c8dc5656bbb4d6f6897d005d7fd8.wav",
+      "sha256": "09f1e5af75ee3d7a0c9c39a4ecf0f82d9232c8dc5656bbb4d6f6897d005d7fd8",
+      "size": 45100,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-074",
+      "textHash": "d892d866c5d0569e39e23c7bd46d63373d95197483e1a9af491e7098913a39ac",
+      "audioKey": "u_064",
+      "file": "audio/2a62015117a239bc4a98dc873179b60695bc64d268be00002429919fad9f7aca.wav",
+      "sha256": "2a62015117a239bc4a98dc873179b60695bc64d268be00002429919fad9f7aca",
+      "size": 49196,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-075",
+      "textHash": "5c8f2beb0fade553073089b76b917cba364605aa8ef570a7bb59d28fa9a67ca7",
+      "audioKey": "u_065",
+      "file": "audio/69e5ffc39eb7a671add97e477f6fb97967d49cb6de5dec20d78a3ee44cccaca5.wav",
+      "sha256": "69e5ffc39eb7a671add97e477f6fb97967d49cb6de5dec20d78a3ee44cccaca5",
+      "size": 62508,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-076",
+      "textHash": "81eb323f21d9399281bf6cf9d230ec6e14f0fdc3598c16200aa024ae2cbe2898",
+      "audioKey": "u_066",
+      "file": "audio/2e348779eb16d8df28003b92641677211335aa0ae82a39d413a871fc7836cae2.wav",
+      "sha256": "2e348779eb16d8df28003b92641677211335aa0ae82a39d413a871fc7836cae2",
+      "size": 52268,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-077",
+      "textHash": "dfbdd9492bec0b1c7ff9ac9c5228684a8cbed11f3e287d92ed9eac60ec611c8b",
+      "audioKey": "u_067",
+      "file": "audio/060ee7e4dc31cb976e881e936cfacfb71233962cffb05cf23ec90e8876899610.wav",
+      "sha256": "060ee7e4dc31cb976e881e936cfacfb71233962cffb05cf23ec90e8876899610",
+      "size": 43052,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-078",
+      "textHash": "278c1448dcadb27907171d4e445ca0f0df171187f236bf9f2967e42f2fdb5457",
+      "audioKey": "u_068",
+      "file": "audio/28e4301d1e564ed57382643bdd27e83cfc91f5ca51145be6baf3dde421c4878d.wav",
+      "sha256": "28e4301d1e564ed57382643bdd27e83cfc91f5ca51145be6baf3dde421c4878d",
+      "size": 104492,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-079",
+      "textHash": "894b6c18383b7c19f55ead7b8d132d9ca67a7d96d17ed37431520e975a9f2455",
+      "audioKey": "u_069",
+      "file": "audio/f4da76464fc9d525c5a01fd5036e6ecfbb57b54c603323917ac95f50e8439f4b.wav",
+      "sha256": "f4da76464fc9d525c5a01fd5036e6ecfbb57b54c603323917ac95f50e8439f4b",
+      "size": 39980,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-080",
+      "textHash": "664e087e8cb34207bae9d5dcd8ecaa992b474a20d73143a6ebfcb94c3c59dbad",
+      "audioKey": "u_070",
+      "file": "audio/ff15ad8b39eb72ae0643c18d556a77b9027e02821b8c8fed57f6d84729c980a5.wav",
+      "sha256": "ff15ad8b39eb72ae0643c18d556a77b9027e02821b8c8fed57f6d84729c980a5",
+      "size": 92204,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-081",
+      "textHash": "5040a80a816df4c0b535c7057c6411851b8e510c00d3c41cc3e1b2c61bd4be3c",
+      "audioKey": "u_071",
+      "file": "audio/5ce024bfa603acc1ddaf3eab50e57416ab0a4657583b092f7250c103d7ef7c8e.wav",
+      "sha256": "5ce024bfa603acc1ddaf3eab50e57416ab0a4657583b092f7250c103d7ef7c8e",
+      "size": 44076,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-082",
+      "textHash": "a15b3f99fb035a7ee8058ff2f4b3f8a554532a7347e70a12ad059d29120e0e42",
+      "audioKey": "u_072",
+      "file": "audio/0918a033c101347d7e9da94110ec56ac96fb92a2ac20d036524648b55e6399ce.wav",
+      "sha256": "0918a033c101347d7e9da94110ec56ac96fb92a2ac20d036524648b55e6399ce",
+      "size": 95276,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-083",
+      "textHash": "3f3d9f370444b48214a7eddc525b0847455ca7707a1cb058691cf343411a1134",
+      "audioKey": "u_073",
+      "file": "audio/b88b12caa2639d89b506229f9543e1805d30ea1fa42a4f721b4fc8a0e78752bc.wav",
+      "sha256": "b88b12caa2639d89b506229f9543e1805d30ea1fa42a4f721b4fc8a0e78752bc",
+      "size": 52268,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-084",
+      "textHash": "90b07aaa23f048fa7ea456625c627a082024cd3c617cfed57b7cdd4f06268b28",
+      "audioKey": "u_074",
+      "file": "audio/2d156d95359cd9b75d2048aa7bac1cc7ae2eeacd19fe0dc52b087c7013a96822.wav",
+      "sha256": "2d156d95359cd9b75d2048aa7bac1cc7ae2eeacd19fe0dc52b087c7013a96822",
+      "size": 67628,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-085",
+      "textHash": "efdaa870d688d9bf36ea249b0a50b3003a4e793d21817018476fa3cdb4332f66",
+      "audioKey": "u_075",
+      "file": "audio/0d490b55ba302e79e26c944c4b3b5817f94b4a1b612a3ff46da544ede883a668.wav",
+      "sha256": "0d490b55ba302e79e26c944c4b3b5817f94b4a1b612a3ff46da544ede883a668",
+      "size": 79916,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-086",
+      "textHash": "bd6b48ee009da4c1a3c6ef33d19a37751cb419363375ae426a00d4de8ea22144",
+      "audioKey": "u_076",
+      "file": "audio/0ed847fb4c2cd777278c12fbfc72551ec9367ca4eac391d1183793bde694ab43.wav",
+      "sha256": "0ed847fb4c2cd777278c12fbfc72551ec9367ca4eac391d1183793bde694ab43",
+      "size": 70700,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-087",
+      "textHash": "9223e48b5e7b4f28abe731f25504befe1124512af956507f050c6daa9b6f8a04",
+      "audioKey": "u_077",
+      "file": "audio/7114ca8115badefd25c75b3be90ed2148bd95385baee0bda52be55ed0eee8b33.wav",
+      "sha256": "7114ca8115badefd25c75b3be90ed2148bd95385baee0bda52be55ed0eee8b33",
+      "size": 88108,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-088",
+      "textHash": "2143e5d712214e3b81498615cc66155eb48783c9dd24496df6a9d11133cde936",
+      "audioKey": "u_078",
+      "file": "audio/02fc9157bea0f8ad3ab061a9f95b96c776322a52882ef3afe25a2d714bad5a32.wav",
+      "sha256": "02fc9157bea0f8ad3ab061a9f95b96c776322a52882ef3afe25a2d714bad5a32",
+      "size": 70700,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-089",
+      "textHash": "26853bd05c75e8ab3e7681921afa8d5c188eb69177ef5cf5fa176a106ea88fc2",
+      "audioKey": "u_079",
+      "file": "audio/2bb119ac1b444aa10038ff4f7183f81936eb817ceb26639468d109be61a10d54.wav",
+      "sha256": "2bb119ac1b444aa10038ff4f7183f81936eb817ceb26639468d109be61a10d54",
+      "size": 59436,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-090",
+      "textHash": "c3c7f6b53d34f7786d2572a1e768abb5c6b90f8687e6b1a17b881b8a3ad34906",
+      "audioKey": "u_080",
+      "file": "audio/34dfa02921a99c42236f8d5b24b5b789cb1aeaac118115f534ba7ca7ff96f574.wav",
+      "sha256": "34dfa02921a99c42236f8d5b24b5b789cb1aeaac118115f534ba7ca7ff96f574",
+      "size": 103468,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-091",
+      "textHash": "d15811278bac114d18918f422013c691f67f4cbee495b382e1e05bb6a354d7a9",
+      "audioKey": "u_081",
+      "file": "audio/c45de24bf82f3587a031c76d3c8f791806ed9534da07200ef6aa656159729fdf.wav",
+      "sha256": "c45de24bf82f3587a031c76d3c8f791806ed9534da07200ef6aa656159729fdf",
+      "size": 85036,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-092",
+      "textHash": "7ea1e9f571c56d2d7bf94881ac2d0a6457cda1e54cb45432f7b6df1e03d8390f",
+      "audioKey": "u_082",
+      "file": "audio/70ce8ef7c68ed2adb5ceee58eac146888f19f18ebbdce82f32b170e38d4c258b.wav",
+      "sha256": "70ce8ef7c68ed2adb5ceee58eac146888f19f18ebbdce82f32b170e38d4c258b",
+      "size": 98348,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-093",
+      "textHash": "697bef6588c4fedd2f79b9021fbfe1edef50d76052c81f8bbdac357f35a098a8",
+      "audioKey": "u_083",
+      "file": "audio/096b1edc531b9981dadf8854b21e33f94cf26f73f6e4f7f5118e2596ce6cf140.wav",
+      "sha256": "096b1edc531b9981dadf8854b21e33f94cf26f73f6e4f7f5118e2596ce6cf140",
+      "size": 86060,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-094",
+      "textHash": "458735a5d2a2b42b32a0a1be1fdda14a7e4a825af7e095080497163886ee3f0c",
+      "audioKey": "u_084",
+      "file": "audio/da65f8ddf15b2ca22486f3c319e78282310a835f5c830bf28e8e07a1c3f2802d.wav",
+      "sha256": "da65f8ddf15b2ca22486f3c319e78282310a835f5c830bf28e8e07a1c3f2802d",
+      "size": 100396,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-095",
+      "textHash": "1bd6c8cd3809be1dd06660137bad0196e66093fdefd6ff478f9182e4f83d661b",
+      "audioKey": "u_085",
+      "file": "audio/8d98b96593c9b516e89f180db36c903e54bddf9185ef0518ef0c65c2f7c044d8.wav",
+      "sha256": "8d98b96593c9b516e89f180db36c903e54bddf9185ef0518ef0c65c2f7c044d8",
+      "size": 71724,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-096",
+      "textHash": "7b2c92d12b735dc95a88cd6b339c096e0bb5bc41e14be6f51b60e628baced37b",
+      "audioKey": "u_086",
+      "file": "audio/e5e994fd7fbd32dea46bc00081a1113365f9f6cb7d54637b6f7eb77e023b13ba.wav",
+      "sha256": "e5e994fd7fbd32dea46bc00081a1113365f9f6cb7d54637b6f7eb77e023b13ba",
+      "size": 129068,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-097",
+      "textHash": "29a12e13fa4b7c1cf3b7880a764f0d4a9073c85afc1c227b879923843c0dc644",
+      "audioKey": "u_087",
+      "file": "audio/8f0e0ea313f2187f594ac0f6e91ea438ccd37a3420481ca4a40d8ce9f53a95e3.wav",
+      "sha256": "8f0e0ea313f2187f594ac0f6e91ea438ccd37a3420481ca4a40d8ce9f53a95e3",
+      "size": 143404,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-098",
+      "textHash": "c3246965c92ffaf40849f3116d1b59b98edef09dd623915d8491bcd5fd2cae5a",
+      "audioKey": "u_088",
+      "file": "audio/c1e3e9d7cada9aeede2b627e4816c0b24d2f33086cbe0b26a579b310e9064c0f.wav",
+      "sha256": "c1e3e9d7cada9aeede2b627e4816c0b24d2f33086cbe0b26a579b310e9064c0f",
+      "size": 69676,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-099",
+      "textHash": "d47cd34e11a22bc4ac82442cf7ff1c491b5355c7392e11327c983cbe80ca588d",
+      "audioKey": "u_089",
+      "file": "audio/d25a97dbb481e4f6ca1cbbc973cbaf5541ff43c0a8b73f9634f1b0d3151b8a5e.wav",
+      "sha256": "d25a97dbb481e4f6ca1cbbc973cbaf5541ff43c0a8b73f9634f1b0d3151b8a5e",
+      "size": 82988,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-100",
+      "textHash": "b3c49e40402bbce8b806671ac272000a417dd51e17cd4e6b5099ce5757b9b9e8",
+      "audioKey": "u_090",
+      "file": "audio/c18fc9f34e87ee40cd6b829842891df688ffd7bd9471b2a3044f0c036acece50.wav",
+      "sha256": "c18fc9f34e87ee40cd6b829842891df688ffd7bd9471b2a3044f0c036acece50",
+      "size": 78892,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-101",
+      "textHash": "9239ef5f18561158c4db6a1e72d6ebe37b2c77d6dd608a1dd52ef9e5035e910b",
+      "audioKey": "u_091",
+      "file": "audio/4cd0a33cb81de6042f8eaaf73ce6570eaa4bde728ca44b0ad3a56b36f13082d1.wav",
+      "sha256": "4cd0a33cb81de6042f8eaaf73ce6570eaa4bde728ca44b0ad3a56b36f13082d1",
+      "size": 80940,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-102",
+      "textHash": "1b4e99ab0e98ce0956e0802fd916db3c9a9004d1caf078c7864c8959f84cc0c4",
+      "audioKey": "u_092",
+      "file": "audio/a08b06b46d7657e576062c3be5ca56088d97cd638b07a81e294fde3ea3de71cd.wav",
+      "sha256": "a08b06b46d7657e576062c3be5ca56088d97cd638b07a81e294fde3ea3de71cd",
+      "size": 105516,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-103",
+      "textHash": "1bd6c8cd3809be1dd06660137bad0196e66093fdefd6ff478f9182e4f83d661b",
+      "audioKey": "u_085",
+      "file": "audio/8d98b96593c9b516e89f180db36c903e54bddf9185ef0518ef0c65c2f7c044d8.wav",
+      "sha256": "8d98b96593c9b516e89f180db36c903e54bddf9185ef0518ef0c65c2f7c044d8",
+      "size": 71724,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-104",
+      "textHash": "7b2c92d12b735dc95a88cd6b339c096e0bb5bc41e14be6f51b60e628baced37b",
+      "audioKey": "u_086",
+      "file": "audio/e5e994fd7fbd32dea46bc00081a1113365f9f6cb7d54637b6f7eb77e023b13ba.wav",
+      "sha256": "e5e994fd7fbd32dea46bc00081a1113365f9f6cb7d54637b6f7eb77e023b13ba",
+      "size": 129068,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-105",
+      "textHash": "c3246965c92ffaf40849f3116d1b59b98edef09dd623915d8491bcd5fd2cae5a",
+      "audioKey": "u_088",
+      "file": "audio/c1e3e9d7cada9aeede2b627e4816c0b24d2f33086cbe0b26a579b310e9064c0f.wav",
+      "sha256": "c1e3e9d7cada9aeede2b627e4816c0b24d2f33086cbe0b26a579b310e9064c0f",
+      "size": 69676,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-106",
+      "textHash": "5ca56b1a059c24526482d939fe17c6849f9683c80b77fae13ffd1df2318464de",
+      "audioKey": "u_093",
+      "file": "audio/af731cc39bf2b8ee70f28c10e5c636c48711aebfcdbd45959ec984965a4df116.wav",
+      "sha256": "af731cc39bf2b8ee70f28c10e5c636c48711aebfcdbd45959ec984965a4df116",
+      "size": 78892,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-107",
+      "textHash": "408d3da71fa4fa779c55d24a1fe788d3e2afc235a3b366e04ebcdf710cec1a93",
+      "audioKey": "u_094",
+      "file": "audio/43c7da09d81b52f28b3db921191e1f9b7670d7c1d68ecf35692b45cfc231903b.wav",
+      "sha256": "43c7da09d81b52f28b3db921191e1f9b7670d7c1d68ecf35692b45cfc231903b",
+      "size": 72748,
+      "mime": "audio/wav"
+    },
+    {
+      "itemId": "4A-Starter-108",
+      "textHash": "1b4e99ab0e98ce0956e0802fd916db3c9a9004d1caf078c7864c8959f84cc0c4",
+      "audioKey": "u_092",
+      "file": "audio/a08b06b46d7657e576062c3be5ca56088d97cd638b07a81e294fde3ea3de71cd.wav",
+      "sha256": "a08b06b46d7657e576062c3be5ca56088d97cd638b07a81e294fde3ea3de71cd",
+      "size": 105516,
+      "mime": "audio/wav"
+    }
+  ]
+}
