@@ -1,44 +1,149 @@
 package com.englishpaper.reader;
 
-import android.content.*;
+import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.*;
-import org.json.*;
-import java.io.*;
+import android.database.sqlite.SQLiteDatabase;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.security.MessageDigest;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /** Durable content catalog. Large audio files live outside SQLite; only stable references are stored. */
 public class ContentDb {
     private final Context context;
     private final AppDatabase database;
-    private final PrivateFileStore files;
-    public ContentDb(Context c,AppDatabase database,PrivateFileStore files){this.context=c.getApplicationContext();this.database=database;this.files=files;}
-    private SQLiteDatabase getReadableDatabase(){return database.getReadableDatabase();}
-    private SQLiteDatabase getWritableDatabase(){return database.getWritableDatabase();}
-    public static void create(SQLiteDatabase db){
+
+    public ContentDb(Context c, AppDatabase database, PrivateFileStore files) { this.context = c.getApplicationContext(); this.database = database; }
+    private SQLiteDatabase getReadableDatabase() { return database.getReadableDatabase(); }
+    private SQLiteDatabase getWritableDatabase() { return database.getWritableDatabase(); }
+
+    public static void create(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS textbooks (id TEXT PRIMARY KEY,title TEXT NOT NULL,grade TEXT,semester TEXT,publisher TEXT,sort_order INTEGER NOT NULL DEFAULT 0,created_at INTEGER NOT NULL,updated_at INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS units (id TEXT PRIMARY KEY,textbook_id TEXT NOT NULL,short_title TEXT NOT NULL,title TEXT NOT NULL,subtitle TEXT,sort_order INTEGER NOT NULL,package_version INTEGER NOT NULL DEFAULT 1,content_version INTEGER NOT NULL DEFAULT 1,source_type TEXT NOT NULL,package_relative_path TEXT,content_hash TEXT,installed_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,last_opened_at INTEGER,item_count INTEGER NOT NULL DEFAULT 0,FOREIGN KEY(textbook_id) REFERENCES textbooks(id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS sections (id TEXT PRIMARY KEY,unit_id TEXT NOT NULL,title TEXT NOT NULL,description TEXT,sort_order INTEGER NOT NULL,FOREIGN KEY(unit_id) REFERENCES units(id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS content_items (id TEXT PRIMARY KEY,unit_id TEXT NOT NULL,section_id TEXT NOT NULL,item_type TEXT NOT NULL,text_en TEXT NOT NULL,translation TEXT,audio_key TEXT,content_hash TEXT NOT NULL,sort_order INTEGER NOT NULL,enabled INTEGER NOT NULL DEFAULT 1,FOREIGN KEY(unit_id) REFERENCES units(id) ON DELETE CASCADE,FOREIGN KEY(section_id) REFERENCES sections(id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS item_options (id INTEGER PRIMARY KEY AUTOINCREMENT,item_id TEXT NOT NULL,option_text TEXT NOT NULL,sort_order INTEGER NOT NULL,FOREIGN KEY(item_id) REFERENCES content_items(id) ON DELETE CASCADE)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS audio_assets (audio_key TEXT PRIMARY KEY,storage_type TEXT NOT NULL CHECK(storage_type IN ('resource','private')),resource_name TEXT,relative_path TEXT,sha256 TEXT,byte_size INTEGER,mime_type TEXT,ref_count INTEGER NOT NULL DEFAULT 0,created_at INTEGER NOT NULL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS app_state (state_key TEXT PRIMARY KEY,state_value TEXT)");
-        db.execSQL("CREATE INDEX IF NOT EXISTS idx_units_book_order ON units(textbook_id,sort_order)");
-        db.execSQL("CREATE INDEX IF NOT EXISTS idx_units_recent ON units(last_opened_at DESC)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS units (id TEXT PRIMARY KEY,textbook_id TEXT NOT NULL REFERENCES textbooks(id) ON DELETE CASCADE,short_title TEXT NOT NULL,title TEXT NOT NULL,subtitle TEXT,sort_order INTEGER NOT NULL CHECK(sort_order>=0),package_version INTEGER NOT NULL DEFAULT 1,content_version INTEGER NOT NULL DEFAULT 1,source_type TEXT NOT NULL DEFAULT 'built_in',content_hash TEXT NOT NULL,installed_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,last_opened_at INTEGER,item_count INTEGER NOT NULL DEFAULT 0,UNIQUE(textbook_id,sort_order))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS sections (id TEXT PRIMARY KEY,unit_id TEXT NOT NULL REFERENCES units(id) ON DELETE CASCADE,title TEXT NOT NULL,description TEXT,sort_order INTEGER NOT NULL DEFAULT 0)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS content_items (id TEXT PRIMARY KEY,unit_id TEXT NOT NULL REFERENCES units(id) ON DELETE CASCADE,section_id TEXT NOT NULL REFERENCES sections(id) ON DELETE CASCADE,item_type TEXT NOT NULL,text_en TEXT NOT NULL,translation TEXT,audio_key TEXT,content_hash TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,enabled INTEGER NOT NULL DEFAULT 1 CHECK(enabled IN (0,1)))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS item_options (id INTEGER PRIMARY KEY AUTOINCREMENT,item_id TEXT NOT NULL REFERENCES content_items(id) ON DELETE CASCADE,option_text TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS app_state (state_key TEXT PRIMARY KEY,state_value TEXT NOT NULL)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_sections_unit_order ON sections(unit_id,sort_order)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_items_unit_section_order ON content_items(unit_id,section_id,sort_order)");
-        db.execSQL("CREATE INDEX IF NOT EXISTS idx_items_audio ON content_items(audio_key)");
+        db.execSQL("CREATE INDEX IF NOT EXISTS idx_options_item ON item_options(item_id,sort_order)");
     }
-    private static void installUnit(SQLiteDatabase db,JSONObject u,String source)throws Exception{String uid=u.getString("unitId"),book=u.optString("textbookId","shanghai-4a");int count=0;JSONArray secs=u.getJSONArray("sections");for(int i=0;i<secs.length();i++)count+=secs.getJSONObject(i).getJSONArray("items").length();ContentValues v=new ContentValues();v.put("id",uid);v.put("textbook_id",book);v.put("short_title",u.optString("shortTitle",u.getString("title")));v.put("title",u.getString("title"));v.put("subtitle",u.optString("subtitle"));v.put("sort_order",u.optInt("order",999));v.put("package_version",u.optInt("packageVersion",1));v.put("content_version",u.optInt("contentVersion",1));v.put("source_type",source);v.put("content_hash",hash(u.toString()));v.put("installed_at",now());v.put("updated_at",now());v.put("item_count",count);db.insertWithOnConflict("units",null,v,SQLiteDatabase.CONFLICT_REPLACE);db.delete("sections","unit_id=?",new String[]{uid});for(int si=0;si<secs.length();si++){JSONObject sec=secs.getJSONObject(si);String sid=sec.optString("sectionId",uid+"-s"+(si+1));ContentValues sv=new ContentValues();sv.put("id",sid);sv.put("unit_id",uid);sv.put("title",sec.optString("title","练习"));sv.put("description",sec.optString("description"));sv.put("sort_order",sec.optInt("order",si));db.insertOrThrow("sections",null,sv);JSONArray items=sec.getJSONArray("items");for(int ii=0;ii<items.length();ii++){JSONObject it=items.getJSONObject(ii);String iid=it.optString("itemId",uid+"-"+(si+1)+"-"+(ii+1));String txt=it.optString("text",it.optString("stem"));ContentValues iv=new ContentValues();iv.put("id",iid);iv.put("unit_id",uid);iv.put("section_id",sid);iv.put("item_type",it.optString("type","sentence"));iv.put("text_en",txt);iv.put("translation",it.optString("translation"));iv.put("audio_key",it.optString("audioResource"));iv.put("content_hash",it.optString("contentHash",hash(txt+"\n"+it.optString("translation"))));iv.put("sort_order",it.optInt("order",ii));db.insertOrThrow("content_items",null,iv);String ak=it.optString("audioResource");if(!ak.isEmpty()){ContentValues av=new ContentValues();av.put("audio_key",ak);av.put("storage_type","resource");av.put("resource_name",ak);av.put("created_at",now());db.insertWithOnConflict("audio_assets",null,av,SQLiteDatabase.CONFLICT_IGNORE);db.execSQL("UPDATE audio_assets SET ref_count=ref_count+1 WHERE audio_key=?",new Object[]{ak});}JSONArray opts=it.optJSONArray("options");if(opts!=null)for(int oi=0;oi<opts.length();oi++){ContentValues ov=new ContentValues();ov.put("item_id",iid);ov.put("option_text",opts.getString(oi));ov.put("sort_order",oi);db.insert("item_options",null,ov);}}}}
-    public synchronized void ensureSeed()throws Exception{
-        SQLiteDatabase db=getWritableDatabase();try(Cursor c=db.rawQuery("SELECT count(*) FROM units",null)){if(c.moveToFirst()&&c.getLong(0)>0)return;}
-        InputStream in=context.getResources().openRawResource(context.getResources().getIdentifier("catalog_seed","raw",context.getPackageName()));ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1)out.write(b,0,n);in.close();JSONObject root=new JSONObject(out.toString("UTF-8"));db.beginTransaction();try{upsertTextbook(db,root.getJSONObject("textbook"));JSONArray units=root.getJSONArray("units");for(int i=0;i<units.length();i++)installUnit(db,units.getJSONObject(i),"built_in");db.setTransactionSuccessful();}finally{db.endTransaction();}}
-    private static long now(){return System.currentTimeMillis();}
-    private static void upsertTextbook(SQLiteDatabase db,JSONObject o)throws Exception{ContentValues v=new ContentValues();v.put("id",o.getString("textbookId"));v.put("title",o.getString("title"));v.put("grade",o.optString("grade"));v.put("semester",o.optString("semester"));v.put("publisher",o.optString("publisher"));v.put("sort_order",o.optInt("order",0));v.put("created_at",now());v.put("updated_at",now());db.insertWithOnConflict("textbooks",null,v,SQLiteDatabase.CONFLICT_REPLACE);}
-    private static String hash(String s)throws Exception{byte[] d=MessageDigest.getInstance("SHA-256").digest(s.getBytes("UTF-8"));StringBuilder x=new StringBuilder();for(byte q:d)x.append(String.format(Locale.US,"%02x",q));return x.toString();}
-    public synchronized String catalog()throws Exception{JSONArray a=new JSONArray();SQLiteDatabase db=getReadableDatabase();try(Cursor c=db.rawQuery("SELECT id,short_title,title,subtitle,sort_order,item_count,last_opened_at FROM units ORDER BY textbook_id,sort_order,id",null)){while(c.moveToNext()){JSONObject o=new JSONObject();o.put("unitId",c.getString(0));o.put("shortTitle",c.getString(1));o.put("title",c.getString(2));o.put("subtitle",c.getString(3));o.put("order",c.getInt(4));o.put("itemCount",c.getInt(5));o.put("lastOpenedAt",c.isNull(6)?JSONObject.NULL:c.getLong(6));a.put(o);}}return a.toString();}
-    public synchronized String unit(String uid)throws Exception{SQLiteDatabase db=getWritableDatabase();JSONObject u=new JSONObject();try(Cursor c=db.rawQuery("SELECT id,short_title,title,subtitle,sort_order FROM units WHERE id=?",new String[]{uid})){if(!c.moveToFirst())throw new JSONException("单元不存在");u.put("schema","english-paper/v1");u.put("unitId",c.getString(0));u.put("shortTitle",c.getString(1));u.put("title",c.getString(2));u.put("subtitle",c.getString(3));u.put("order",c.getInt(4));}JSONArray sections=new JSONArray();try(Cursor sc=db.rawQuery("SELECT id,title,description FROM sections WHERE unit_id=? ORDER BY sort_order",new String[]{uid})){while(sc.moveToNext()){JSONObject s=new JSONObject();s.put("sectionId",sc.getString(0));s.put("title",sc.getString(1));s.put("description",sc.isNull(2)?null:sc.getString(2));JSONArray items=new JSONArray();try(Cursor ic=db.rawQuery("SELECT id,item_type,text_en,translation,audio_key FROM content_items WHERE section_id=? AND enabled=1 ORDER BY sort_order",new String[]{sc.getString(0)})){while(ic.moveToNext()){JSONObject it=new JSONObject();it.put("itemId",ic.getString(0));it.put("type",ic.getString(1));it.put("text",ic.getString(2));it.put("translation",ic.getString(3));it.put("audioResource",ic.getString(4));JSONArray opts=new JSONArray();try(Cursor oc=db.rawQuery("SELECT option_text FROM item_options WHERE item_id=? ORDER BY sort_order",new String[]{ic.getString(0)})){while(oc.moveToNext())opts.put(oc.getString(0));}if(opts.length()>0)it.put("options",opts);items.put(it);}}s.put("items",items);sections.put(s);}}u.put("sections",sections);db.execSQL("UPDATE units SET last_opened_at=? WHERE id=?",new Object[]{now(),uid});return u.toString();}
-    public synchronized String getState(String key,String fallback){try(Cursor c=getReadableDatabase().rawQuery("SELECT state_value FROM app_state WHERE state_key=?",new String[]{key})){return c.moveToFirst()?c.getString(0):fallback;}}
-    public synchronized void setState(String key,String value){ContentValues v=new ContentValues();v.put("state_key",key);v.put("state_value",value);getWritableDatabase().insertWithOnConflict("app_state",null,v,SQLiteDatabase.CONFLICT_REPLACE);}
+
+    public synchronized void ensureSeed() throws Exception {
+        SQLiteDatabase db = getWritableDatabase();
+        try (Cursor c = db.rawQuery("SELECT count(*) FROM units", null)) { if (c.moveToFirst() && c.getLong(0) > 0) return; }
+        InputStream in = context.getResources().openRawResource(context.getResources().getIdentifier("catalog_seed", "raw", context.getPackageName()));
+        ByteArrayOutputStream out = new ByteArrayOutputStream(); byte[] b = new byte[8192]; int n;
+        while ((n = in.read(b)) != -1) out.write(b, 0, n);
+        in.close();
+        JSONObject root = new JSONObject(out.toString("UTF-8"));
+        db.beginTransaction();
+        try { upsertTextbook(db, root.getJSONObject("textbook")); JSONArray units = root.getJSONArray("units"); for (int i = 0; i < units.length(); i++) installUnit(db, units.getJSONObject(i), "built_in"); db.setTransactionSuccessful(); } finally { db.endTransaction(); }
+    }
+
+    private static long now() { return System.currentTimeMillis(); }
+
+    private static void upsertTextbook(SQLiteDatabase db, JSONObject o) throws Exception {
+        ContentValues v = new ContentValues();
+        v.put("id", o.getString("textbookId")); v.put("title", o.getString("title")); v.put("grade", o.optString("grade")); v.put("semester", o.optString("semester")); v.put("publisher", o.optString("publisher")); v.put("sort_order", o.optInt("order", 0)); v.put("created_at", now()); v.put("updated_at", now());
+        db.insertWithOnConflict("textbooks", null, v, SQLiteDatabase.CONFLICT_REPLACE);
+    }
+
+    private static String hash(String s) throws Exception {
+        byte[] d = MessageDigest.getInstance("SHA-256").digest(s.getBytes("UTF-8"));
+        StringBuilder x = new StringBuilder(); for (byte q : d) x.append(String.format(java.util.Locale.US, "%02x", q));
+        return x.toString();
+    }
+
+    private static void installUnit(SQLiteDatabase db, JSONObject u, String source) throws Exception {
+        String uid = u.getString("unitId"), book = u.optString("textbookId", "shanghai-4a");
+        int count = 0; JSONArray secs = u.getJSONArray("sections");
+        for (int i = 0; i < secs.length(); i++) count += secs.getJSONObject(i).getJSONArray("items").length();
+        ContentValues v = new ContentValues();
+        v.put("id", uid); v.put("textbook_id", book); v.put("short_title", u.optString("shortTitle", u.getString("title"))); v.put("title", u.getString("title")); v.put("subtitle", u.optString("subtitle")); v.put("sort_order", u.optInt("order", 999)); v.put("package_version", u.optInt("packageVersion", 1)); v.put("content_version", u.optInt("contentVersion", 1)); v.put("source_type", source); v.put("content_hash", hash(u.toString())); v.put("installed_at", now()); v.put("updated_at", now()); v.put("item_count", count);
+        db.insertWithOnConflict("units", null, v, SQLiteDatabase.CONFLICT_REPLACE);
+        db.delete("sections", "unit_id=?", new String[]{uid});
+        for (int si = 0; si < secs.length(); si++) {
+            JSONObject sec = secs.getJSONObject(si);
+            String sid = sec.optString("sectionId", uid + "-s" + (si + 1));
+            ContentValues sv = new ContentValues();
+            sv.put("id", sid); sv.put("unit_id", uid); sv.put("title", sec.optString("title", "练习")); sv.put("description", sec.optString("description")); sv.put("sort_order", sec.optInt("order", si));
+            db.insertOrThrow("sections", null, sv);
+            JSONArray items = sec.getJSONArray("items");
+            for (int ii = 0; ii < items.length(); ii++) {
+                JSONObject it = items.getJSONObject(ii);
+                String iid = it.optString("itemId", uid + "-" + (si + 1) + "-" + (ii + 1));
+                String txt = it.optString("text", it.optString("stem"));
+                ContentValues iv = new ContentValues();
+                iv.put("id", iid); iv.put("unit_id", uid); iv.put("section_id", sid); iv.put("item_type", it.optString("type", "sentence")); iv.put("text_en", txt); iv.put("translation", it.optString("translation")); iv.put("audio_key", it.optString("audioResource")); iv.put("content_hash", it.optString("contentHash", hash(txt + "\n" + it.optString("translation")))); iv.put("sort_order", it.optInt("order", ii));
+                db.insertOrThrow("content_items", null, iv);
+                JSONArray opts = it.optJSONArray("options");
+                if (opts != null) for (int oi = 0; oi < opts.length(); oi++) {
+                    ContentValues ov = new ContentValues();
+                    ov.put("item_id", iid); ov.put("option_text", opts.getString(oi)); ov.put("sort_order", oi);
+                    db.insert("item_options", null, ov);
+                }
+            }
+        }
+    }
+
+    public synchronized String catalog() throws Exception {
+        JSONArray a = new JSONArray();
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT id,short_title,title,subtitle,sort_order,item_count,last_opened_at FROM units ORDER BY textbook_id,sort_order,id", null)) {
+            while (c.moveToNext()) {
+                JSONObject o = new JSONObject();
+                o.put("unitId", c.getString(0)); o.put("shortTitle", c.getString(1)); o.put("title", c.getString(2)); o.put("subtitle", c.getString(3)); o.put("order", c.getInt(4)); o.put("itemCount", c.getInt(5)); o.put("lastOpenedAt", c.isNull(6) ? JSONObject.NULL : c.getLong(6));
+                a.put(o);
+            }
+        }
+        return a.toString();
+    }
+
+    public synchronized String unit(String uid) throws Exception {
+        SQLiteDatabase db = getWritableDatabase();
+        JSONObject u = new JSONObject();
+        try (Cursor c = db.rawQuery("SELECT id,short_title,title,subtitle,sort_order FROM units WHERE id=?", new String[]{uid})) {
+            if (!c.moveToFirst()) throw new org.json.JSONException("单元不存在");
+            u.put("schema", "english-paper/v1"); u.put("unitId", c.getString(0)); u.put("shortTitle", c.getString(1)); u.put("title", c.getString(2)); u.put("subtitle", c.getString(3)); u.put("order", c.getInt(4));
+        }
+        Map<String, JSONArray> optsByItem = new HashMap<>();
+        try (Cursor oc = db.rawQuery("SELECT o.item_id,o.option_text FROM item_options o JOIN content_items ci ON ci.id=o.item_id WHERE ci.unit_id=? ORDER BY o.item_id,o.sort_order", new String[]{uid})) {
+            while (oc.moveToNext()) { JSONArray arr = optsByItem.get(oc.getString(0)); if (arr == null) { arr = new JSONArray(); optsByItem.put(oc.getString(0), arr); } arr.put(oc.getString(1)); }
+        }
+        JSONArray sections = new JSONArray();
+        try (Cursor sc = db.rawQuery("SELECT id,title,description FROM sections WHERE unit_id=? ORDER BY sort_order", new String[]{uid})) {
+            while (sc.moveToNext()) {
+                JSONObject s = new JSONObject();
+                s.put("sectionId", sc.getString(0)); s.put("title", sc.getString(1)); s.put("description", sc.isNull(2) ? null : sc.getString(2));
+                JSONArray items = new JSONArray();
+                try (Cursor ic = db.rawQuery("SELECT id,item_type,text_en,translation,audio_key FROM content_items WHERE section_id=? AND enabled=1 ORDER BY sort_order", new String[]{sc.getString(0)})) {
+                    while (ic.moveToNext()) {
+                        JSONObject it = new JSONObject();
+                        it.put("itemId", ic.getString(0)); it.put("type", ic.getString(1)); it.put("text", ic.getString(2)); it.put("translation", ic.getString(3)); it.put("audioResource", ic.getString(4));
+                        JSONArray opts = optsByItem.get(ic.getString(0));
+                        if (opts != null) it.put("options", opts);
+                        items.put(it);
+                    }
+                }
+                s.put("items", items); sections.put(s);
+            }
+        }
+        u.put("sections", sections);
+        db.execSQL("UPDATE units SET last_opened_at=? WHERE id=?", new Object[]{now(), uid});
+        return u.toString();
+    }
+
+    public synchronized String getState(String key, String fallback) {
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT state_value FROM app_state WHERE state_key=?", new String[]{key})) { return c.moveToFirst() ? c.getString(0) : fallback; }
+    }
+
+    public synchronized void setState(String key, String value) {
+        ContentValues v = new ContentValues();
+        v.put("state_key", key); v.put("state_value", value == null ? "" : value);
+        getWritableDatabase().insertWithOnConflict("app_state", null, v, SQLiteDatabase.CONFLICT_REPLACE);
+    }
 }
