@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.18.0
+version: 1.19.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,12 @@ version: 1.18.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.40.0 设置卡片化盘
+
+- 单元选择列表去掉“· N项”计数，只留副标题；
+- 设置面板重构为卡片分组：setcard(浅灰底+settitle 粗体卡标题) 三组——播放语速(白底分段控件)、本单元(删除语音红色行)、帮助(使用说明行)；版本脚注+完成主按钮；
+- 教训：悬浮小灰字标签(settingtitle)观感差，标题必须进入卡片成为层级一部分。
 
 ## 1.39.0 掌握规则与统计文案盘
 
@@ -349,3 +355,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.37.0（code41）。去加载占位+平板单元面板锚定；release：GitHub 383111980、Gitee 1124473；skill v1.16.0。
 - 2026-09-05：APK 1.38.0（code42）。单元面板全尺寸下拉锚定、点选即切换、去完成按钮；release：GitHub 383114726、Gitee 1124505；skill v1.17.0。
 - 2026-09-05：APK 1.39.0（code43）。掌握自动标记仅限纯书写错误；统计“X项待练习”+13px 字号一致；release：GitHub 383116543、Gitee 1124570；skill v1.18.0。
+- 2026-09-05：APK 1.40.0（code44）。设置卡片化三组；单元列表去项数；release：GitHub 383119081、Gitee 1124590；skill v1.19.0。
