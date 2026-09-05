@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.22.0
+version: 1.23.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,12 @@ version: 1.22.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.44.0 播放聚焦与刘海避让盘
+
+- 头部彻底不显示“正在播放”：播放中状态行隐藏，焦点交给行内高亮（用户定规：行高亮已足够，头部提示是干扰）。
+- 播放行“突出而柔和”配方：左 3px 蓝竖条(inset shadow)+90deg 淡蓝渐变底+柔和外发光(0 2px 14px rgba(47,127,224,.14))+英文变蓝+喇叭钮变实心蓝带投影；.item/.choice 加 background/box-shadow .25s 过渡避免生硬；不改尺寸防布局跳动。
+- 水滴屏/刘海：Java 设 LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER（API28+）让系统避让挖孔，状态栏染头部同色(#16406F)视觉无缝；CSS 再兜底 .top padding-top:env(safe-area-inset-top)。
 
 ## 1.43.0 状态行事件化盘
 
@@ -383,3 +389,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.41.0（code45）。书写→拼写全文案；错题列表缓存即时渲染；release：GitHub 383121775、Gitee 1124648；skill v1.20.0。
 - 2026-09-05：APK 1.42.0（code46）。性能根因修复：缓存三层+线程分离+合并桥+预热；首进 98ms；release：GitHub 383127641、Gitee 1124684；skill v1.21.0。
 - 2026-09-05：APK 1.43.0（code47）。状态行事件化：就绪静默隐藏、下载成功仅 3 秒、未下载才警告；release：GitHub 383131671、Gitee 1124703；skill v1.22.0。
+- 2026-09-05：APK 1.44.0（code48）。播放行高亮配方+头部不显正在播放+刘海 NEVER 避让+状态栏同色；release：GitHub 383134217、Gitee 1124719；skill v1.23.0。
