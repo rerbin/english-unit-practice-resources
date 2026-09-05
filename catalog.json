@@ -8,13 +8,13 @@
       "order": 0,
       "title": "Starter",
       "subtitle": "我们的家人和朋友",
-      "audioVersion": 4,
+      "audioVersion": 5,
       "minAppVersionCode": 26,
-      "size": 4345766,
-      "sha256": "0013d0cb61b1563300f205b2c5276b6f21eef3740934aa011b7ae988dbee9fe6",
+      "size": 8432495,
+      "sha256": "c38b353dc618f4c0313648133a056a33150c6eca7c66caefc614827db4947b81",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v4.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v4.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v5.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v5.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
@@ -26,13 +26,13 @@
       "order": 999,
       "title": "Unit 1",
       "subtitle": "",
-      "audioVersion": 4,
+      "audioVersion": 5,
       "minAppVersionCode": 26,
-      "size": 4817976,
-      "sha256": "57e21d7b5eede405d6bbb6e2c06eac7ab35d883faed8f1be1dce8e5634cf0d96",
+      "size": 9657205,
+      "sha256": "a78f9ca3b750839c96d0716f39727db4800b440d92cb8d83365a27f7a1f04e70",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v4.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v4.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v5.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v5.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",
