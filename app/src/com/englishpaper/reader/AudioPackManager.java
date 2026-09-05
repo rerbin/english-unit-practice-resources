@@ -23,12 +23,15 @@ public final class AudioPackManager {
     private final Context context;
     private final PrivateFileStore files;
     private final File packsRoot;
+    private final android.content.SharedPreferences trialPrefs;
+    private static final String TRIAL_PREF = "voice_trial_variant";
     private final Map<String, Map<String,String>> manifestCache = new ConcurrentHashMap<>();
 
     public AudioPackManager(Context context, PrivateFileStore files) {
         this.context = context.getApplicationContext();
         this.files = files;
         packsRoot = files.packsRoot();
+        trialPrefs = context.getSharedPreferences("voice_trial", 0);
         if (!packsRoot.exists()) packsRoot.mkdirs();
     }
 
@@ -45,31 +48,70 @@ public final class AudioPackManager {
     /** Resolve an audio key to an absolute playable file, or null. */
     public File fileFor(String unitId, String audioKey) {
         if (audioKey == null || audioKey.isEmpty()) return null;
-        Map<String,String> m;
-        try { m = keyMap(unitId); } catch (Exception e) { return null; }
-        String rel = m.get(audioKey);
-        if (rel == null) return null;
-        File f = new File(packDir(unitId), rel);
-        return f.isFile() ? f : null;
+        String variant = selectedVariant();
+        if (!"default".equals(variant)) {
+            try {
+                File dir = trialPackDir(variant, unitId);
+                String rel = keyMapFor(dir, "trial:" + variant + ":" + unitId).get(audioKey);
+                File f = rel == null ? null : new File(dir, rel);
+                if (f != null && f.isFile()) return f;
+            } catch (Exception ignored) { }
+        }
+        try {
+            String rel = keyMap(unitId).get(audioKey);
+            File f = rel == null ? null : new File(packDir(unitId), rel);
+            return f != null && f.isFile() ? f : null;
+        } catch (Exception e) { return null; }
     }
 
-    public synchronized Map<String,String> keyMap(String unitId) throws Exception {
-        Map<String,String> cached = manifestCache.get(unitId);
+    public synchronized Map<String,String> keyMap(String unitId) throws Exception { return keyMapFor(packDir(unitId), "default:" + unitId); }
+    private synchronized Map<String,String> keyMapFor(File dir, String cacheKey) throws Exception {
+        Map<String,String> cached = manifestCache.get(cacheKey);
         if (cached != null) return cached;
-        File mf = new File(packDir(unitId), "manifest.json");
+        File mf = new File(dir, "manifest.json");
         JSONObject root = new JSONObject(readAll(new FileInputStream(mf)));
         Map<String,String> map = new HashMap<>();
         JSONArray items = root.getJSONArray("items");
-        for (int i = 0; i < items.length(); i++) {
-            JSONObject it = items.getJSONObject(i);
-            map.put(it.getString("audioKey"), it.getString("file"));
-        }
-        manifestCache.put(unitId, map);
+        for (int i = 0; i < items.length(); i++) { JSONObject it = items.getJSONObject(i); map.put(it.getString("audioKey"), it.getString("file")); }
+        manifestCache.put(cacheKey, map);
         return map;
     }
     private JSONObject manifestRoot(String unitId) throws Exception {
         File mf = new File(packDir(unitId), "manifest.json");
         return new JSONObject(readAll(new FileInputStream(mf)));
+    }
+
+    public String selectedVariant() { return trialPrefs.getString(TRIAL_PREF, "default"); }
+    public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, variant).apply(); }
+    private File trialRoot(String variant) { return new File(new File(packsRoot, "voice-trial"), safe(variant)); }
+    private File trialPackDir(String variant, String unitId) { return new File(trialRoot(variant), safe(unitId)); }
+    public boolean isTrialReady(String variant) { return new File(trialPackDir(variant, "4A-Starter"), "manifest.json").isFile() && new File(trialPackDir(variant, "4A-U1"), "manifest.json").isFile(); }
+    public JSONObject trialState() {
+        JSONObject o = new JSONObject();
+        try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","kokoro","sonia"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
+        return o;
+    }
+    private String trialUrl(String variant) { return "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/voice-trial-" + variant + "-v1.zip"; }
+    private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("kokoro".equals(variant)) return 9252066L; if ("sonia".equals(variant)) return 2120307L; return -1L; }
+    public void downloadTrial(String variant, Listener listener) {
+        new Thread(() -> {
+            try {
+                if (!"piper".equals(variant) && !"kokoro".equals(variant) && !"sonia".equals(variant)) throw new IOException("未知语音方案");
+                File part = new File(packsRoot, "trial-" + safe(variant) + ".part");
+                if (!downloadResumable(trialUrl(variant), part, trialSize(variant), listener)) { listener.onFinished(false, "下载未完成，稍后可继续下载"); return; }
+                installTrial(part, variant); part.delete(); listener.onFinished(true, "语音方案下载成功，可用于试听");
+            } catch (Exception e) { listener.onFinished(false, "下载失败：" + e.getMessage()); }
+        }, "voice-trial-download").start();
+    }
+    private void installTrial(File zip, String variant) throws IOException {
+        File stage = new File(files.importStagingRoot(), "trial-" + safe(variant)); if (stage.exists()) deleteTree(stage); if (!stage.mkdirs()) throw new IOException("无法创建临时目录");
+        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(zip))) {
+            ZipEntry e; byte[] b = new byte[32768];
+            while ((e = zin.getNextEntry()) != null) { if (e.isDirectory()) continue; File out = new File(stage, e.getName()).getCanonicalFile(); if (!out.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径"); File parent = out.getParentFile(); if (!parent.exists()) parent.mkdirs(); try (OutputStream os = new FileOutputStream(out)) { int n; while ((n = zin.read(b)) != -1) os.write(b, 0, n); } }
+        }
+        if (!new File(stage, "4A-Starter/manifest.json").isFile() || !new File(stage, "4A-U1/manifest.json").isFile()) { deleteTree(stage); throw new IOException("对比包缺少单元清单"); }
+        File dest = trialRoot(variant); if (dest.exists()) deleteTree(dest); copyTree(stage, dest); deleteTree(stage);
+        manifestCache.remove("trial:" + variant + ":4A-Starter"); manifestCache.remove("trial:" + variant + ":4A-U1");
     }
 
     public void delete(String unitId, Set<String> keepAudioKeys) {
