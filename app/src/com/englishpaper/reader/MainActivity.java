@@ -17,7 +17,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebChromeClient;
 import android.webkit.JsResult;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -27,11 +26,8 @@ import java.io.OutputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 
 public class MainActivity extends Activity {
-    private static final int PICK_JSON = 41;
     private static final int EXPORT_WRONG = 44;
     private static final String PREFS = "reader_settings";
     private static final String KEY_SPEECH_RATE = "speech_rate";
@@ -58,7 +54,7 @@ public class MainActivity extends Activity {
         packs = new AudioPackManager(this,privateFiles);
         wrongDb = new WrongBookDb(appDatabase);
         contentDb = new ContentDb(this,appDatabase,privateFiles);
-        dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("contentReady","ready"); } catch(Exception e){js("contentError",e.getMessage());} });
+        dbExecutor.execute(() -> { try { contentDb.ensureSeed(); } catch(Exception e){js("contentError",e.getMessage());} });
         speechRate = prefs.getFloat(KEY_SPEECH_RATE, 1.0f);
 
         web = new WebView(this);
@@ -132,14 +128,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    private String read(Uri uri) throws Exception {
-        InputStream input = getContentResolver().openInputStream(uri);
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] data = new byte[4096]; int count;
-        while ((count = input.read(data)) != -1) output.write(data, 0, count);
-        input.close();
-        return output.toString("UTF-8");
-    }
 
     private void js(String function, String payload) {
         runOnUiThread(() -> web.evaluateJavascript("window." + function + "(" + org.json.JSONObject.quote(payload) + ")", null));
@@ -175,14 +163,13 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void downloadUnitAudio(String unitId) { packs.download(unitId, new AudioPackManager.Listener(){ public void onProgress(int percent){ js("downloadProgress", packJson(unitId,percent,null,null)); } public void onFinished(boolean ok,String message){ js("downloadFinished", packJson(unitId,-1,ok,message)); } }); }
         private String packJson(String unitId,int percent,Boolean ok,String message){ try{ org.json.JSONObject o=new org.json.JSONObject(); o.put("unitId",unitId); if(percent>=0)o.put("percent",percent); if(ok!=null)o.put("ok",ok); if(message!=null)o.put("message",message); return o.toString(); }catch(Exception e){ return "{\"unitId\":\""+unitId+"\"}"; } }
         @JavascriptInterface public void requestPackState(String unitId) { dbExecutor.execute(() -> { try { js("packState", packs.state(unitId, getAppVersionCode()).toString()); } catch (Exception e) { js("packState", "{\"ready\":false}"); } }); }
-        @JavascriptInterface public String getAudioState(String unitId) { try { org.json.JSONObject o=new org.json.JSONObject(); o.put("ready",packs.isReady(unitId)); o.put("version",packs.installedVersion(unitId)); o.put("size",packs.packSize(unitId)); return o.toString(); } catch(Exception e){ return "{\"ready\":false}"; } }
         @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ js("audioDeleted",unitId); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }
         @JavascriptInterface public void setSpeechRate(float rate) { runOnUiThread(() -> MainActivity.this.setSpeechRate(rate)); }
         @JavascriptInterface public String getSpeechRate() { return String.valueOf(speechRate); }
-        @JavascriptInterface public String getAppVersion() { try { android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0); return pi.versionName + " (" + pi.versionCode + ")"; } catch (Exception e) { return ""; } }
+        @JavascriptInterface public String getAppVersion() { try { android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0); return pi.versionName + " (" + pi.getLongVersionCode() + ")"; } catch (Exception e) { return ""; } }
         @JavascriptInterface public void deleteWrong(long id) { dbExecutor.execute(() -> { wrongDb.delete(id); js("wrongDeleted", "已移除"); }); }
         @JavascriptInterface public void requestCatalog() { dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("receiveCatalog",contentDb.catalog()); } catch(Exception e){js("contentError",e.getMessage());} }); }
         @JavascriptInterface public void requestUnit(String unitId) { dbExecutor.execute(() -> { try { contentDb.setState("last_unit_id",unitId);js("receiveUnit",contentDb.unit(unitId)); } catch(Exception e){js("contentError",e.getMessage());} }); }
@@ -195,22 +182,12 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已放回正在练习"); }); }
         @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { wrongDb.spellResult(id,correct,entered);js("spellSaved",correct?"correct":"wrong"); }); }
         @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); i.putExtra(Intent.EXTRA_TITLE,"错题本.xls"); startActivityForResult(i, EXPORT_WRONG); }); }
-        @JavascriptInterface public void importPaper() {
-            runOnUiThread(() -> {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("application/json");
-                startActivityForResult(intent, PICK_JSON);
-            });
-        }
     }
 
     @Override protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
         if (result != RESULT_OK || data == null || data.getData() == null) return;
-        if (request == PICK_JSON) {
-            final Uri uri=data.getData();dbExecutor.execute(() -> {try{String id=contentDb.importUnit(read(uri));js("unitImported",id);}catch(Exception e){js("contentError","导入失败："+e.getMessage());}});
-        } else if (request == EXPORT_WRONG) { final Uri uri=data.getData(); dbExecutor.execute(() -> { try { String html=buildWrongBookHtml(); OutputStream out=getContentResolver().openOutputStream(uri); out.write(html.getBytes("UTF-8")); out.close(); js("exportFinished","错题已导出，可用 Excel 打开打印"); } catch (Exception e) { js("exportFinished","导出失败："+e.getMessage()); } }); }
+        if (request == EXPORT_WRONG) { final Uri uri=data.getData(); dbExecutor.execute(() -> { try { String html=buildWrongBookHtml(); OutputStream out=getContentResolver().openOutputStream(uri); out.write(html.getBytes("UTF-8")); out.close(); js("exportFinished","错题已导出，可用 Excel 打开打印"); } catch (Exception e) { js("exportFinished","导出失败："+e.getMessage()); } }); }
     }
 
     @Override public void onBackPressed() {
