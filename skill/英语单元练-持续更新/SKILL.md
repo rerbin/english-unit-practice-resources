@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.12.0
+version: 1.13.0
 ---
 
 # 英语单元练-持续更新
@@ -48,6 +48,12 @@ version: 1.12.0
 2. `playwright` + 系统 `/usr/bin/chromium`（--no-sandbox）以 390x844 截四页：学习、错题本、设置、单元选择；
 3. 逐图检查：对齐/折行/留白/层级/选中态；headless 无 emoji 字体出现方框属环境差异，真机正常；
 4. 发现不一致（如简称回退全名）当场修数据或 CSS，再构建。
+
+## 1.34.0 使用说明页盘
+
+- 学习页“停止”改“停止连读”，语义与连读本页对应。
+- 设置新增“使用说明”：独立全屏页（渐变头+返回），卡片分区：下载语音/点读与连读/切换单元/语速/错题本/其他；文案面向家长与学生，不出现技术名词；helppage[hidden] 需显式 display:none（flex 会覆盖 hidden 属性）。
+- 交付前 playwright 截帮助页自检。
 
 ## 1.33.0 数据结构审查盘（DB v6）
 
@@ -295,3 +301,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.31.0（code35）。全页面视觉重写+playwright 四页截图自检流程入 skill v1.10.0；单元简称统一。
 - 2026-09-05：APK 1.32.0（code36）。代码质量盘：死代码清理、LEFT JOIN 提效、DB v5；skill v1.11.0。
 - 2026-09-05：APK 1.33.0（code37）。数据结构审查：删 audio_assets/normalized_word/四冗余索引；UNIQUE+CHECK 补强；N+1 清零；DB v6；sqlite3 约束门禁入 skill v1.12.0。
+- 2026-09-05：APK 1.34.0（code38）。“停止连读”文案；设置“使用说明”独立页（六分区卡片）；skill v1.13.0。
