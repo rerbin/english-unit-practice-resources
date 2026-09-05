@@ -86,10 +86,28 @@ public final class AudioPackManager {
     }
 
     private JSONObject catalogCache; private long catalogCacheAt;
+    private final java.util.concurrent.ExecutorService netExecutor = java.util.concurrent.Executors.newSingleThreadExecutor();
+    private static final String PREF_CATALOG = "pack_catalog_json";
+    private static final String PREF_CATALOG_AT = "pack_catalog_at";
     public JSONObject fetchCatalog() {
         if (catalogCache != null && System.currentTimeMillis() - catalogCacheAt < 300_000) return catalogCache;
-        for (String url : CATALOG_URLS) { JSONObject c = fetchJson(url); if (c != null) { catalogCache = c; catalogCacheAt = System.currentTimeMillis(); return c; } }
+        JSONObject d = readDiskCatalog();
+        if (d != null) { catalogCache = d; catalogCacheAt = System.currentTimeMillis(); return d; }
         return null;
+    }
+    private JSONObject readDiskCatalog() {
+        try { android.content.SharedPreferences sp = context.getSharedPreferences("pack_catalog", 0); String json = sp.getString(PREF_CATALOG, null); return json == null ? null : new JSONObject(json); } catch (Exception e) { return null; }
+    }
+    private void writeDiskCatalog(JSONObject c) {
+        try { context.getSharedPreferences("pack_catalog", 0).edit().putString(PREF_CATALOG, c.toString()).putLong(PREF_CATALOG_AT, System.currentTimeMillis()).apply(); } catch (Exception ignored) { }
+    }
+    public JSONObject fetchCatalogNetwork() {
+        for (String url : CATALOG_URLS) { JSONObject c = fetchJson(url); if (c != null) { catalogCache = c; catalogCacheAt = System.currentTimeMillis(); writeDiskCatalog(c); return c; } }
+        return null;
+    }
+    /** Stale-while-revalidate: background refresh, never on the DB executor. */
+    public void refreshCatalogAsync(final Runnable onDone) {
+        netExecutor.execute(() -> { JSONObject c = fetchCatalogNetwork(); if (c != null && onDone != null) onDone.run(); });
     }
     private static JSONObject catalogUnit(JSONObject catalog, String unitId) throws Exception {
         JSONArray units = catalog.getJSONArray("units");
@@ -121,6 +139,7 @@ public final class AudioPackManager {
         new Thread(() -> {
             try {
                 JSONObject catalog = fetchCatalog();
+                if (catalog == null) catalog = fetchCatalogNetwork();
                 if (catalog == null) { listener.onFinished(false, "无法获取语音目录，请检查网络"); return; }
                 JSONObject unit = catalogUnit(catalog, unitId);
                 if (unit == null) { listener.onFinished(false, "目录中没有该单元的语音包"); return; }
