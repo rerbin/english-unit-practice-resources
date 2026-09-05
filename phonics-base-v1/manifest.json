@@ -1,0 +1,364 @@
+{
+  "schema": "phonics-audio/v1",
+  "packageVersion": 1,
+  "voice": {
+    "language": "en-GB",
+    "name": "Cori High",
+    "engine": "Piper en_GB-cori-high",
+    "license": "CC BY 4.0"
+  },
+  "phonemes": [
+    {
+      "audioKey": "phoneme:iː",
+      "phoneme": "iː",
+      "file": "audio/p00.wav",
+      "sha256": "5339d4c9b1891757264aaa217bc153d27c4f7d0c330de9d1fe882b42fb98b28c",
+      "size": 21548,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɪ",
+      "phoneme": "ɪ",
+      "file": "audio/p01.wav",
+      "sha256": "c874d9d2b6feda8f4059e91aabe29ab3730cb4b6ee7c137a81b81e7aa0039f0b",
+      "size": 52780,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:e",
+      "phoneme": "e",
+      "file": "audio/p02.wav",
+      "sha256": "fc76ebfcc2fd21a70693b19541c5ebd48b063266057d3dddc7a7a8a0deb0c5c1",
+      "size": 75308,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:æ",
+      "phoneme": "æ",
+      "file": "audio/p03.wav",
+      "sha256": "9dcc158001ffbbad0db7db9cc04f969bd71e54d7140b7fd7a1d6fdd056d15434",
+      "size": 122412,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɑː",
+      "phoneme": "ɑː",
+      "file": "audio/p04.wav",
+      "sha256": "ff12ff4dcaff300e6a2265809f18be2153b8d62cef5ab22aed051b603da4975e",
+      "size": 28716,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɒ",
+      "phoneme": "ɒ",
+      "file": "audio/p05.wav",
+      "sha256": "c963e4e326c060c2c4ee31f3f1c687d545e6ad164d83f5576aae74fb167dc4de",
+      "size": 67116,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɔː",
+      "phoneme": "ɔː",
+      "file": "audio/p06.wav",
+      "sha256": "ae28363db7abb08a14f576c9508f2364e5b3e44c595ad86551bbe0f5d5061293",
+      "size": 32300,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ʊ",
+      "phoneme": "ʊ",
+      "file": "audio/p07.wav",
+      "sha256": "f1f503705bbd547f883904d4ee0d8b9331427ce67b8fcda65c815b2d7d579969",
+      "size": 68652,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:uː",
+      "phoneme": "uː",
+      "file": "audio/p08.wav",
+      "sha256": "5108e7229b6fd52aa108f050764b389d069d3d0ac87e77090fe0672cd23a99da",
+      "size": 22060,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ʌ",
+      "phoneme": "ʌ",
+      "file": "audio/p09.wav",
+      "sha256": "059ffd1730b600ba9586392a170590887af432055ed9a21218e37cef502c2575",
+      "size": 125996,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɜː",
+      "phoneme": "ɜː",
+      "file": "audio/p10.wav",
+      "sha256": "306cc65b6ca90b6c8acfe87ffedd35dee7a25319bd3d477e5a6a9bfe9ffebee0",
+      "size": 32812,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ə",
+      "phoneme": "ə",
+      "file": "audio/p11.wav",
+      "sha256": "20236a99f5c306da31de35f1112c2d53f7d844227f973bec183b4cb22a35d683",
+      "size": 122924,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:eɪ",
+      "phoneme": "eɪ",
+      "file": "audio/p12.wav",
+      "sha256": "6879f651baaf6f7c087db72bd71d70c826c5e46836b1f9b8f982fa08b37d76e2",
+      "size": 20524,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:aɪ",
+      "phoneme": "aɪ",
+      "file": "audio/p13.wav",
+      "sha256": "d8108bbd4613a28b30ce5575a6cdec6982bcd71628dc8247ed76fd553f2c915a",
+      "size": 23084,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɔɪ",
+      "phoneme": "ɔɪ",
+      "file": "audio/p14.wav",
+      "sha256": "4f0a3d8d6bcf137cf7244c660cff7253081e764fa331c150d6f1f34d6492df92",
+      "size": 35372,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:əʊ",
+      "phoneme": "əʊ",
+      "file": "audio/p15.wav",
+      "sha256": "d640ecc6efcce2a8fbb5c65787a63a895c22f8d55964dd148ea95575f6af5c4b",
+      "size": 41004,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:aʊ",
+      "phoneme": "aʊ",
+      "file": "audio/p16.wav",
+      "sha256": "fc3c89a0b55104131be277910a300b611e8ebe0ee4bfabd1398a944e139be0c0",
+      "size": 26156,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ɪə",
+      "phoneme": "ɪə",
+      "file": "audio/p17.wav",
+      "sha256": "8168e4a6702f0675982edcd390b8b6387c50a5ad8be9b0fe5e8a99598ddde6ae",
+      "size": 30764,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:eə",
+      "phoneme": "eə",
+      "file": "audio/p18.wav",
+      "sha256": "db8e2e44d4a59976106ecc7de86cc95fe248134f530def4cc14162470fde0170",
+      "size": 54828,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ʊə",
+      "phoneme": "ʊə",
+      "file": "audio/p19.wav",
+      "sha256": "8a6168f0b29db54845314d1c58277585eec1d3c9b1726e1d02b0895dc3857300",
+      "size": 71212,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:p",
+      "phoneme": "p",
+      "file": "audio/p20.wav",
+      "sha256": "f381115f693f31baf3393a84c0f339dfbabbfef7eed6f1c06bdc913daf622cb3",
+      "size": 101932,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:b",
+      "phoneme": "b",
+      "file": "audio/p21.wav",
+      "sha256": "e5ec87ca0ba00663ee66ab166d3ba1504249178edefc5b32b8b2ba54b80a8e2e",
+      "size": 133676,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:t",
+      "phoneme": "t",
+      "file": "audio/p22.wav",
+      "sha256": "14954c3fe730a14ba0851d8194c74d23881a3f6d05b2c7ddff6226eb682a59aa",
+      "size": 78380,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:d",
+      "phoneme": "d",
+      "file": "audio/p23.wav",
+      "sha256": "24a160646372aafba035120b050d85a965f50943a0d45011ff869b1ec7837df1",
+      "size": 87596,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:k",
+      "phoneme": "k",
+      "file": "audio/p24.wav",
+      "sha256": "e1a857e8ff1a4f9d0dd90a4d6614d2c6ee5f52bc44bc8d587212f3faf447ea29",
+      "size": 114220,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:g",
+      "phoneme": "g",
+      "file": "audio/p25.wav",
+      "sha256": "288fb10cd4cb4683be0795cca7e10e99ddc54922b996435f85277f144e5686fa",
+      "size": 119340,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:f",
+      "phoneme": "f",
+      "file": "audio/p26.wav",
+      "sha256": "a34d7f6aea60e60c35bf9b825471c3a92b6b0f6e2d2a286c6098ea65f550897e",
+      "size": 125996,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:v",
+      "phoneme": "v",
+      "file": "audio/p27.wav",
+      "sha256": "af5f73eb863a3e7d0783085acf84ef0b2f42655ff21c88b8497cfff5ba158666",
+      "size": 50220,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:θ",
+      "phoneme": "θ",
+      "file": "audio/p28.wav",
+      "sha256": "2d3779e125dd0f0ccb67c301d7b5919e4b854b8bc7dc0f8bb8fd180aff1e7275",
+      "size": 129580,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ð",
+      "phoneme": "ð",
+      "file": "audio/p29.wav",
+      "sha256": "5a247f2ed0f5edc7349278b654fa5100d41bc376031332c537a01ec3a2197e91",
+      "size": 63020,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:s",
+      "phoneme": "s",
+      "file": "audio/p30.wav",
+      "sha256": "e2439921562fceef518939178a8632f6122665163dca997f415dbe564df20b0b",
+      "size": 40492,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:z",
+      "phoneme": "z",
+      "file": "audio/p31.wav",
+      "sha256": "a9340ade21268d1a1ec49af2255820c0b28ec98119129c9d6e8158000b64a357",
+      "size": 40492,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ʃ",
+      "phoneme": "ʃ",
+      "file": "audio/p32.wav",
+      "sha256": "4f6ec007136f09637a0022ecf4b521f8cffb378f89a2634b4c50020d12b8a7f9",
+      "size": 133676,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ʒ",
+      "phoneme": "ʒ",
+      "file": "audio/p33.wav",
+      "sha256": "3728f58fb2dab9822a526bb29acd70a12890aee74cc54c216d6d6f5dd391dd12",
+      "size": 93740,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:h",
+      "phoneme": "h",
+      "file": "audio/p34.wav",
+      "sha256": "1f322e4d28d9865cdd56956f559c387aaf5afa167d58cf16bee268ee49404fdf",
+      "size": 111148,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:tʃ",
+      "phoneme": "tʃ",
+      "file": "audio/p35.wav",
+      "sha256": "ab3405621675b5cb428c9ce506444ddd8cdf1c963c6b956b640b2bd20040f538",
+      "size": 100908,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:dʒ",
+      "phoneme": "dʒ",
+      "file": "audio/p36.wav",
+      "sha256": "c4a93c4c7d29180c8ee2ce4adcd67e25c5845f28071032ec2c891122e2be0b6c",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:m",
+      "phoneme": "m",
+      "file": "audio/p37.wav",
+      "sha256": "38a14032ee7d6b0b5f3bfa38edd9087602f46aea5feb1a53d955b8009347b6a4",
+      "size": 232492,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:n",
+      "phoneme": "n",
+      "file": "audio/p38.wav",
+      "sha256": "04cddec18cdcbbdd75554e4fb6746e9f3f298480ad32ab9dd3ea77b5a67bc5e0",
+      "size": 235052,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:ŋ",
+      "phoneme": "ŋ",
+      "file": "audio/p39.wav",
+      "sha256": "9103222ff9796c4406c35160da8f1d048535ebc8c1d541b465d7bdf78e9292b8",
+      "size": 172588,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:l",
+      "phoneme": "l",
+      "file": "audio/p40.wav",
+      "sha256": "50fc31d7a397b766e16a60e22dd3ca4befaf2adbf461d2910528e59d6305869f",
+      "size": 88108,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:r",
+      "phoneme": "r",
+      "file": "audio/p41.wav",
+      "sha256": "fb7622f4211ade5f763be52f8c570e5e78b0a4f8a2620299939d876d524728e4",
+      "size": 100908,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:j",
+      "phoneme": "j",
+      "file": "audio/p42.wav",
+      "sha256": "974fd02f825dcd92bc2c21840c4040742cdd38ef896112d0224463c99158dafb",
+      "size": 34860,
+      "mime": "audio/wav"
+    },
+    {
+      "audioKey": "phoneme:w",
+      "phoneme": "w",
+      "file": "audio/p43.wav",
+      "sha256": "3ec14e902507d63c37367149f0cb22c0567d1d7b31b15534fc5235c7b9d91361",
+      "size": 73772,
+      "mime": "audio/wav"
+    }
+  ]
+}
