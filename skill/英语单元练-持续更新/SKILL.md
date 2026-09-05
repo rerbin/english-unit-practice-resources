@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.28.0
+version: 1.29.0
 ---
 
 # 英语单元练-持续更新
@@ -121,6 +121,16 @@ version: 1.28.0
 - 根因：通用 tab 切换绑定到全部 .navbtn，设置按钮无 data-view，switchView(undefined) 使 `undefined===undefined` 成立→设置 tab 被点亮且不恢复。
 - 修复：视图切换监听与 active 切换只作用于 `.navbtn[data-view]`；设置是弹层不是视图，永不参与 tab 高亮；打开/关闭设置不改变当前视图 tab。
 - 纪律：弹层触发器不得复用视图 tab 的绑定与高亮逻辑；无 data-view 的导航按钮必须排除在视图切换之外。
+
+## 语音质量专题盘（Kokoro 换代，v5 语音包）
+
+- 选型结论：Kokoro-82M（Apache-2.0，权重与音色库均商业可用）取代 Piper en_GB-alba 作主音色；固定 bf_emma（英式女声）全 App 统一，不混用引擎/口音（共享方案评审共识：固定单一 voice 利于小学生形成稳定发音体系）。
+- 三级架构裁剪：固定试卷内容全部走“预生成+语音包携带”（零延迟/零耗电/完全离线）；端侧实时生成被否（需 APK 内嵌 325MB 模型）；缓存键思想 SHA256(text+voice+version) 与现有按内容 SHA 命名一致。
+- 音素演示（W/er/ir/ur/ar/or）：优先 Kokoro [[phoneme]] 探针；探针失败才回退 Piper 音素+例词拼接，并在 manifest voice 字段注明混合来源。
+- 生成参数：speed 0.9（学龄清晰度），24kHz 16bit mono WAV。
+- 探针结论：Kokoro espeak 前端原生支持 [[phoneme]]（[[w]] 0.77s / [[ə]] 0.53s），音素演示无需回退 Piper，全 App 单一音色 bf_emma 成立。
+- v5 语音包：Starter 8.4MB / U1 9.7MB（24kHz WAV 较 22kHz 增大，下载一次后离线；后续可评估 FLAC/m4a 压缩）。
+- 许可台账：Kokoro Apache-2.0；Piper 音素部分 CC BY 4.0（保留归属说明 voice_license.txt）。
 
 ## 1.49.0 同行化盘
 
@@ -421,4 +431,5 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.47.0（code51）。首装不提示更新（installed>0 才算更新）；release：GitHub 383142740、Gitee 1124790；skill v1.26.0。
 - 2026-09-05：APK 1.48.0（code52）。未下载警告单出口（状态行），横幅只留按钮/进度；release：GitHub 383145971、Gitee 1124800；skill v1.27.0。
 - 2026-09-05：APK 1.49.0（code53）。警告+动作同行（内嵌胶囊按钮、行底进度细线），横幅退役；release：GitHub 383149537、Gitee 1124924；skill v1.28.0。
+- 2026-09-05：APK 1.50.0（code55）。语音换代 Kokoro-82M bf_emma（Apache-2.0），语音包 v5，172 条重生成，单一音色；skill v1.29.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。

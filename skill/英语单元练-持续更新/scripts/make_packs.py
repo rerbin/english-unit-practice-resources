@@ -12,7 +12,7 @@ for sec in unit['sections']:
         if digest not in copied:
             shutil.copy2(src, out/name); copied[digest] = name
         items.append({'itemId': it.get('itemId', '%s-%03d' % (uid, len(items))), 'textHash': hashlib.sha256(t.encode()).hexdigest(), 'audioKey': key, 'file': name, 'sha256': digest, 'size': src.stat().st_size, 'mime': 'audio/wav'})
-manifest = {'schema': 'english-unit-audio/v1', 'packageVersion': version, 'textbookId': unit.get('textbookId', 'shanghai-4a'), 'unitId': uid, 'contentVersion': unit.get('contentVersion', 1), 'voice': {'language': 'en-GB', 'name': 'Alba', 'engine': 'Piper en_GB-alba-medium', 'license': 'CC BY 4.0'}, 'format': 'wav', 'itemCount': len(items), 'fileCount': len(copied), 'items': items}
+manifest = {'schema': 'english-unit-audio/v1', 'packageVersion': version, 'textbookId': unit.get('textbookId', 'shanghai-4a'), 'unitId': uid, 'contentVersion': unit.get('contentVersion', 1), 'voice': {'language': 'en-GB', 'name': 'Emma', 'engine': 'Kokoro-82M bf_emma', 'license': 'Apache-2.0'}, 'format': 'wav', 'itemCount': len(items), 'fileCount': len(copied), 'items': items}
 (out/'manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
 zip_path = pub/('%s-audio-v%d.zip' % (uid, version))
 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
