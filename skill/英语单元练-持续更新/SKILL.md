@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.19.0
+version: 1.20.0
 ---
 
 # 英语单元练-持续更新
@@ -115,6 +115,13 @@ version: 1.19.0
 2. GitHub：POST /repos/…/releases（tag_name）→ 用返回 id 向 uploads.github.com 上传 APK 附件（Content-Type: application/vnd.android.package-archive）；遇 422 already_exists 说明已创建，GET /releases/tags/<tag> 取 id 续传附件；
 3. Gitee：POST api/v5/repos/…/releases 必须带 `target_commitish`（master），否则 422；Gitee 无附件 API，release 正文指向仓库 apk/ 与 GitHub 附件；
 4. 台账记录两站 release id。
+
+## 1.41.0 拼写文案与列表缓存盘
+
+- 用户可见文案“书写”全部改“拼写”（筛选、标签、记错弹窗、帮助页、Excel 导出类型）；DB 列名 writing_error 保持内部不变；
+- 掌握规则文案明确：只有拼写错误拼写通过才自动掌握，发音错误必须手动（规则自 1.39 已在 spellResult：we==1&&pe==0 才自动）；
+- 错题列表加载优化：Web 端按 stage|filter 缓存首页结果，进入即渲染缓存再异步刷新（pendingOffset 区分首页/翻页）；变更类回调（wrongBookChanged/mistakeSaved/wrongDeleted/archiveFinished/spellSaved）先清缓存再刷新；
+- 自检：二次进入 50ms 内卡片可见。
 
 ## 1.40.0 设置卡片化盘
 
@@ -356,3 +363,4 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.38.0（code42）。单元面板全尺寸下拉锚定、点选即切换、去完成按钮；release：GitHub 383114726、Gitee 1124505；skill v1.17.0。
 - 2026-09-05：APK 1.39.0（code43）。掌握自动标记仅限纯书写错误；统计“X项待练习”+13px 字号一致；release：GitHub 383116543、Gitee 1124570；skill v1.18.0。
 - 2026-09-05：APK 1.40.0（code44）。设置卡片化三组；单元列表去项数；release：GitHub 383119081、Gitee 1124590；skill v1.19.0。
+- 2026-09-05：APK 1.41.0（code45）。书写→拼写全文案；错题列表缓存即时渲染；release：GitHub 383121775、Gitee 1124648；skill v1.20.0。
