@@ -37,6 +37,14 @@ public final class AudioPackManager {
         packsRoot = files.packsRoot(); baseRoot = new File(packsRoot, "phonics-base"); if (!baseRoot.exists()) baseRoot.mkdirs();
         trialPrefs = context.getSharedPreferences("voice_trial", 0);
         if (!packsRoot.exists()) packsRoot.mkdirs();
+        String legacyVariant = trialPrefs.getString(TRIAL_PREF, "default");
+        if (!allowedVariant(legacyVariant)) {
+            trialPrefs.edit().putString(TRIAL_PREF, "default").apply();
+            if (!"default".equals(legacyVariant)) {
+                deleteTree(trialRoot(legacyVariant));
+                new File(packsRoot, "trial-" + safe(legacyVariant) + ".part").delete();
+            }
+        }
     }
 
     public File packDir(String unitId) { return new File(packsRoot, safe(unitId)); }
@@ -93,22 +101,23 @@ public final class AudioPackManager {
     public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
     public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础发音包下载未完成");return;}if(!sha256(part).equalsIgnoreCase(baseSha)){part.delete();listener.onFinished(false,"基础发音包校验失败");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
 
-    public String selectedVariant() { return trialPrefs.getString(TRIAL_PREF, "default"); }
-    public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, variant).apply(); }
+    private static boolean allowedVariant(String variant) { return "default".equals(variant) || "piper".equals(variant) || "sonia".equals(variant) || "cori".equals(variant); }
+    public String selectedVariant() { String v=trialPrefs.getString(TRIAL_PREF, "default"); return allowedVariant(v) ? v : "default"; }
+    public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, allowedVariant(variant) ? variant : "default").apply(); }
     private File trialRoot(String variant) { return new File(new File(packsRoot, "voice-trial"), safe(variant)); }
     private File trialPackDir(String variant, String unitId) { return new File(trialRoot(variant), safe(unitId)); }
     public boolean isTrialReady(String variant) { return new File(trialPackDir(variant, "4A-Starter"), "manifest.json").isFile() && new File(trialPackDir(variant, "4A-U1"), "manifest.json").isFile(); }
     public JSONObject trialState() {
         JSONObject o = new JSONObject();
-        try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","kokoro","sonia","cori"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
+        try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","sonia","cori"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
         return o;
     }
     private String[] trialUrls(String variant) { String f="voice-trial-"+variant+"-v1.zip";return new String[]{"https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/"+f,"https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/"+f}; }
-    private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("kokoro".equals(variant)) return 9252066L; if ("sonia".equals(variant)) return 2120307L; if ("cori".equals(variant)) return 9236968L; return -1L; }
+    private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("sonia".equals(variant)) return 2120307L; if ("cori".equals(variant)) return 9236968L; return -1L; }
     public void downloadTrial(String variant, Listener listener) {
         new Thread(() -> {
             try {
-                if (!"piper".equals(variant) && !"kokoro".equals(variant) && !"sonia".equals(variant) && !"cori".equals(variant)) throw new IOException("未知语音方案");
+                if (!"piper".equals(variant) && !"sonia".equals(variant) && !"cori".equals(variant)) throw new IOException("未知语音方案");
                 File part = new File(packsRoot, "trial-" + safe(variant) + ".part");
                 boolean ok=false;for(String u:trialUrls(variant)){if(downloadResumable(u,part,trialSize(variant),listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"下载未完成，稍后可继续下载");return;}
                 installTrial(part, variant); part.delete(); listener.onFinished(true, "语音方案下载成功，可用于试听");
