@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.47.0
+version: 1.48.0
 ---
 
 # 英语单元练-持续更新
@@ -450,4 +450,5 @@ ALWAYS use this exact template:
 - 2026-09-06：APK 1.69.0（code73）。错题本顶部单元框支持全部/具体单元筛选，与学习单元状态隔离；GitHub release 383571693；skill v1.45.0。
 - 2026-09-06：APK 1.70.0（code74）。错题本删除重复页标题和统计胶囊，重排状态/类型+导出/列表层级；GitHub release 383581196；skill v1.46.0。
 - 2026-09-06：APK 1.71.0（code75）。已掌握卡片删除“已收好”，动作统一为听/拼/重练/删除图标短文案；GitHub release 383586658；skill v1.47.0。
+- 2026-09-06：APK 1.72.0（code76）。正在练习掌握/移出补图标；底部三 Tab 改统一 22x22 线性 SVG 并消除 badge 基线偏差；GitHub release 383593446；skill v1.48.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
