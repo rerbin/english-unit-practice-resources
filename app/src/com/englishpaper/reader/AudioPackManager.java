@@ -35,9 +35,36 @@ public final class AudioPackManager {
         this.context = context.getApplicationContext();
         this.files = files;
         packsRoot = files.packsRoot(); baseRoot = new File(packsRoot, "phonics-base"); if (!baseRoot.exists()) baseRoot.mkdirs();
+        installBundledPhonics();
         trialPrefs = context.getSharedPreferences("voice_trial", 0);
         if (!packsRoot.exists()) packsRoot.mkdirs();
         trialPrefs.edit().putString(TRIAL_PREF, "default").apply();
+    }
+
+    /** Install the small built-in phonics v2 pack on first launch. No network is required. */
+    private void installBundledPhonics() {
+        try {
+            File manifest = new File(baseRoot, "manifest.json");
+            if (manifest.isFile() && new JSONObject(readAll(new FileInputStream(manifest))).optInt("packageVersion", 0) == 2) return;
+            int id = context.getResources().getIdentifier("phonics_base_v2", "raw", context.getPackageName());
+            if (id == 0) throw new IOException("内置音标资源缺失");
+            File stage = new File(files.importStagingRoot(), "embedded-phonics-v2");
+            if (stage.exists()) deleteTree(stage);
+            if (!stage.mkdirs()) throw new IOException("无法创建音标目录");
+            try (ZipInputStream zin = new ZipInputStream(context.getResources().openRawResource(id))) {
+                ZipEntry e; byte[] b = new byte[32768];
+                while ((e = zin.getNextEntry()) != null) {
+                    if (e.isDirectory()) continue;
+                    File out = new File(stage, e.getName()).getCanonicalFile();
+                    if (!out.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
+                    File parent = out.getParentFile(); if (!parent.exists()) parent.mkdirs();
+                    try (OutputStream os = new FileOutputStream(out)) { int n; while ((n = zin.read(b)) != -1) os.write(b, 0, n); }
+                }
+            }
+            if (!new File(stage, "manifest.json").isFile()) throw new IOException("内置音标清单缺失");
+            if (baseRoot.exists()) deleteTree(baseRoot);
+            copyTree(stage, baseRoot); deleteTree(stage); manifestCache.remove("phonics-base");
+        } catch (Exception e) { android.util.Log.e("AudioPackManager", "Unable to install bundled phonics", e); }
     }
 
     public File packDir(String unitId) { return new File(packsRoot, safe(unitId)); }
