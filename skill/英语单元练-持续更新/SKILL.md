@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.32.0
+version: 1.33.0
 ---
 
 # 英语单元练-持续更新
@@ -435,4 +435,5 @@ ALWAYS use this exact template:
 - 2026-09-05：APK 1.54.0（code58）。独立 phonics-base-v1（44 音素）已生成，App 首次下载入口已接入；GitHub Release 383263094 含 APK+基础包；Gitee 因连接超时未确认同步。skill v1.30.0。
 - 2026-09-06：APK 1.55.0（code59）。基础包 catalog 版本检查：installed=0 仅下载、installed<latest 更新、最新隐藏；skill v1.31.0。
 - 2026-09-06：APK 1.56.0（code60）。GitHub Raw+jsDelivr 双入口、Range断点续传、运行时去Gitee；skill v1.32.0。
+- 2026-09-06：APK 1.57.0（code61）。phonics-base-v2 真实英国隔离音素 44/44；修 parser/or映射/SHA；skill v1.33.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
