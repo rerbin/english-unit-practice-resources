@@ -1,7 +1,5 @@
-Offline voice attribution
-Voice: Piper en_GB-alba-medium (Alba, English - Great Britain)
-Voice model repository: https://huggingface.co/rhasspy/piper-voices
-Dataset: University of Edinburgh DataShare, https://datashare.ed.ac.uk/handle/10283/3270
-Dataset license: Creative Commons Attribution 4.0 (CC BY 4.0)
-Piper project: https://github.com/rhasspy/piper (MIT License)
-Audio in this application was generated from the Unit 1 text using this model.
+English learning audio production record
+
+Current official voice: Microsoft en-GB-SoniaNeural.
+Audio is generated during content production, packaged by unit, downloaded on demand, and cached for offline playback.
+Accuracy is prioritized. Only Microsoft voices that pass full textbook pronunciation review may be added to the voice selector.
