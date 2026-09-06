@@ -195,7 +195,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已放入已经掌握":"请先标记为已掌握"); }); }
         @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已放回正在练习"); }); }
         @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { wrongDb.spellResult(id,correct,entered);js("spellSaved",correct?"correct":"wrong"); }); }
-        @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); i.putExtra(Intent.EXTRA_TITLE,"错题本.xls"); startActivityForResult(i, EXPORT_WRONG); }); }
+        @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); String stamp=new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm",java.util.Locale.US).format(new java.util.Date()); i.putExtra(Intent.EXTRA_TITLE,"错题本_"+stamp+".xls"); startActivityForResult(i, EXPORT_WRONG); }); }
     }
 
     @Override protected void onActivityResult(int request, int result, Intent data) {
