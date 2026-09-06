@@ -8,13 +8,13 @@
       "order": 0,
       "title": "Starter",
       "subtitle": "我们的家人和朋友",
-      "audioVersion": 7,
+      "audioVersion": 8,
       "minAppVersionCode": 26,
-      "size": 9407676,
-      "sha256": "664c1ec2177fee53471c30af615f45822ec9e6bf19e492207dd27a03012454d9",
+      "size": 9407239,
+      "sha256": "28283d74696abf8b3e001c8ad2bf2b860961ddaf3c7107c641dad9fe1561e776",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v7.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v7.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v8.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v8.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
