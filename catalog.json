@@ -57,12 +57,12 @@
     }
   ],
   "phonicsBase": {
-    "version": 1,
-    "size": 3127173,
-    "sha256": "31aba465b6c0d10d0200c542b12eff568b6f20ee8fcf9caec3e7ea15893a59ec",
+    "version": 2,
+    "size": 592210,
+    "sha256": "ffa38d85dfb215aac02c719d5cfa31139386a4b647bb3b0e5a9d44fd9f355b87",
     "sources": [
-      "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/phonics-base-v1.zip",
-      "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip"
+      "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/phonics-base-v2.zip",
+      "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v2.zip"
     ]
   }
 }

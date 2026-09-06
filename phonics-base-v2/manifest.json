@@ -1,0 +1,365 @@
+{
+  "schema": "phonics-audio/v1",
+  "packageVersion": 2,
+  "language": "en-GB",
+  "name": "British English 44 Isolated Phonemes",
+  "source": {
+    "project": "xiaozhah/phoneme_audio",
+    "commit": "8729b390d19e8f2bb6da5d6624fa6253e50e66f9",
+    "upstreamAudio": "Oxford Dictionary"
+  },
+  "phonemes": [
+    {
+      "audioKey": "phoneme:iː",
+      "phoneme": "iː",
+      "file": "audio/afd581168f03d7b64a2d4d35bb07349eb5f32b3be357f7895a7e60a81f1fc5d2.mp3",
+      "sha256": "afd581168f03d7b64a2d4d35bb07349eb5f32b3be357f7895a7e60a81f1fc5d2",
+      "size": 16718,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɪ",
+      "phoneme": "ɪ",
+      "file": "audio/ba85026e8711189f196f1175aa12c31a30b5de9545df7d1dff4f62ab429a6a3f.mp3",
+      "sha256": "ba85026e8711189f196f1175aa12c31a30b5de9545df7d1dff4f62ab429a6a3f",
+      "size": 13061,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:e",
+      "phoneme": "e",
+      "file": "audio/21798cf9f7e90ec748cb412bb5f4edf832eeba56da82496890579ba47af85e4b.mp3",
+      "sha256": "21798cf9f7e90ec748cb412bb5f4edf832eeba56da82496890579ba47af85e4b",
+      "size": 14628,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:æ",
+      "phoneme": "æ",
+      "file": "audio/50a3c2fec98ec9cb92c7efc23d33ec9471bcbc7379b2e3619c36c3bf1af004fe.mp3",
+      "sha256": "50a3c2fec98ec9cb92c7efc23d33ec9471bcbc7379b2e3619c36c3bf1af004fe",
+      "size": 14106,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɑː",
+      "phoneme": "ɑː",
+      "file": "audio/64ef578f8fdae27acd198ef1f1653f2be7178bbd5efa0ad0e379d2c5b37995b6.mp3",
+      "sha256": "64ef578f8fdae27acd198ef1f1653f2be7178bbd5efa0ad0e379d2c5b37995b6",
+      "size": 18285,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɒ",
+      "phoneme": "ɒ",
+      "file": "audio/f5181ace03a6dd63c9c6b43d1e98e6721907abc787c336a664866ed944649260.mp3",
+      "sha256": "f5181ace03a6dd63c9c6b43d1e98e6721907abc787c336a664866ed944649260",
+      "size": 15151,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɔː",
+      "phoneme": "ɔː",
+      "file": "audio/f43edcf6923b432b0ed49ae8d5c4fb710245a9df7e4ef04efb700804f7113358.mp3",
+      "sha256": "f43edcf6923b432b0ed49ae8d5c4fb710245a9df7e4ef04efb700804f7113358",
+      "size": 18285,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ʊ",
+      "phoneme": "ʊ",
+      "file": "audio/4dbc19967a6fc7c6d142f2d7a7306ebdef8e6b3453ffb9dada03291837a0eddc.mp3",
+      "sha256": "4dbc19967a6fc7c6d142f2d7a7306ebdef8e6b3453ffb9dada03291837a0eddc",
+      "size": 13061,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:uː",
+      "phoneme": "uː",
+      "file": "audio/9d99cb1024e063e17473faf5c8f5b012a40965b42bcd496045c07311b7c40b4a.mp3",
+      "sha256": "9d99cb1024e063e17473faf5c8f5b012a40965b42bcd496045c07311b7c40b4a",
+      "size": 17763,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ʌ",
+      "phoneme": "ʌ",
+      "file": "audio/4651a859db067befdc152a29aaccb58ac55ab6ffc57d3f5ed43783c4120c570a.mp3",
+      "sha256": "4651a859db067befdc152a29aaccb58ac55ab6ffc57d3f5ed43783c4120c570a",
+      "size": 14106,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɜː",
+      "phoneme": "ɜː",
+      "file": "audio/3314628f00ddb6bd5bb4dcb098c9c6a49a4100025bfe1c00bdfcd574934e11ff.mp3",
+      "sha256": "3314628f00ddb6bd5bb4dcb098c9c6a49a4100025bfe1c00bdfcd574934e11ff",
+      "size": 17763,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ə",
+      "phoneme": "ə",
+      "file": "audio/f2f2edeb43159cab5918392361bd63343e0282075e24f150fa650cd73237ae20.mp3",
+      "sha256": "f2f2edeb43159cab5918392361bd63343e0282075e24f150fa650cd73237ae20",
+      "size": 14106,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:eɪ",
+      "phoneme": "eɪ",
+      "file": "audio/d780237b60f6ab365966e88caae049a9e6fd4d303f3aebd89772059f80211c56.mp3",
+      "sha256": "d780237b60f6ab365966e88caae049a9e6fd4d303f3aebd89772059f80211c56",
+      "size": 16196,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:aɪ",
+      "phoneme": "aɪ",
+      "file": "audio/49be91968bdc3e72d6f43e365161399f8e4e7929da1caf786807ec719edfbed7.mp3",
+      "sha256": "49be91968bdc3e72d6f43e365161399f8e4e7929da1caf786807ec719edfbed7",
+      "size": 16718,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɔɪ",
+      "phoneme": "ɔɪ",
+      "file": "audio/f0f4be1a37f602a70762b2a8be24638da1c779a9fa84c28f44a8d401064c731e.mp3",
+      "sha256": "f0f4be1a37f602a70762b2a8be24638da1c779a9fa84c28f44a8d401064c731e",
+      "size": 16718,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:əʊ",
+      "phoneme": "əʊ",
+      "file": "audio/6e556574466d26f73c14113e9f19803c39d19c1fc3ecbe7146db6b5bf300bd14.mp3",
+      "sha256": "6e556574466d26f73c14113e9f19803c39d19c1fc3ecbe7146db6b5bf300bd14",
+      "size": 16196,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:aʊ",
+      "phoneme": "aʊ",
+      "file": "audio/afa5f6a2216aa35f1757164b5c92077ee83262d4e82f7dbd556a065753bee0f7.mp3",
+      "sha256": "afa5f6a2216aa35f1757164b5c92077ee83262d4e82f7dbd556a065753bee0f7",
+      "size": 17240,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ɪə",
+      "phoneme": "ɪə",
+      "file": "audio/d2965baf916bb09cb5c98fb4869cd36fffc70d797b28a14f2f0ec9578239e75c.mp3",
+      "sha256": "d2965baf916bb09cb5c98fb4869cd36fffc70d797b28a14f2f0ec9578239e75c",
+      "size": 16196,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:eə",
+      "phoneme": "eə",
+      "file": "audio/f48d62a61944442b0e419d2cb140e7c9dda3fe2f14eb847aee0c4da00d3c373f.mp3",
+      "sha256": "f48d62a61944442b0e419d2cb140e7c9dda3fe2f14eb847aee0c4da00d3c373f",
+      "size": 17240,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ʊə",
+      "phoneme": "ʊə",
+      "file": "audio/68b97144489945ddca08bd8b0aff98e45b5399187d7200f94c419bdd858aab71.mp3",
+      "sha256": "68b97144489945ddca08bd8b0aff98e45b5399187d7200f94c419bdd858aab71",
+      "size": 14628,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:p",
+      "phoneme": "p",
+      "file": "audio/28bfb8d9aa64ede9305212eee397af040cee2a2231e6f4ca908180301b8ecce1.mp3",
+      "sha256": "28bfb8d9aa64ede9305212eee397af040cee2a2231e6f4ca908180301b8ecce1",
+      "size": 12016,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:b",
+      "phoneme": "b",
+      "file": "audio/49d539f3bf5c51a6464b59ef57b8037f1f682d20c6935565a96d8d96e19108e8.mp3",
+      "sha256": "49d539f3bf5c51a6464b59ef57b8037f1f682d20c6935565a96d8d96e19108e8",
+      "size": 11493,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:t",
+      "phoneme": "t",
+      "file": "audio/7de8392c7849c03155f0307263fc35385dd4a0cc21eb3ab3ac2037c08743f4f0.mp3",
+      "sha256": "7de8392c7849c03155f0307263fc35385dd4a0cc21eb3ab3ac2037c08743f4f0",
+      "size": 11493,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:d",
+      "phoneme": "d",
+      "file": "audio/2c5888848c78796357b7d18e775fabc70e2cc3de820eda0c89cf2f44f8ca36e7.mp3",
+      "sha256": "2c5888848c78796357b7d18e775fabc70e2cc3de820eda0c89cf2f44f8ca36e7",
+      "size": 12016,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:k",
+      "phoneme": "k",
+      "file": "audio/7a5b7f2e5d51034dadb3f9c76b8803f2c5f296505a19381dbe53468ef3906cd1.mp3",
+      "sha256": "7a5b7f2e5d51034dadb3f9c76b8803f2c5f296505a19381dbe53468ef3906cd1",
+      "size": 11493,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:g",
+      "phoneme": "g",
+      "file": "audio/057c53b770cd7164fdff620b5559ef660fc85840904c8bf31e6365323125142a.mp3",
+      "sha256": "057c53b770cd7164fdff620b5559ef660fc85840904c8bf31e6365323125142a",
+      "size": 12538,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:f",
+      "phoneme": "f",
+      "file": "audio/442e3c37cc9acaff5f89e3953d4d97535ca41cd9a64658ad516bbed8063190fb.mp3",
+      "sha256": "442e3c37cc9acaff5f89e3953d4d97535ca41cd9a64658ad516bbed8063190fb",
+      "size": 15673,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:v",
+      "phoneme": "v",
+      "file": "audio/2d96602116a5f4d754f70c859883200a183ef42975bc031610619d2661620e28.mp3",
+      "sha256": "2d96602116a5f4d754f70c859883200a183ef42975bc031610619d2661620e28",
+      "size": 16718,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:θ",
+      "phoneme": "θ",
+      "file": "audio/78322d27492aa2c9988f7c9baeda087c1008a3d040426fe1b571536a2e69187a.mp3",
+      "sha256": "78322d27492aa2c9988f7c9baeda087c1008a3d040426fe1b571536a2e69187a",
+      "size": 16196,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ð",
+      "phoneme": "ð",
+      "file": "audio/6f559d8bbded39415d56e44cf134437784fb9f5967bb67c0219514cfe90eef3c.mp3",
+      "sha256": "6f559d8bbded39415d56e44cf134437784fb9f5967bb67c0219514cfe90eef3c",
+      "size": 18808,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:s",
+      "phoneme": "s",
+      "file": "audio/e78a11091752b7e180b3b9c0f350a2dfeb6504afc62fbb400d038018d1fb787b.mp3",
+      "sha256": "e78a11091752b7e180b3b9c0f350a2dfeb6504afc62fbb400d038018d1fb787b",
+      "size": 17240,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:z",
+      "phoneme": "z",
+      "file": "audio/e1987c6dccf4273adbf3029e9c95c450e51054cd28e0562afa8b9ab962ab88b3.mp3",
+      "sha256": "e1987c6dccf4273adbf3029e9c95c450e51054cd28e0562afa8b9ab962ab88b3",
+      "size": 19853,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ʃ",
+      "phoneme": "ʃ",
+      "file": "audio/d66221332c1930959ccfd3d6e2ce8073a1ccc3d190b0f417f54c80d7ae4b3647.mp3",
+      "sha256": "d66221332c1930959ccfd3d6e2ce8073a1ccc3d190b0f417f54c80d7ae4b3647",
+      "size": 18808,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ʒ",
+      "phoneme": "ʒ",
+      "file": "audio/f7626eaa342181c3810255b9f397126cc4ed4cd585fca8f98619afcd5db5827d.mp3",
+      "sha256": "f7626eaa342181c3810255b9f397126cc4ed4cd585fca8f98619afcd5db5827d",
+      "size": 18808,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:h",
+      "phoneme": "h",
+      "file": "audio/d1c292d20ceee8911099ce6ef180808e6a7b208ee17716a4d6b3f219cbc6ebb0.mp3",
+      "sha256": "d1c292d20ceee8911099ce6ef180808e6a7b208ee17716a4d6b3f219cbc6ebb0",
+      "size": 13583,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:tʃ",
+      "phoneme": "tʃ",
+      "file": "audio/48604dcc33cd8828f1356a5273a407638b80e9bf48e0ac90558a82ac844364f2.mp3",
+      "sha256": "48604dcc33cd8828f1356a5273a407638b80e9bf48e0ac90558a82ac844364f2",
+      "size": 12538,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:dʒ",
+      "phoneme": "dʒ",
+      "file": "audio/c316cf57e71441a87a8899d3673617282f58476c9351a092e7ced33745372dba.mp3",
+      "sha256": "c316cf57e71441a87a8899d3673617282f58476c9351a092e7ced33745372dba",
+      "size": 13583,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:m",
+      "phoneme": "m",
+      "file": "audio/789e82fe37ec5a23d0ba3e619ff396894ae5b5c861e6051748c51214dff25f82.mp3",
+      "sha256": "789e82fe37ec5a23d0ba3e619ff396894ae5b5c861e6051748c51214dff25f82",
+      "size": 19330,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:n",
+      "phoneme": "n",
+      "file": "audio/72ad1098d692799381dc54e4d1f86c97174132c5b8a938a20199fc1cf7668dbc.mp3",
+      "sha256": "72ad1098d692799381dc54e4d1f86c97174132c5b8a938a20199fc1cf7668dbc",
+      "size": 19853,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:ŋ",
+      "phoneme": "ŋ",
+      "file": "audio/e077084d1dac92e9a3cb65a17ed4818245348d378d419e383cc723463bd2e73e.mp3",
+      "sha256": "e077084d1dac92e9a3cb65a17ed4818245348d378d419e383cc723463bd2e73e",
+      "size": 21420,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:l",
+      "phoneme": "l",
+      "file": "audio/cee087fb33b31a01de741d154ac62fcb78d5c9131986c6a7ef8bc6aff7228948.mp3",
+      "sha256": "cee087fb33b31a01de741d154ac62fcb78d5c9131986c6a7ef8bc6aff7228948",
+      "size": 20375,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:r",
+      "phoneme": "r",
+      "file": "audio/2392f2385569f54354c3a6ec1f3b24cae92125022c960936efef45f3137eeb4a.mp3",
+      "sha256": "2392f2385569f54354c3a6ec1f3b24cae92125022c960936efef45f3137eeb4a",
+      "size": 15151,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:j",
+      "phoneme": "j",
+      "file": "audio/35db1f2ed252dcfc2967d064973529f7df5f0f8474e93891ae28ddf034f45d53.mp3",
+      "sha256": "35db1f2ed252dcfc2967d064973529f7df5f0f8474e93891ae28ddf034f45d53",
+      "size": 14628,
+      "mime": "audio/mpeg"
+    },
+    {
+      "audioKey": "phoneme:w",
+      "phoneme": "w",
+      "file": "audio/57844d9e74763d625c81fd03b8899118927047de07b7ce9342cf0b8a455feaeb.mp3",
+      "sha256": "57844d9e74763d625c81fd03b8899118927047de07b7ce9342cf0b8a455feaeb",
+      "size": 13061,
+      "mime": "audio/mpeg"
+    }
+  ]
+}
