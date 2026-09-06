@@ -71,7 +71,7 @@ public class WrongBookDb {
 
     private static boolean contains(JSONArray a, String s) throws org.json.JSONException { for (int i = 0; i < a.length(); i++) if (s.equals(a.getString(i))) return true; return false; }
 
-    public synchronized String list(String stage, String filter, int limit, int offset) throws Exception {
+    public synchronized String list(String stage, String filter, String unitId, int limit, int offset) throws Exception {
         if (limit < 1 || limit > 100) limit = 50;
         if (offset < 0) offset = 0;
         ArrayList<String> args = new ArrayList<>();
@@ -79,6 +79,7 @@ public class WrongBookDb {
         args.add("mastered".equals(stage) ? "mastered" : "active");
         if ("pronunciation".equals(filter)) where.append(" AND m.pronunciation_error=1");
         else if ("writing".equals(filter)) where.append(" AND m.writing_error=1");
+        if (unitId != null && !unitId.isEmpty()) { where.append(" AND m.unit_id=?"); args.add(unitId); }
         String sql = "SELECT m.*,ci.audio_key AS audio_key FROM mistakes m LEFT JOIN content_items ci ON ci.id=m.source_item_id WHERE " + where + " ORDER BY m.updated_at DESC,m.id DESC LIMIT ? OFFSET ?";
         args.add(String.valueOf(limit)); args.add(String.valueOf(offset));
         SQLiteDatabase db = getReadableDatabase();
@@ -136,15 +137,18 @@ public class WrongBookDb {
         return o;
     }
 
-    public synchronized String counts() throws Exception {
+    public synchronized String counts(String unitId) throws Exception {
         SQLiteDatabase db = getReadableDatabase();
+        boolean scoped = unitId != null && !unitId.isEmpty();
+        String suffix = scoped ? " AND unit_id=?" : "";
+        String[] args = scoped ? new String[]{unitId} : null;
         JSONObject o = new JSONObject();
-        o.put("active", scalar(db, "SELECT count(*) FROM mistakes WHERE stage='active'"));
-        o.put("mastered", scalar(db, "SELECT count(*) FROM mistakes WHERE stage='mastered'"));
+        o.put("active", scalar(db, "SELECT count(*) FROM mistakes WHERE stage='active'" + suffix, args));
+        o.put("mastered", scalar(db, "SELECT count(*) FROM mistakes WHERE stage='mastered'" + suffix, args));
         return o.toString();
     }
 
-    private long scalar(SQLiteDatabase db, String sql) { try (Cursor c = db.rawQuery(sql, null)) { return c.moveToFirst() ? c.getLong(0) : 0; } }
+    private long scalar(SQLiteDatabase db, String sql, String[] args) { try (Cursor c = db.rawQuery(sql, args)) { return c.moveToFirst() ? c.getLong(0) : 0; } }
 
     public synchronized void toggleMaster(long id) {
         SQLiteDatabase db = getWritableDatabase();
