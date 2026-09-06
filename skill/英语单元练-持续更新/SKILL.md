@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.36.0
+version: 1.37.0
 ---
 
 # 英语单元练-持续更新
@@ -439,4 +439,5 @@ ALWAYS use this exact template:
 - 2026-09-06：APK 1.58.0（code62，DB v7）。强制重建 phoneme: 键+seed 自检，确保真正调用 v2；skill v1.34.0。
 - 2026-09-06：APK 1.59.0（code63）。设置改音色选择、Microsoft默认、可选音色按需；默认单元包v7无音素；skill v1.35.0。
 - 2026-09-06：APK 1.60.0（code64）。修复 Microsoft default 点击误走下载；skill v1.36.0。
+- 2026-09-06：APK 1.61.0（code65）。永久删除 Kokoro Emma，旧选中/目录/part 自动清理；GitHub release 383471364；skill v1.37.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
