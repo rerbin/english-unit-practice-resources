@@ -452,5 +452,5 @@ ALWAYS use this exact template:
 - 2026-09-06：APK 1.71.0（code75）。已掌握卡片删除“已收好”，动作统一为听/拼/重练/删除图标短文案；GitHub release 383586658；skill v1.47.0。
 - 2026-09-06：APK 1.72.0（code76）。正在练习掌握/移出补图标；底部三 Tab 改统一 22x22 线性 SVG 并消除 badge 基线偏差；GitHub release 383593446；skill v1.48.0。
 - 2026-09-06：APK 1.73.0（code77）。每单元会话内记忆阅读位置并瞬间恢复；导航/筛选无平滑动画，仅连读焦点保留；GitHub release 383597990；skill v1.49.0。
-- 2026-09-06：APK 2.0.0（code78）。M3 Expressive-inspired全视觉系统重构，语义色/统一SVG/形状层级/克制动效/可访问性；保留全部1.73业务与数据；GitHub release 383618660，commit e6c56aa；skill v2.0.0。
+- 2026-09-06：APK 2.0.0（code78）。M3 Expressive-inspired全视觉系统重构，语义色/统一SVG/形状层级/克制动效/可访问性；保留全部1.73业务与数据；GitHub release 383618660，最终 commit 7066257；APK SHA-256 581f25b7d17b8d43a69145175f22cb4198be84f73960ab6900a6ad8760e0ba96；skill v2.0.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
