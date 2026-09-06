@@ -115,6 +115,7 @@ public class MainActivity extends Activity {
     private void play(String unitId, String resourceName, String text, String id, boolean next) {
         File packFile = packs.fileFor(unitId, resourceName);
         if (packFile != null) { playFile(packFile, id, next); return; }
+        if (next) js0("playbackFailed");
         status("本单元语音未下载，请先在顶部下载语音");
     }
     private void playFile(File f, String id, boolean next) { runOnUiThread(() -> { try {
@@ -122,9 +123,9 @@ public class MainActivity extends Activity {
         player.setDataSource(f.getAbsolutePath());
         player.setOnPreparedListener(mp->{try{PlaybackParams pp=mp.getPlaybackParams();pp.setSpeed(speechRate);pp.setPitch(1.0f);mp.setPlaybackParams(pp);}catch(Exception ignored){}mark(id);mp.start();js0("playbackStarted");});
         player.setOnCompletionListener(mp->{mp.release();player=null;js0("playbackEnded");if(next)web.evaluateJavascript("window.nextAudio()",null);});
-        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;js0("playbackEnded");status("离线语音播放失败");return true;});
+        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;js0("playbackEnded");js0("playbackFailed");status("离线语音播放失败");return true;});
         player.prepareAsync();
-    } catch(Exception e){ status("离线语音播放失败："+e.getMessage()); } }); }
+    } catch(Exception e){ js0("playbackFailed"); status("离线语音播放失败："+e.getMessage()); } }); }
 
 
     private void stopPlayback() {
