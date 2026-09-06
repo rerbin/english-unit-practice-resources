@@ -8,52 +8,36 @@
       "order": 0,
       "title": "Starter",
       "subtitle": "我们的家人和朋友",
-      "audioVersion": 6,
+      "audioVersion": 7,
       "minAppVersionCode": 26,
-      "size": 9408131,
-      "sha256": "53e2ded746283974dc9c5b01ac25237e8ae70f7ad00f6e3f4a9797ed4219168c",
+      "size": 9407676,
+      "sha256": "664c1ec2177fee53471c30af615f45822ec9e6bf19e492207dd27a03012454d9",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v6.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v6.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-Starter-audio-v7.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v7.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
         "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-Starter/manifest.json"
-      },
-      "sources": [
-        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/4A-Starter-audio-v6.zip",
-        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v6.zip"
-      ],
-      "manifestSources": [
-        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/packs/4A-Starter/manifest.json",
-        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-Starter/manifest.json"
-      ]
+      }
     },
     {
       "unitId": "4A-U1",
       "order": 999,
       "title": "Unit 1",
       "subtitle": "",
-      "audioVersion": 6,
+      "audioVersion": 7,
       "minAppVersionCode": 26,
-      "size": 10606900,
-      "sha256": "97479bab89dffdbd6fcb94db0f82dfe8f37903f03b5daf442e4961431110ed25",
+      "size": 10606865,
+      "sha256": "9905157be775f3bb1589a856ea36f0a736f3ad62e1b1c5abf840d70a93cc4ae9",
       "mirrors": {
-        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v6.zip",
-        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v6.zip"
+        "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/4A-U1-audio-v7.zip",
+        "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v7.zip"
       },
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",
         "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-U1/manifest.json"
-      },
-      "sources": [
-        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/4A-U1-audio-v6.zip",
-        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v6.zip"
-      ],
-      "manifestSources": [
-        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/packs/4A-U1/manifest.json",
-        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-U1/manifest.json"
-      ]
+      }
     }
   ],
   "phonicsBase": {

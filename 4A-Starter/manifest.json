@@ -1,30 +1,21 @@
 {
   "schema": "english-unit-audio/v1",
-  "packageVersion": 6,
+  "packageVersion": 7,
   "textbookId": "shanghai-4a",
   "unitId": "4A-Starter",
   "contentVersion": 1,
   "voice": {
     "language": "en-GB",
-    "name": "Emma",
-    "engine": "Kokoro-82M bf_emma",
-    "license": "Apache-2.0"
+    "name": "Microsoft Sonia",
+    "engine": "Microsoft en-GB-SoniaNeural",
+    "license": "Evaluation generation; migrate to Azure Speech for formal commercial release"
   },
-  "format": "wav",
-  "itemCount": 109,
-  "fileCount": 95,
+  "format": "mixed",
+  "itemCount": 104,
+  "fileCount": 90,
   "items": [
     {
       "itemId": "4A-Starter-000",
-      "textHash": "cc7e4412564ba8a761bd32ab4cc6086bac3c2c9e580367e0b0eb32a4316f9154",
-      "audioKey": "u_000",
-      "file": "audio/cc74e9554178b474cf511c4813420b823a2c195977a257556b1c769e6f86b89f.wav",
-      "sha256": "cc74e9554178b474cf511c4813420b823a2c195977a257556b1c769e6f86b89f",
-      "size": 145452,
-      "mime": "audio/wav"
-    },
-    {
-      "itemId": "4A-Starter-001",
       "textHash": "1057a9604e04b274da5a4de0c8f4b4868d9b230989f8c8c6a28221143cc5a755",
       "audioKey": "u_001",
       "file": "audio/905441ddb11edb409c6027fd4782e8bb5a2e8ffe45e0eca48cce3a0e7a9abf4c.mp3",
@@ -33,7 +24,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-002",
+      "itemId": "4A-Starter-001",
       "textHash": "cf0622ef2a661cd2f11b0b644e40e4e00eb962918424a8c8ba53842fdf290235",
       "audioKey": "u_002",
       "file": "audio/59bef9093cb23e6d49075a05a43fb158ce350f72a3eeab0e52d5045316212067.mp3",
@@ -42,7 +33,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-003",
+      "itemId": "4A-Starter-002",
       "textHash": "88a1881f0025cf7117501d07aefc5d4be6696656790d765678df8bc48ca52687",
       "audioKey": "u_003",
       "file": "audio/15b799f761b8008b4c08c37ccd52d69f789ce5027f7f08841a9053ed09a8a210.mp3",
@@ -51,7 +42,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-004",
+      "itemId": "4A-Starter-003",
       "textHash": "1980d3927f07fec9c8d727f187ddde727da7e45247dbb71c7555e5ae0eca66d5",
       "audioKey": "u_004",
       "file": "audio/6d342b71f2fb009602c56dfd1b460560eb18c4d534c3d9a84386a03460a90a9e.mp3",
@@ -60,7 +51,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-005",
+      "itemId": "4A-Starter-004",
       "textHash": "0b4bd77cec705cf5df016344c0fc673fb3c2240078e6af572b2c5c6fa76114af",
       "audioKey": "u_005",
       "file": "audio/52c2c623d0c082f36145b72ca760c47ca02886ea1417b9089dfc98bd2e516964.mp3",
@@ -69,7 +60,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-006",
+      "itemId": "4A-Starter-005",
       "textHash": "12886f9d00055adf24c40579e22d31b2b45f2023f892954ffd5567beb60825f8",
       "audioKey": "u_006",
       "file": "audio/33c866bf7689e8d66a741321a8f986dfb423c80c49121020c8e82f7c68126319.mp3",
@@ -78,16 +69,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-007",
-      "textHash": "08c85bd37cdd0ffce8c39ecd7c7f0ff94e6f45af2aa986673b0c9f1a8a2fffea",
-      "audioKey": "u_007",
-      "file": "audio/93afcc09086ed46069e260f107e5ca0cf7b3853ed4f7e86dd8872344877505e5.wav",
-      "sha256": "93afcc09086ed46069e260f107e5ca0cf7b3853ed4f7e86dd8872344877505e5",
-      "size": 14380,
-      "mime": "audio/wav"
-    },
-    {
-      "itemId": "4A-Starter-008",
+      "itemId": "4A-Starter-006",
       "textHash": "aca5fb59db69e5dffeda36ff0bd65205f16720b7fa1893c4557e9216dfc276d5",
       "audioKey": "u_008",
       "file": "audio/7101c0b50b10cd2fe17e0a7f41e7544ff8e87389501fa6ba809ce8451414d0be.mp3",
@@ -96,7 +78,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-009",
+      "itemId": "4A-Starter-007",
       "textHash": "7a5179eecc0fe18760ba615f92603372ae3fe302860098a019e15927551fee3b",
       "audioKey": "u_009",
       "file": "audio/e8accf091b9bf0ccea327a8e4f4716b1860e27f6a96dce90fc706b68062b1512.mp3",
@@ -105,7 +87,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-010",
+      "itemId": "4A-Starter-008",
       "textHash": "431ba1c6936744f659289a8ff5292f004a51ba6a96dcecc65ef8f0783018dd5f",
       "audioKey": "u_010",
       "file": "audio/f513304b67d708726719551459224995385d19689d51b6ceb204dbab990dca81.mp3",
@@ -114,7 +96,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-011",
+      "itemId": "4A-Starter-009",
       "textHash": "a52514252adf86066966790e947f72ef6ea6690a6852d5bb5480ee2eeb663395",
       "audioKey": "u_011",
       "file": "audio/ecad3965032c12b0a82219a2bb78523f4619da4ec0f9df0a7d6a14a5bf9b1c5f.mp3",
@@ -123,7 +105,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-012",
+      "itemId": "4A-Starter-010",
       "textHash": "a7937b64b8caa58f03721bb6bacf5c78cb235febe0e70b1b84cd99541461a08e",
       "audioKey": "u_012",
       "file": "audio/edf85dabd49497dbc71171d62dd1ec09091c4b274b2c6431ca907f003be4a8ab.mp3",
@@ -132,7 +114,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-013",
+      "itemId": "4A-Starter-011",
       "textHash": "9ecc81f0a4b6dfb0c30e78370c42a1e0c118d2b426ec4dd1ee06c9f62a832040",
       "audioKey": "u_013",
       "file": "audio/de5886d10deaa97e62cf59e29021744834fd3f95ec7b8f1f18eb619af1a09d86.mp3",
@@ -141,16 +123,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-014",
-      "textHash": "4cd8cf8e48cfb313c2c5136ab40bd2b5f43de704542db49b85c0a2006a47832e",
-      "audioKey": "u_014",
-      "file": "audio/1593b5f6558081e214cbe2787b8f86d855f97ab2734e4b1f873f282ba9c27efe.wav",
-      "sha256": "1593b5f6558081e214cbe2787b8f86d855f97ab2734e4b1f873f282ba9c27efe",
-      "size": 33836,
-      "mime": "audio/wav"
-    },
-    {
-      "itemId": "4A-Starter-015",
+      "itemId": "4A-Starter-012",
       "textHash": "fc2662062ffdef9610020183ea2b087c21d71150d78a7c7463be8a9050bd3ac9",
       "audioKey": "u_015",
       "file": "audio/0fb6d55c11223e477956ddb1eb4825276ced9d800ea7d7f8caf499ea67243e4d.mp3",
@@ -159,7 +132,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-016",
+      "itemId": "4A-Starter-013",
       "textHash": "781e5116a1e14a34eada50159d589e690c81ec4c5063115ea1f10b99441d5b94",
       "audioKey": "u_016",
       "file": "audio/9cb605054d202515ab1598412be177b695367ea7006a225e7ef3e47fde64093d.mp3",
@@ -168,7 +141,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-017",
+      "itemId": "4A-Starter-014",
       "textHash": "9b473845f684444f80a26586ae298d2ba491752cc70b893cc653d943b6fa2ac2",
       "audioKey": "u_017",
       "file": "audio/a12ba1c253c91674035cf8aa5b854d129935dbc7e71a3f98baaa4966fc2fe5d9.mp3",
@@ -177,7 +150,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-018",
+      "itemId": "4A-Starter-015",
       "textHash": "8e0a1b0ada42172886fd1297e25abf99f14396a9400acbd5f20da20289cff02f",
       "audioKey": "u_018",
       "file": "audio/288639bbbebfa840800a0471ddb02c629546ba5f8df9d33b5548b333adcef63b.mp3",
@@ -186,7 +159,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-019",
+      "itemId": "4A-Starter-016",
       "textHash": "dbe35c7363c2f7ec747b902fb240907fc58ae00b98f107be2d4c7b9cd7f6226e",
       "audioKey": "u_019",
       "file": "audio/605245d08756c19c18762fcb864dd197c8337ad19267ed5c855f6a81c58613b1.mp3",
@@ -195,16 +168,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-020",
-      "textHash": "ab5b62081b1d305e78d0daadb2cd23470b3faeb65af7370627798b7219ea2061",
-      "audioKey": "u_020",
-      "file": "audio/fc1fc7c58cb0e6d0839e39049246b4169f06815174787d5e411cd4287808f791.wav",
-      "sha256": "fc1fc7c58cb0e6d0839e39049246b4169f06815174787d5e411cd4287808f791",
-      "size": 30764,
-      "mime": "audio/wav"
-    },
-    {
-      "itemId": "4A-Starter-021",
+      "itemId": "4A-Starter-017",
       "textHash": "4d3971de62245c94cd3dd8d4d3a72b8ff527d902832eedc8529a9717a969f1d1",
       "audioKey": "u_021",
       "file": "audio/9c0bb2cf4ec47c1b8b217b02bd268ffad8c4886a903681f515d5bce66faf423c.mp3",
@@ -213,7 +177,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-022",
+      "itemId": "4A-Starter-018",
       "textHash": "2b2961a431b23c9007efe270c1d7eb79c19d4192d7cd2d924176eb0b19e7d2a1",
       "audioKey": "u_022",
       "file": "audio/0691c54e8929942fc1a0f006c6231352ca9b7f551844178d4bd51a043504322a.mp3",
@@ -222,7 +186,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-023",
+      "itemId": "4A-Starter-019",
       "textHash": "8367cd66fdd136bba8ba23f8805bb050dd6289401c8ec3b0be44a3c233eef90d",
       "audioKey": "u_023",
       "file": "audio/2a29ed1f6817c0ca1393b2cf2ab63a3eb7649cab97e4ae0d2a5ad7e43b7f0e99.mp3",
@@ -231,7 +195,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-024",
+      "itemId": "4A-Starter-020",
       "textHash": "ddf7ff5ebd9d66ce161466c1c0262430fa04de32b0e420ee3f489e2e2112e386",
       "audioKey": "u_024",
       "file": "audio/bdcf284f529e24455f2ae9bbb2b765495c074b85ea862cba0c88bc941fca460b.mp3",
@@ -240,7 +204,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-025",
+      "itemId": "4A-Starter-021",
       "textHash": "23eeb69c681dfdb8eacc7ce9e55ea007d41c2dd5273848c597f1b3e49dbd86e1",
       "audioKey": "u_025",
       "file": "audio/48a99cc519c36ff2b0c868b37d1e0c41ef6e8550ded14a3fbbebe7a87f76669e.mp3",
@@ -249,7 +213,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-026",
+      "itemId": "4A-Starter-022",
       "textHash": "1d0fea39ec33ff7543f345be85d1ccd34d6d864297d4151b737802cb294a338c",
       "audioKey": "u_026",
       "file": "audio/2c97d372202c58b3cd84086a0474d16896ed79552b2cda0f2522f2329338e4d3.mp3",
@@ -258,16 +222,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-027",
-      "textHash": "7175517a370b5cd2e664e3fd29c4ea9db5ce17058eb9772fe090a5485e49dad6",
-      "audioKey": "u_027",
-      "file": "audio/9e47ff4f1a0a4fca0d279cb422f67c5dc2c77f31c108b6859a8ef2c2029a4465.wav",
-      "sha256": "9e47ff4f1a0a4fca0d279cb422f67c5dc2c77f31c108b6859a8ef2c2029a4465",
-      "size": 28204,
-      "mime": "audio/wav"
-    },
-    {
-      "itemId": "4A-Starter-028",
+      "itemId": "4A-Starter-023",
       "textHash": "9cee2304bd633d42c35db17c1427a273668bd3166487f924216d807a566a8e73",
       "audioKey": "u_028",
       "file": "audio/cfabfebf5cf0ab92c61d36af9103c8a9f2a90cad2176cc8e4084f1183a344c1b.mp3",
@@ -276,7 +231,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-029",
+      "itemId": "4A-Starter-024",
       "textHash": "10c22bcf4c768b515be4e94bcafc71bf3e8fb5f70b2584bcc8c7533217f2e7f9",
       "audioKey": "u_029",
       "file": "audio/b06b6d71ec4723c176d1d1823272a45161291ca74d5ddfe7afe100f8a44109ce.mp3",
@@ -285,7 +240,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-030",
+      "itemId": "4A-Starter-025",
       "textHash": "ec450786e26a5154173545c402bcc03b20e2e0477d6086fa632a55c85bdcdd83",
       "audioKey": "u_030",
       "file": "audio/2b4ad8740e723f238787668cf983020a7c4ca314b177ec8fcc1b85cd39c8e33c.mp3",
@@ -294,7 +249,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-031",
+      "itemId": "4A-Starter-026",
       "textHash": "c23b31a0179b550f8a18fb06bc52a26e32333540369073d646da5c84a4dc341f",
       "audioKey": "u_031",
       "file": "audio/c9f5b16f654d375ca23f02c24f9b8cd46c98d7c22db74eb43598543835e4924a.mp3",
@@ -303,7 +258,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-032",
+      "itemId": "4A-Starter-027",
       "textHash": "f9b0078b5df596d2ea19010c001bbd009e651de2c57e8fb7e355f31eb9d3f739",
       "audioKey": "u_032",
       "file": "audio/80a24e1ff6014e6571e9951b62cd86c7a096f68da28a76bd2729e19c5acdf8b3.mp3",
@@ -312,7 +267,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-033",
+      "itemId": "4A-Starter-028",
       "textHash": "fd62862b6dc213bee77c2badd6311528253c6cb3107e03c16051aa15584eca1c",
       "audioKey": "u_033",
       "file": "audio/ba97f0545ae08a61b670849e402ad10fc55251a5d829f921d4fdfef2510a1f31.mp3",
@@ -321,7 +276,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-034",
+      "itemId": "4A-Starter-029",
       "textHash": "d34a569ab7aaa54dacd715ae64953455d86b768846cd0085ef4e9e7471489b7b",
       "audioKey": "u_034",
       "file": "audio/c7b5dd353a8dd2f6985f1e158ec2cd86bf4324d9f514a9d84a5f3efc0f7dbf9a.mp3",
@@ -330,7 +285,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-035",
+      "itemId": "4A-Starter-030",
       "textHash": "88a1881f0025cf7117501d07aefc5d4be6696656790d765678df8bc48ca52687",
       "audioKey": "u_003",
       "file": "audio/15b799f761b8008b4c08c37ccd52d69f789ce5027f7f08841a9053ed09a8a210.mp3",
@@ -339,7 +294,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-036",
+      "itemId": "4A-Starter-031",
       "textHash": "cf0622ef2a661cd2f11b0b644e40e4e00eb962918424a8c8ba53842fdf290235",
       "audioKey": "u_002",
       "file": "audio/59bef9093cb23e6d49075a05a43fb158ce350f72a3eeab0e52d5045316212067.mp3",
@@ -348,7 +303,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-037",
+      "itemId": "4A-Starter-032",
       "textHash": "6fe8ecbc1deafa51c2ecf088cf364eba1ceba9032ffbe2621e771b90ea93153d",
       "audioKey": "u_035",
       "file": "audio/bac6d43c9c57cdcbd041ec1a0fee5e18460639c0192b700f2d1d603f278cc37e.mp3",
@@ -357,7 +312,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-038",
+      "itemId": "4A-Starter-033",
       "textHash": "f2d758f9e379babc91f1f5062e2d486a70008cccc3c5d47b75f645e588a0ea09",
       "audioKey": "u_036",
       "file": "audio/360dad61c646c23d055bc0c612b3fe0d486c3ddfd19fe7c9bdaea17c738aa80b.mp3",
@@ -366,7 +321,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-039",
+      "itemId": "4A-Starter-034",
       "textHash": "1eb4d6a000efefe9aadbb4910424c708727d10c018bdb188fe09b4e07cdeed61",
       "audioKey": "u_037",
       "file": "audio/90b48665179740bf8f19582ca108ee7a4682981875ae9d65a6d655644e97c615.mp3",
@@ -375,7 +330,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-040",
+      "itemId": "4A-Starter-035",
       "textHash": "ba8d3e6a2d8b5ed67ba21927de648785e0dccf8fdf6efacde32b8456f534f70b",
       "audioKey": "u_038",
       "file": "audio/382456852c6b4c5e6f8219f4ffd6f364a8547a596ee0dea60c9aea991986ebe2.mp3",
@@ -384,7 +339,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-041",
+      "itemId": "4A-Starter-036",
       "textHash": "0b4bd77cec705cf5df016344c0fc673fb3c2240078e6af572b2c5c6fa76114af",
       "audioKey": "u_005",
       "file": "audio/52c2c623d0c082f36145b72ca760c47ca02886ea1417b9089dfc98bd2e516964.mp3",
@@ -393,7 +348,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-042",
+      "itemId": "4A-Starter-037",
       "textHash": "1980d3927f07fec9c8d727f187ddde727da7e45247dbb71c7555e5ae0eca66d5",
       "audioKey": "u_004",
       "file": "audio/6d342b71f2fb009602c56dfd1b460560eb18c4d534c3d9a84386a03460a90a9e.mp3",
@@ -402,7 +357,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-043",
+      "itemId": "4A-Starter-038",
       "textHash": "6ce834139509cc20a5b1b0e0e8007f46fb14ef72532e87c4f33894d150e997c0",
       "audioKey": "u_039",
       "file": "audio/484e5236fc09ec8b6e48a36ebe3614434dcc9766b9784cac90f76642b4ba586d.mp3",
@@ -411,7 +366,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-044",
+      "itemId": "4A-Starter-039",
       "textHash": "cde48537ca2c28084ff560826d0e6388b7c57a51497a6cb56f397289e52ff41b",
       "audioKey": "u_040",
       "file": "audio/cc016ac850f38f4c1bd906cda63f8674c13db55be067743f7894a35197ab8cb0.mp3",
@@ -420,7 +375,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-045",
+      "itemId": "4A-Starter-040",
       "textHash": "66f9b98dde76ccbacebabd344bf5244fd6bb4a6a5ac62ababfea82d3fcc650b1",
       "audioKey": "u_041",
       "file": "audio/c4ac90500c482306093cd82e7afc37f0eda0b14207eddbc0d088bd4e7b1df61e.mp3",
@@ -429,7 +384,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-046",
+      "itemId": "4A-Starter-041",
       "textHash": "1057a9604e04b274da5a4de0c8f4b4868d9b230989f8c8c6a28221143cc5a755",
       "audioKey": "u_001",
       "file": "audio/905441ddb11edb409c6027fd4782e8bb5a2e8ffe45e0eca48cce3a0e7a9abf4c.mp3",
@@ -438,7 +393,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-047",
+      "itemId": "4A-Starter-042",
       "textHash": "264c8c381bf16c982a4e59b0dd4c6f7808c51a05f64c35db42cc78a2a72875bb",
       "audioKey": "u_042",
       "file": "audio/b1cfbcda949c507564514050803550084d9736c63cb550652fa7e627b8c51dc1.mp3",
@@ -447,7 +402,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-048",
+      "itemId": "4A-Starter-043",
       "textHash": "7820f1b6fd39bb5b0c5e597637fbdd1c08741651302f45e48116a18fda4b4f75",
       "audioKey": "u_043",
       "file": "audio/83e2d85fe2dda6c13ae7642bdd2ea164309171932c535d1113afed8b538b45ce.mp3",
@@ -456,7 +411,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-049",
+      "itemId": "4A-Starter-044",
       "textHash": "0317c92ad78c13c7887310bac1e747e6c5b6da7f619ab9e7b66481c7cbab86cb",
       "audioKey": "u_044",
       "file": "audio/e39cf7fbb5d6408bde74c2e40f66bce41ea5850970c89f7f9f4867f13fb8448c.mp3",
@@ -465,7 +420,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-050",
+      "itemId": "4A-Starter-045",
       "textHash": "7887043af41d6abec85ac089d5c4c0499224ad30449b33cceef4a34f83501d06",
       "audioKey": "u_045",
       "file": "audio/b250fd3bf023e4c48b2364714993e3b356083a4e6e0736433b922df245cc75bf.mp3",
@@ -474,7 +429,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-051",
+      "itemId": "4A-Starter-046",
       "textHash": "6a00dfc1dc867e8454c2c8856e1512d9bf02a76710e3411c0972aec886c76c61",
       "audioKey": "u_046",
       "file": "audio/6e95cf22cc9dc53624d5dfeb5d623e26b3258c2218ba76b3f9eae00b8fb83d4f.mp3",
@@ -483,7 +438,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-052",
+      "itemId": "4A-Starter-047",
       "textHash": "7d8af1de1262f150187d5938bf649d6c35726970685f916d1ec6392a801b9762",
       "audioKey": "u_047",
       "file": "audio/50ed70fe8cd169245a38b441acad35e2075a538f524bec11b79d12724bb1897f.mp3",
@@ -492,7 +447,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-053",
+      "itemId": "4A-Starter-048",
       "textHash": "c0a6cc829cd08735294765c75938a7da2b0f222d52e98bff13cb237cd99deaac",
       "audioKey": "u_048",
       "file": "audio/db641101798c934195c3633381ac7367031638816bf1c163198da77935658e63.mp3",
@@ -501,7 +456,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-054",
+      "itemId": "4A-Starter-049",
       "textHash": "fc2662062ffdef9610020183ea2b087c21d71150d78a7c7463be8a9050bd3ac9",
       "audioKey": "u_015",
       "file": "audio/0fb6d55c11223e477956ddb1eb4825276ced9d800ea7d7f8caf499ea67243e4d.mp3",
@@ -510,7 +465,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-055",
+      "itemId": "4A-Starter-050",
       "textHash": "e21f3f372a46d4be7b49f6809fc91baefeadae004af06485518e124a142c0271",
       "audioKey": "u_049",
       "file": "audio/7aecac415e016531424f7ab128e0c5bf03b333af0f2a061f18b36407b6a25d86.mp3",
@@ -519,7 +474,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-056",
+      "itemId": "4A-Starter-051",
       "textHash": "dbe35c7363c2f7ec747b902fb240907fc58ae00b98f107be2d4c7b9cd7f6226e",
       "audioKey": "u_019",
       "file": "audio/605245d08756c19c18762fcb864dd197c8337ad19267ed5c855f6a81c58613b1.mp3",
@@ -528,7 +483,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-057",
+      "itemId": "4A-Starter-052",
       "textHash": "873fef760e5d001ba0a843bf1846713fd92538699f323ef00d51f97a2ad2756c",
       "audioKey": "u_050",
       "file": "audio/4dcccef75210779a4bcb9494d6c06b97d454ecd83bc9404c4a3f4abac98ecb20.mp3",
@@ -537,7 +492,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-058",
+      "itemId": "4A-Starter-053",
       "textHash": "6df37daaa46ce714fa410768b63f415dfad094df33eb34ac1af332074fd15a1c",
       "audioKey": "u_051",
       "file": "audio/ade1490026428977d6df1c249e468361c21223ffa0a56e7512814ab00357cb3e.mp3",
@@ -546,7 +501,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-059",
+      "itemId": "4A-Starter-054",
       "textHash": "12886f9d00055adf24c40579e22d31b2b45f2023f892954ffd5567beb60825f8",
       "audioKey": "u_006",
       "file": "audio/33c866bf7689e8d66a741321a8f986dfb423c80c49121020c8e82f7c68126319.mp3",
@@ -555,7 +510,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-060",
+      "itemId": "4A-Starter-055",
       "textHash": "7c2c4df740f720b0c861920dc27692c4d4b5daa65d6330a593c931d35f8ac737",
       "audioKey": "u_052",
       "file": "audio/44000c41ed917b0b66938363f68aa7ed6c9706a297efae60464e20f453b51649.mp3",
@@ -564,7 +519,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-061",
+      "itemId": "4A-Starter-056",
       "textHash": "aca5fb59db69e5dffeda36ff0bd65205f16720b7fa1893c4557e9216dfc276d5",
       "audioKey": "u_008",
       "file": "audio/7101c0b50b10cd2fe17e0a7f41e7544ff8e87389501fa6ba809ce8451414d0be.mp3",
@@ -573,7 +528,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-062",
+      "itemId": "4A-Starter-057",
       "textHash": "9cee2304bd633d42c35db17c1427a273668bd3166487f924216d807a566a8e73",
       "audioKey": "u_028",
       "file": "audio/cfabfebf5cf0ab92c61d36af9103c8a9f2a90cad2176cc8e4084f1183a344c1b.mp3",
@@ -582,7 +537,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-063",
+      "itemId": "4A-Starter-058",
       "textHash": "f8d807ee15e983f8d185132ffb0e55d3075b220891aff58845e55a158c842798",
       "audioKey": "u_053",
       "file": "audio/515243adab85835e003529043ad3d770e47c9492f8e65460fd9f386c3cc31837.mp3",
@@ -591,7 +546,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-064",
+      "itemId": "4A-Starter-059",
       "textHash": "df41164e151227b31ca29bb188c936923a0afb26d9bd0a8e4ec6d05d4815c991",
       "audioKey": "u_054",
       "file": "audio/95cb1283cf7346507440bba207fff43c5f1203ddaddff9cdfb8790ab0016b22b.mp3",
@@ -600,7 +555,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-065",
+      "itemId": "4A-Starter-060",
       "textHash": "ab0e4b1a7839571e0278fdb4c49d6ea632bc9df91968af197d539b2df976d4f9",
       "audioKey": "u_055",
       "file": "audio/51f4564f90e4490a7713bfa0e127815a6683a9dbdb17e40f7c4c775265898de8.mp3",
@@ -609,7 +564,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-066",
+      "itemId": "4A-Starter-061",
       "textHash": "0dbc3407a7080e3d39871b66208636c038ed9ffbd082421b6ad6b80b22f447f1",
       "audioKey": "u_056",
       "file": "audio/474d9532b729e42fff9b03b7299929267379a05704f0249fc2da5b47c05b710f.mp3",
@@ -618,7 +573,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-067",
+      "itemId": "4A-Starter-062",
       "textHash": "521c74a4d5824aba60ce4abaf48f951b11836b548de2f7f72af3bac37e70fc47",
       "audioKey": "u_057",
       "file": "audio/8402e233f45b68a61c884cea5a0b7d89170bb1d00a06b9dfd3a87188e843ee73.mp3",
@@ -627,7 +582,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-068",
+      "itemId": "4A-Starter-063",
       "textHash": "a86a6a017586300cf9c2bc4fdd5719fafffe98be5b69a9db601477a78e19c53e",
       "audioKey": "u_058",
       "file": "audio/79116a2d62eaab9d56f432bf05a704d722d6bf7d7a483a9738a6f0a701b4cce6.mp3",
@@ -636,7 +591,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-069",
+      "itemId": "4A-Starter-064",
       "textHash": "d64debd942d7dc26a851231583b1721f43ea936fa41932b6dad7556e5f8cd24a",
       "audioKey": "u_059",
       "file": "audio/a1fc4772aab64b193a6cd30cb4c475c7635f939b8c5ded804935a870b3104a95.mp3",
@@ -645,7 +600,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-070",
+      "itemId": "4A-Starter-065",
       "textHash": "ff53e7fd51c9c321e7e21efd1e2fffe052d23aa393d9ba0a37adf3313183a7cd",
       "audioKey": "u_060",
       "file": "audio/e670325f4bd933cbc5f5653310a4037fa7b54b28c3ecf8273bf011c9cfd8140d.mp3",
@@ -654,7 +609,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-071",
+      "itemId": "4A-Starter-066",
       "textHash": "0a9c1b69fb9cd906e1f05241f34d9b775d7f7624cd108bd9c38901c7b269335d",
       "audioKey": "u_061",
       "file": "audio/f02b48dd4a8e095834026c1794d916863da411ff9005495a7223d8a31ae3e1fe.mp3",
@@ -663,7 +618,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-072",
+      "itemId": "4A-Starter-067",
       "textHash": "0a473e835ded3809fc6aa7f7e7528cc7c62cd517354cd09586a2f8b81b2eb61b",
       "audioKey": "u_062",
       "file": "audio/15af0ee1e2853c1d6b3fa20302e2d0d7de77349c3a8463f6222c44bcb282567d.mp3",
@@ -672,7 +627,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-073",
+      "itemId": "4A-Starter-068",
       "textHash": "4ee80569fff3aaf979832285112aaf61793dde9ab311b419303035b85a7b4b98",
       "audioKey": "u_063",
       "file": "audio/0b854cba5b64f2ae57beedf68080170676be38a60636d6c7f24abc07a328e8a2.mp3",
@@ -681,7 +636,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-074",
+      "itemId": "4A-Starter-069",
       "textHash": "d892d866c5d0569e39e23c7bd46d63373d95197483e1a9af491e7098913a39ac",
       "audioKey": "u_064",
       "file": "audio/7cba20b9edf85d83f6ee77025694d3eb6604c315bdd3a6a1ab54d6c2f0dea128.mp3",
@@ -690,7 +645,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-075",
+      "itemId": "4A-Starter-070",
       "textHash": "5c8f2beb0fade553073089b76b917cba364605aa8ef570a7bb59d28fa9a67ca7",
       "audioKey": "u_065",
       "file": "audio/82623b658e2300f0867e830b027412b3c62152cd91bc331b7002443bcb201677.mp3",
@@ -699,7 +654,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-076",
+      "itemId": "4A-Starter-071",
       "textHash": "81eb323f21d9399281bf6cf9d230ec6e14f0fdc3598c16200aa024ae2cbe2898",
       "audioKey": "u_066",
       "file": "audio/9d382caef72fab7e9aa1fda8c57df1cc90a7119265de0a4b4be56b5489aa3f4a.mp3",
@@ -708,7 +663,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-077",
+      "itemId": "4A-Starter-072",
       "textHash": "dfbdd9492bec0b1c7ff9ac9c5228684a8cbed11f3e287d92ed9eac60ec611c8b",
       "audioKey": "u_067",
       "file": "audio/68622fc8f792c72c1f4b0513666af4025b0bc5a51e7fc15ca0f94ee401ed4eb9.mp3",
@@ -717,7 +672,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-078",
+      "itemId": "4A-Starter-073",
       "textHash": "278c1448dcadb27907171d4e445ca0f0df171187f236bf9f2967e42f2fdb5457",
       "audioKey": "u_068",
       "file": "audio/ee6aa9b3e4173c87432b2ca5f8d967138a83281d761ad98d5f7aab88796cea56.mp3",
@@ -726,7 +681,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-079",
+      "itemId": "4A-Starter-074",
       "textHash": "894b6c18383b7c19f55ead7b8d132d9ca67a7d96d17ed37431520e975a9f2455",
       "audioKey": "u_069",
       "file": "audio/346e18f3e571a27bbfc559fac5ad024c85e58923b448ab41c756b1529045aaa0.mp3",
@@ -735,7 +690,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-080",
+      "itemId": "4A-Starter-075",
       "textHash": "664e087e8cb34207bae9d5dcd8ecaa992b474a20d73143a6ebfcb94c3c59dbad",
       "audioKey": "u_070",
       "file": "audio/5c5dfe7f1fc9335985f5acefac41cafb836582e33a65418126e5f1e412858167.mp3",
@@ -744,7 +699,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-081",
+      "itemId": "4A-Starter-076",
       "textHash": "5040a80a816df4c0b535c7057c6411851b8e510c00d3c41cc3e1b2c61bd4be3c",
       "audioKey": "u_071",
       "file": "audio/b4de1d27d0f75a8d52147e5e4ce66c256e1e83c8918976236338bc65befa4bfe.mp3",
@@ -753,7 +708,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-082",
+      "itemId": "4A-Starter-077",
       "textHash": "a15b3f99fb035a7ee8058ff2f4b3f8a554532a7347e70a12ad059d29120e0e42",
       "audioKey": "u_072",
       "file": "audio/24bc5ea7534b616eb852b2a37dc7fecbc2b16a46489abfe5a452d1a35f7c9b2b.mp3",
@@ -762,7 +717,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-083",
+      "itemId": "4A-Starter-078",
       "textHash": "3f3d9f370444b48214a7eddc525b0847455ca7707a1cb058691cf343411a1134",
       "audioKey": "u_073",
       "file": "audio/be6dfa446a6f8d427e8440d691a4e24215107e6d1bf2b01b93e4daed29348929.mp3",
@@ -771,7 +726,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-084",
+      "itemId": "4A-Starter-079",
       "textHash": "90b07aaa23f048fa7ea456625c627a082024cd3c617cfed57b7cdd4f06268b28",
       "audioKey": "u_074",
       "file": "audio/a063e10bc7eb27dbdd6346eb60b8aefe97737b4590e3483bf0895cec71b6315a.mp3",
@@ -780,7 +735,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-085",
+      "itemId": "4A-Starter-080",
       "textHash": "efdaa870d688d9bf36ea249b0a50b3003a4e793d21817018476fa3cdb4332f66",
       "audioKey": "u_075",
       "file": "audio/a4a2d2d6b7470b4895e8dce47fc317208063cf22073dc7353e0cc73daacf5ab9.mp3",
@@ -789,7 +744,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-086",
+      "itemId": "4A-Starter-081",
       "textHash": "bd6b48ee009da4c1a3c6ef33d19a37751cb419363375ae426a00d4de8ea22144",
       "audioKey": "u_076",
       "file": "audio/d4136488e983f315e98b4d013cbc7ba8201d43e8a99f67ef912eaa55858f1955.mp3",
@@ -798,7 +753,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-087",
+      "itemId": "4A-Starter-082",
       "textHash": "9223e48b5e7b4f28abe731f25504befe1124512af956507f050c6daa9b6f8a04",
       "audioKey": "u_077",
       "file": "audio/aa339b34e0d7468b5f44197db0513811ebd0a6f625a5660cf44ff4617a9eae05.mp3",
@@ -807,7 +762,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-088",
+      "itemId": "4A-Starter-083",
       "textHash": "2143e5d712214e3b81498615cc66155eb48783c9dd24496df6a9d11133cde936",
       "audioKey": "u_078",
       "file": "audio/9fd7d2f49865c53dd754fce918fef47d328ab2e4c071d465b97c6030e5ec19b1.mp3",
@@ -816,7 +771,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-089",
+      "itemId": "4A-Starter-084",
       "textHash": "26853bd05c75e8ab3e7681921afa8d5c188eb69177ef5cf5fa176a106ea88fc2",
       "audioKey": "u_079",
       "file": "audio/3b70a237cb5835656c2d66c8e760ba1a6437934d2505c9d053243dd422fd12d8.mp3",
@@ -825,7 +780,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-090",
+      "itemId": "4A-Starter-085",
       "textHash": "c3c7f6b53d34f7786d2572a1e768abb5c6b90f8687e6b1a17b881b8a3ad34906",
       "audioKey": "u_080",
       "file": "audio/bc57679526dc7b840c2c4d7b07bb93a0c67628d0be13b2e90e3d088ac16c0138.mp3",
@@ -834,7 +789,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-091",
+      "itemId": "4A-Starter-086",
       "textHash": "d15811278bac114d18918f422013c691f67f4cbee495b382e1e05bb6a354d7a9",
       "audioKey": "u_081",
       "file": "audio/392f2ef4422f11fb965b2d1821c14679564bb6bb0fe45ddbec4cf46d03005b87.mp3",
@@ -843,7 +798,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-092",
+      "itemId": "4A-Starter-087",
       "textHash": "7ea1e9f571c56d2d7bf94881ac2d0a6457cda1e54cb45432f7b6df1e03d8390f",
       "audioKey": "u_082",
       "file": "audio/c6213b1d433b275849855f158528d032173fc4c3da2692cd1fb76f6fb39b3986.mp3",
@@ -852,7 +807,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-093",
+      "itemId": "4A-Starter-088",
       "textHash": "697bef6588c4fedd2f79b9021fbfe1edef50d76052c81f8bbdac357f35a098a8",
       "audioKey": "u_083",
       "file": "audio/f79e46b01952e8bcf176c10edf067cebc7468e49ca3923694d4a8c31fb9bfd39.mp3",
@@ -861,7 +816,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-094",
+      "itemId": "4A-Starter-089",
       "textHash": "458735a5d2a2b42b32a0a1be1fdda14a7e4a825af7e095080497163886ee3f0c",
       "audioKey": "u_084",
       "file": "audio/baf9f1c1e9ce1c514c61163cde540d299e9373f1a3376a21a7c18e0f60a49fe4.mp3",
@@ -870,7 +825,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-095",
+      "itemId": "4A-Starter-090",
       "textHash": "1bd6c8cd3809be1dd06660137bad0196e66093fdefd6ff478f9182e4f83d661b",
       "audioKey": "u_085",
       "file": "audio/9a566ef62c688316243be2987fcc654cbd4e0a70afe50e91953cf47ea62a8a06.mp3",
@@ -879,7 +834,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-096",
+      "itemId": "4A-Starter-091",
       "textHash": "7b2c92d12b735dc95a88cd6b339c096e0bb5bc41e14be6f51b60e628baced37b",
       "audioKey": "u_086",
       "file": "audio/decbb5ccadcf6b4a80bd780f2c34083fdc9f0b0cfd2c6df52bf02de6ecf79191.mp3",
@@ -888,7 +843,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-097",
+      "itemId": "4A-Starter-092",
       "textHash": "29a12e13fa4b7c1cf3b7880a764f0d4a9073c85afc1c227b879923843c0dc644",
       "audioKey": "u_087",
       "file": "audio/a298096905178c9cff420b124a32532cacd309ea1566f2cd75ef4189ee28b1ee.mp3",
@@ -897,7 +852,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-098",
+      "itemId": "4A-Starter-093",
       "textHash": "c3246965c92ffaf40849f3116d1b59b98edef09dd623915d8491bcd5fd2cae5a",
       "audioKey": "u_088",
       "file": "audio/c3737b82c9d9c9ba87c04ab0bfa209ee89e727e35f13b60dc1497a9473693bb0.mp3",
@@ -906,7 +861,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-099",
+      "itemId": "4A-Starter-094",
       "textHash": "d47cd34e11a22bc4ac82442cf7ff1c491b5355c7392e11327c983cbe80ca588d",
       "audioKey": "u_089",
       "file": "audio/c1e204fd1a1e706b7725656c5578ff1bd410bc740ea55ba9fdf2d71b8fa7c3dc.mp3",
@@ -915,7 +870,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-100",
+      "itemId": "4A-Starter-095",
       "textHash": "b3c49e40402bbce8b806671ac272000a417dd51e17cd4e6b5099ce5757b9b9e8",
       "audioKey": "u_090",
       "file": "audio/df22a6373bc8c310197eaad6ba0a2421e442df560be95525450fcdd1afbc59c3.mp3",
@@ -924,7 +879,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-101",
+      "itemId": "4A-Starter-096",
       "textHash": "9239ef5f18561158c4db6a1e72d6ebe37b2c77d6dd608a1dd52ef9e5035e910b",
       "audioKey": "u_091",
       "file": "audio/7ef9eed14a3f4696e553f9339a6abfedb56f3f1118a53cf7e20c1bbed36b5c74.mp3",
@@ -933,7 +888,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-102",
+      "itemId": "4A-Starter-097",
       "textHash": "1b4e99ab0e98ce0956e0802fd916db3c9a9004d1caf078c7864c8959f84cc0c4",
       "audioKey": "u_092",
       "file": "audio/92b51c0785ecbf892a4c120271f0dde6be1e05fbe82f2ee98bff36093df6ca82.mp3",
@@ -942,7 +897,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-103",
+      "itemId": "4A-Starter-098",
       "textHash": "1bd6c8cd3809be1dd06660137bad0196e66093fdefd6ff478f9182e4f83d661b",
       "audioKey": "u_085",
       "file": "audio/9a566ef62c688316243be2987fcc654cbd4e0a70afe50e91953cf47ea62a8a06.mp3",
@@ -951,7 +906,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-104",
+      "itemId": "4A-Starter-099",
       "textHash": "7b2c92d12b735dc95a88cd6b339c096e0bb5bc41e14be6f51b60e628baced37b",
       "audioKey": "u_086",
       "file": "audio/decbb5ccadcf6b4a80bd780f2c34083fdc9f0b0cfd2c6df52bf02de6ecf79191.mp3",
@@ -960,7 +915,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-105",
+      "itemId": "4A-Starter-100",
       "textHash": "c3246965c92ffaf40849f3116d1b59b98edef09dd623915d8491bcd5fd2cae5a",
       "audioKey": "u_088",
       "file": "audio/c3737b82c9d9c9ba87c04ab0bfa209ee89e727e35f13b60dc1497a9473693bb0.mp3",
@@ -969,7 +924,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-106",
+      "itemId": "4A-Starter-101",
       "textHash": "5ca56b1a059c24526482d939fe17c6849f9683c80b77fae13ffd1df2318464de",
       "audioKey": "u_093",
       "file": "audio/1d4b646bb80b79a6d2b1eecf90fab2e2d1ab0b4a2c2a7507fdffdf78822913fa.mp3",
@@ -978,7 +933,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-107",
+      "itemId": "4A-Starter-102",
       "textHash": "408d3da71fa4fa779c55d24a1fe788d3e2afc235a3b366e04ebcdf710cec1a93",
       "audioKey": "u_094",
       "file": "audio/30f72e074b8c22efb8374b6b4e679aad3750418cd5a965b0612d38b0355609e2.mp3",
@@ -987,7 +942,7 @@
       "mime": "audio/mpeg"
     },
     {
-      "itemId": "4A-Starter-108",
+      "itemId": "4A-Starter-103",
       "textHash": "1b4e99ab0e98ce0956e0802fd916db3c9a9004d1caf078c7864c8959f84cc0c4",
       "audioKey": "u_092",
       "file": "audio/92b51c0785ecbf892a4c120271f0dde6be1e05fbe82f2ee98bff36093df6ca82.mp3",
