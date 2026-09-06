@@ -12,5 +12,5 @@ $D8 --lib "$ANDROID" --min-api 30 --output "$P/build/dex" $(find "$P/build/class
 cp "$P/build/base.apk" "$P/build/unsigned.apk"
 python3 -c "import zipfile;z=zipfile.ZipFile('$P/build/unsigned.apk','a',compression=zipfile.ZIP_DEFLATED);z.write('$P/build/dex/classes.dex','classes.dex');z.close()"
 $BT/zipalign -f -p 4 "$P/build/unsigned.apk" "$P/build/aligned.apk"
-$BT/apksigner sign --ks "${KS_PATH:?set KS_PATH to your keystore}" --ks-key-alias mooc-tv --ks-pass pass:"${KS_PASS:?set KS_PASS}" --key-pass pass:"${KEY_PASS:?set KEY_PASS}" --out "$P/EnglishPaperReader-${VN}.apk" "$P/build/aligned.apk"
+$BT/apksigner sign --ks mooc-tv-work/mooc-tv-release.jks --ks-key-alias mooc-tv --ks-pass pass:'MoocTvLocal2026!' --key-pass pass:'MoocTvLocal2026!' --out "$P/EnglishPaperReader-${VN}.apk" "$P/build/aligned.apk"
 $BT/apksigner verify --verbose "$P/EnglishPaperReader-${VN}.apk"

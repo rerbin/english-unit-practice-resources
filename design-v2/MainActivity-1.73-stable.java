@@ -53,7 +53,7 @@ public class MainActivity extends Activity {
             getWindow().setAttributes(lp);
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        getWindow().setStatusBarColor(0xFF315DA8);
+        getWindow().setStatusBarColor(0xFF16406F);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         appDatabase = AppDatabase.get(this);
