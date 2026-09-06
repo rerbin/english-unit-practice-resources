@@ -42,7 +42,16 @@ public class ContentDb {
         in.close();
         JSONObject root = new JSONObject(out.toString("UTF-8"));
         db.beginTransaction();
-        try { upsertTextbook(db, root.getJSONObject("textbook")); JSONArray units = root.getJSONArray("units"); for (int i = 0; i < units.length(); i++) installUnit(db, units.getJSONObject(i), "built_in"); db.setTransactionSuccessful(); } finally { db.endTransaction(); }
+        try { upsertTextbook(db, root.getJSONObject("textbook")); JSONArray units = root.getJSONArray("units"); for (int i = 0; i < units.length(); i++) installUnit(db, units.getJSONObject(i), "built_in"); assertPhonemeKeys(db); db.setTransactionSuccessful(); } finally { db.endTransaction(); }
+    }
+
+    private static void assertPhonemeKeys(SQLiteDatabase db) {
+        try (Cursor c = db.rawQuery("SELECT text_en,audio_key FROM content_items WHERE item_type='letter'", null)) {
+            while (c.moveToNext()) {
+                String key = c.getString(1);
+                if (key == null || !key.startsWith("phoneme:")) throw new IllegalStateException("音标条目未指向基础包：" + c.getString(0));
+            }
+        }
     }
 
     private static long now() { return System.currentTimeMillis(); }
