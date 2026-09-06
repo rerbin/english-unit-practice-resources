@@ -19,7 +19,15 @@
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-Starter/manifest.json",
         "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-Starter/manifest.json"
-      }
+      },
+      "sources": [
+        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/4A-Starter-audio-v6.zip",
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-Starter-audio-v6.zip"
+      ],
+      "manifestSources": [
+        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/packs/4A-Starter/manifest.json",
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-Starter/manifest.json"
+      ]
     },
     {
       "unitId": "4A-U1",
@@ -37,13 +45,24 @@
       "manifestUrl": {
         "gitee": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/packs/4A-U1/manifest.json",
         "github": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-U1/manifest.json"
-      }
+      },
+      "sources": [
+        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/4A-U1-audio-v6.zip",
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/4A-U1-audio-v6.zip"
+      ],
+      "manifestSources": [
+        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/packs/4A-U1/manifest.json",
+        "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/packs/4A-U1/manifest.json"
+      ]
     }
   ],
   "phonicsBase": {
     "version": 1,
     "size": 3127173,
     "sha256": "31aba465b6c0d10d0200c542b12eff568b6f20ee8fcf9caec3e7ea15893a59ec",
-    "url": "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip"
+    "sources": [
+      "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/phonics-base-v1.zip",
+      "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip"
+    ]
   }
 }

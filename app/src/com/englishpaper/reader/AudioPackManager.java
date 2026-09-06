@@ -17,7 +17,7 @@ public final class AudioPackManager {
 
     private static final String[] CATALOG_URLS = {
         "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/catalog.json",
-        "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/catalog.json"
+        "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/catalog.json"
     };
 
     private final Context context;
@@ -25,7 +25,7 @@ public final class AudioPackManager {
     private final File packsRoot, baseRoot;
     private final android.content.SharedPreferences trialPrefs;
     private static final String TRIAL_PREF = "voice_trial_variant";
-    private volatile String baseUrl = "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip";
+    private volatile String[] baseUrls = new String[]{"https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/phonics-base-v1.zip","https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip"};
     private volatile long baseSize = 3127173L;
     private volatile int baseLatest = 1;
     private final Map<String, Map<String,String>> manifestCache = new ConcurrentHashMap<>();
@@ -88,9 +88,9 @@ public final class AudioPackManager {
     public boolean baseReady(){return new File(baseRoot,"manifest.json").isFile();}
     public JSONObject baseState(){JSONObject o=new JSONObject();try{o.put("ready",baseReady());o.put("installedVersion",baseReady()?manifestRootBase().optInt("packageVersion",0):0);o.put("latestVersion",baseLatest);o.put("updateAvailable",baseReady()&&baseLatest>manifestRootBase().optInt("packageVersion",0));}catch(Exception ignored){}return o;}
     private JSONObject manifestRootBase() throws Exception{return new JSONObject(readAll(new FileInputStream(new File(baseRoot,"manifest.json"))));}
-    private void applyBaseCatalog(JSONObject c){try{JSONObject b=c.optJSONObject("phonicsBase");if(b!=null){baseLatest=b.optInt("version",1);baseSize=b.optLong("size",baseSize);baseUrl=b.optString("url",baseUrl);}}catch(Exception ignored){}}
+    private void applyBaseCatalog(JSONObject c){try{JSONObject b=c.optJSONObject("phonicsBase");if(b!=null){baseLatest=b.optInt("version",1);baseSize=b.optLong("size",baseSize);JSONArray a=b.optJSONArray("sources");if(a!=null&&a.length()>0){baseUrls=new String[a.length()];for(int i=0;i<a.length();i++)baseUrls[i]=a.getString(i);}}}catch(Exception ignored){}}
     public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
-    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");if(!downloadResumable(baseUrl,part,baseSize,listener)){listener.onFinished(false,"基础发音包下载未完成");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
+    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础发音包下载未完成");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
 
     public String selectedVariant() { return trialPrefs.getString(TRIAL_PREF, "default"); }
     public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, variant).apply(); }
@@ -102,14 +102,14 @@ public final class AudioPackManager {
         try { o.put("selected", selectedVariant()); for (String v : new String[]{"piper","kokoro","sonia","cori"}) o.put(v, isTrialReady(v)); } catch (Exception ignored) { }
         return o;
     }
-    private String trialUrl(String variant) { return "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/voice-trial-" + variant + "-v1.zip"; }
+    private String[] trialUrls(String variant) { String f="voice-trial-"+variant+"-v1.zip";return new String[]{"https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/"+f,"https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/"+f}; }
     private long trialSize(String variant) { if ("piper".equals(variant)) return 8876658L; if ("kokoro".equals(variant)) return 9252066L; if ("sonia".equals(variant)) return 2120307L; if ("cori".equals(variant)) return 9236968L; return -1L; }
     public void downloadTrial(String variant, Listener listener) {
         new Thread(() -> {
             try {
                 if (!"piper".equals(variant) && !"kokoro".equals(variant) && !"sonia".equals(variant) && !"cori".equals(variant)) throw new IOException("未知语音方案");
                 File part = new File(packsRoot, "trial-" + safe(variant) + ".part");
-                if (!downloadResumable(trialUrl(variant), part, trialSize(variant), listener)) { listener.onFinished(false, "下载未完成，稍后可继续下载"); return; }
+                boolean ok=false;for(String u:trialUrls(variant)){if(downloadResumable(u,part,trialSize(variant),listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"下载未完成，稍后可继续下载");return;}
                 installTrial(part, variant); part.delete(); listener.onFinished(true, "语音方案下载成功，可用于试听");
             } catch (Exception e) { listener.onFinished(false, "下载失败：" + e.getMessage()); }
         }, "voice-trial-download").start();
@@ -199,8 +199,7 @@ public final class AudioPackManager {
                 String sha = unit.getString("sha256"); long size = unit.optLong("size", -1);
                 int installed = installedVersion(unitId); int latest = unit.optInt("audioVersion", 1);
                 if (installed > 0 && latest > installed) {
-                    JSONObject nm = null; JSONObject mu = unit.optJSONObject("manifestUrl");
-                    if (mu != null) for (String k : new String[]{"gitee", "github"}) { nm = fetchJson(mu.optString(k)); if (nm != null) break; }
+                    JSONObject nm=null;JSONObject mu=unit.optJSONObject("manifestUrl");JSONArray ms=unit.optJSONArray("manifestSources");if(ms!=null){for(int i=0;i<ms.length();i++){nm=fetchJson(ms.optString(i));if(nm!=null)break;}}else if(mu!=null){for(String k:new String[]{"github","gitee"}){nm=fetchJson(mu.optString(k));if(nm!=null)break;}}
                     if (nm != null) {
                         JSONArray items = nm.getJSONArray("items");
                         java.util.List<JSONObject> missing = new java.util.ArrayList<>(); long missingBytes = 0;
@@ -212,8 +211,9 @@ public final class AudioPackManager {
                         }
                     }
                 }
-                JSONObject mirrors = unit.getJSONObject("mirrors");
-                String[] urls = { mirrors.optString("gitee"), mirrors.optString("github") };
+                String[] urls;
+                JSONArray srcs=unit.optJSONArray("sources");
+                if(srcs!=null&&srcs.length()>0){urls=new String[srcs.length()];for(int i=0;i<srcs.length();i++)urls[i]=srcs.getString(i);}else{JSONObject mirrors=unit.getJSONObject("mirrors");urls=new String[]{mirrors.optString("github"),mirrors.optString("gitee")};}
                 File part = new File(packsRoot, safe(unitId) + ".part");
                 boolean got = false;
                 for (String u : urls) {
