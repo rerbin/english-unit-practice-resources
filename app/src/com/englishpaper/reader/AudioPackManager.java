@@ -119,7 +119,7 @@ public final class AudioPackManager {
     private JSONObject manifestRootBase() throws Exception{return new JSONObject(readAll(new FileInputStream(new File(baseRoot,"manifest.json"))));}
     private void applyBaseCatalog(JSONObject c){try{JSONObject b=c.optJSONObject("phonicsBase");if(b!=null){baseLatest=b.optInt("version",1);baseSize=b.optLong("size",baseSize);baseSha=b.optString("sha256",baseSha);JSONArray a=b.optJSONArray("sources");if(a!=null&&a.length()>0){baseUrls=new String[a.length()];for(int i=0;i<a.length();i++)baseUrls[i]=a.getString(i);}}}catch(Exception ignored){}}
     public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
-    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础发音包下载未完成");return;}if(!sha256(part).equalsIgnoreCase(baseSha)){part.delete();listener.onFinished(false,"基础发音包校验失败");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
+    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础音标发音下载暂时中断。请检查网络后重试；已下载的部分会保留。");return;}if(!sha256(part).equalsIgnoreCase(baseSha)){part.delete();listener.onFinished(false,"下载的基础音标发音文件不完整，已自动清除。请重新下载。");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础音标发音已下载，可以离线使用。");}catch(Exception e){listener.onFinished(false,"基础音标发音下载失败。请检查网络和存储空间后重试。");}},"phonics-base-download").start();}
 
     private static boolean allowedVariant(String variant) { return "default".equals(variant); }
     public String selectedVariant() { String v=trialPrefs.getString(TRIAL_PREF, "default"); return allowedVariant(v) ? v : "default"; }
@@ -137,11 +137,11 @@ public final class AudioPackManager {
     public void downloadTrial(String variant, Listener listener) {
         new Thread(() -> {
             try {
-                if (!allowedVariant(variant) || "default".equals(variant)) throw new IOException("未知语音方案");
+                if (!allowedVariant(variant) || "default".equals(variant)) throw new IOException("无法使用所选音色，请重新选择。");
                 File part = new File(packsRoot, "trial-" + safe(variant) + ".part");
-                boolean ok=false;for(String u:trialUrls(variant)){if(downloadResumable(u,part,trialSize(variant),listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"下载未完成，稍后可继续下载");return;}
-                installTrial(part, variant); part.delete(); listener.onFinished(true, "语音方案下载成功，可用于试听");
-            } catch (Exception e) { listener.onFinished(false, "下载失败：" + e.getMessage()); }
+                boolean ok=false;for(String u:trialUrls(variant)){if(downloadResumable(u,part,trialSize(variant),listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"下载暂时中断。请检查网络后重试；已下载的部分会保留。");return;}
+                installTrial(part, variant); part.delete(); listener.onFinished(true, "试听语音已下载，现在可以试听。");
+            } catch (Exception e) { listener.onFinished(false, "试听语音下载失败。请检查网络和存储空间后重试。"); }
         }, "voice-trial-download").start();
     }
     private void installTrial(File zip, String variant) throws IOException {
@@ -223,9 +223,9 @@ public final class AudioPackManager {
             try {
                 JSONObject catalog = fetchCatalog();
                 if (catalog == null) catalog = fetchCatalogNetwork();
-                if (catalog == null) { listener.onFinished(false, "无法获取语音目录，请检查网络"); return; }
+                if (catalog == null) { listener.onFinished(false, "暂时无法获取语音资源。请检查网络后重试。"); return; }
                 JSONObject unit = catalogUnit(catalog, unitId);
-                if (unit == null) { listener.onFinished(false, "目录中没有该单元的语音包"); return; }
+                if (unit == null) { listener.onFinished(false, "暂未提供本单元语音。请更新应用后再试。"); return; }
                 String sha = unit.getString("sha256"); long size = unit.optLong("size", -1);
                 int installed = installedVersion(unitId); int latest = unit.optInt("audioVersion", 1);
                 if (installed > 0 && latest > installed) {
@@ -236,7 +236,7 @@ public final class AudioPackManager {
                         for (int i = 0; i < items.length(); i++) { JSONObject it = items.getJSONObject(i); File f = new File(packDir(unitId), it.getString("file")); if (!f.isFile()) { missing.add(it); missingBytes += it.optLong("size", 0); } }
                         if (missingBytes <= 1_500_000 && downloadMissing(unitId, mu, missing, listener)) {
                             writeManifest(unitId, nm);
-                            listener.onFinished(true, "语音已更新到 v" + nm.optInt("packageVersion", latest));
+                            listener.onFinished(true, "本单元语音已更新，可以离线使用。");
                             return;
                         }
                     }
@@ -251,14 +251,14 @@ public final class AudioPackManager {
                     got = downloadResumable(u, part, size, listener);
                     if (got) break;
                 }
-                if (!got) { listener.onFinished(false, "下载未完成，稍后可继续下载"); return; }
+                if (!got) { listener.onFinished(false, "下载暂时中断。请检查网络后重试；已下载的部分会保留。"); return; }
                 String actual = sha256(part);
-                if (!actual.equalsIgnoreCase(sha)) { part.delete(); listener.onFinished(false, "文件校验失败，请重试"); return; }
+                if (!actual.equalsIgnoreCase(sha)) { part.delete(); listener.onFinished(false, "下载的语音文件不完整，已自动清除。请重新下载。"); return; }
                 install(part, unitId);
                 part.delete();
-                listener.onFinished(true, "语音已下载，可离线使用");
+                listener.onFinished(true, "本单元语音已下载，可以离线使用。");
             } catch (Exception e) {
-                listener.onFinished(false, "下载失败：" + e.getMessage());
+                listener.onFinished(false, "本单元语音下载失败。请检查网络和存储空间后重试。");
             }
         }, "audio-pack-download").start();
     }

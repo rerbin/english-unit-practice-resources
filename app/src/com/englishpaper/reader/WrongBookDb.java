@@ -150,7 +150,7 @@ public class WrongBookDb {
 
     private long scalar(SQLiteDatabase db, String sql, String[] args) { try (Cursor c = db.rawQuery(sql, args)) { return c.moveToFirst() ? c.getLong(0) : 0; } }
 
-    public synchronized void toggleMaster(long id) {
+    public synchronized boolean toggleMaster(long id) {
         SQLiteDatabase db = getWritableDatabase();
         int value = 0;
         try (Cursor c = db.rawQuery("SELECT mastered FROM mistakes WHERE id=? AND stage='active'", new String[]{String.valueOf(id)})) { if (c.moveToFirst()) value = c.getInt(0) == 0 ? 1 : 0; }
@@ -160,6 +160,7 @@ public class WrongBookDb {
         v.put("updated_at", now());
         db.update("mistakes", v, "id=? AND stage='active'", new String[]{String.valueOf(id)});
         event(db, id, value == 1 ? "marked_mastered" : "mastery_cancelled", null);
+        return value == 1;
     }
 
     public synchronized boolean archive(long id) {

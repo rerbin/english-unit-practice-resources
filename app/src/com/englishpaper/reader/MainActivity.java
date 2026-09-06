@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
     private MediaPlayer player;
     private SharedPreferences prefs;
     private float speechRate = 1.0f;
-    private String lastStatus = "离线发音";
+    private String lastStatus = "已下载的语音可以离线播放";
     private AppDatabase appDatabase;
     private WrongBookDb wrongDb;
     private ContentDb contentDb;
@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
         packs = new AudioPackManager(this,privateFiles);
         wrongDb = new WrongBookDb(appDatabase);
         contentDb = new ContentDb(this,appDatabase,privateFiles);
-        dbExecutor.execute(() -> { try { contentDb.ensureSeed(); } catch(Exception e){js("contentError",e.getMessage());} });
+        dbExecutor.execute(() -> { try { contentDb.ensureSeed(); } catch(Exception e){android.util.Log.e("MainActivity","Unable to initialize learning content",e);js("contentError","学习内容暂时无法打开。请重新启动应用；如果仍有问题，请更新或重新安装应用。");} });
         speechRate = prefs.getFloat(KEY_SPEECH_RATE, 1.0f);
 
         web = new WebView(this);
@@ -74,11 +74,11 @@ public class MainActivity extends Activity {
         web.setWebViewClient(new WebViewClient());
         web.setWebChromeClient(new WebChromeClient() {
             @Override public boolean onJsAlert(WebView view, String url, String message, final JsResult result) {
-                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("确定", (d, w) -> result.confirm()).setCancelable(false).show();
+                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("知道了", (d, w) -> result.confirm()).setCancelable(false).show();
                 return true;
             }
             @Override public boolean onJsConfirm(WebView view, String url, String message, final JsResult result) {
-                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("确定", (d, w) -> result.confirm()).setNegativeButton("取消", (d, w) -> result.cancel()).setCancelable(false).show();
+                new android.app.AlertDialog.Builder(MainActivity.this).setMessage(message).setPositiveButton("继续", (d, w) -> result.confirm()).setNegativeButton("取消", (d, w) -> result.cancel()).setCancelable(false).show();
                 return true;
             }
         });
@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
         speechRate = rate;
         prefs.edit().putFloat(KEY_SPEECH_RATE, rate).apply();
         applyRate();
-        status("语速已设为 " + Math.round(rate * 100) + "%");
+        status("播放速度已调整为 " + Math.round(rate * 100) + "%");
     }
     private void applyRate() {
         if (player != null) { try { PlaybackParams pp = player.getPlaybackParams(); pp.setSpeed(speechRate); pp.setPitch(1.0f); player.setPlaybackParams(pp); } catch (Exception ignored) { } }
@@ -116,16 +116,16 @@ public class MainActivity extends Activity {
         File packFile = packs.fileFor(unitId, resourceName);
         if (packFile != null) { playFile(packFile, id, next); return; }
         if (next) js0("playbackFailed");
-        status("本单元语音未下载，请先在顶部下载语音");
+        status("还没有下载本单元语音。请点击“下载语音”后再播放。");
     }
     private void playFile(File f, String id, boolean next) { runOnUiThread(() -> { try {
         stopPlayback(); player=new MediaPlayer(); player.setAudioAttributes(new AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_MEDIA).setContentType(AudioAttributes.CONTENT_TYPE_SPEECH).build());
         player.setDataSource(f.getAbsolutePath());
         player.setOnPreparedListener(mp->{try{PlaybackParams pp=mp.getPlaybackParams();pp.setSpeed(speechRate);pp.setPitch(1.0f);mp.setPlaybackParams(pp);}catch(Exception ignored){}mark(id);mp.start();js0("playbackStarted");});
         player.setOnCompletionListener(mp->{mp.release();player=null;js0("playbackEnded");if(next)web.evaluateJavascript("window.nextAudio()",null);});
-        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;js0("playbackEnded");js0("playbackFailed");status("离线语音播放失败");return true;});
+        player.setOnErrorListener((mp,w,e)->{mp.release();player=null;js0("playbackEnded");js0("playbackFailed");status("语音播放失败。请重试；如果仍无法播放，请重新下载本单元语音。");return true;});
         player.prepareAsync();
-    } catch(Exception e){ js0("playbackFailed"); status("离线语音播放失败："+e.getMessage()); } }); }
+    } catch(Exception e){ android.util.Log.e("MainActivity","Unable to play offline audio",e); js0("playbackFailed"); status("语音播放失败。请重试；如果仍无法播放，请重新下载本单元语音。"); } }); }
 
 
     private void stopPlayback() {
@@ -149,8 +149,9 @@ public class MainActivity extends Activity {
     private String buildWrongBookHtml() throws Exception {
         StringBuilder sb = new StringBuilder();
         sb.append("<html xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><head><meta charset=\"UTF-8\"><style>td,th{border:1px solid #999;padding:6px 10px;font-size:14px}th{background:#dce8f7}h1{font-size:18px}</style></head><body>");
-        sb.append("<h1>英语单元练 · 错题本</h1><table><tr><th>序号</th><th>单元</th><th>状态</th><th>错误类型</th><th>内容（英）</th><th>错误单词</th><th>中文</th></tr>");
-        android.database.Cursor c = appDatabase.getReadableDatabase().rawQuery("SELECT m.id,m.unit_id,m.stage,m.pronunciation_error,m.writing_error,m.text_en,m.translation FROM mistakes m ORDER BY m.unit_id,m.id", null);
+        String exportedAt = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(new java.util.Date());
+        sb.append("<h1>英语单元练 · 错题本</h1><p>导出时间：").append(esc(exportedAt)).append("</p><table><tr><th>序号</th><th>单元</th><th>状态</th><th>练习类型</th><th>英语内容</th><th>需练单词</th><th>中文</th></tr>");
+        android.database.Cursor c = appDatabase.getReadableDatabase().rawQuery("SELECT m.id,m.unit_id,m.stage,m.pronunciation_error,m.writing_error,m.text_en,m.translation,COALESCE(c.short_title,c.title,m.unit_title,m.unit_id) FROM mistakes m LEFT JOIN units c ON c.id=m.unit_id ORDER BY COALESCE(c.sort_order,999),m.id", null);
         int n = 0;
         while (c.moveToNext()) {
             n++;
@@ -159,8 +160,8 @@ public class MainActivity extends Activity {
             android.database.Cursor w = appDatabase.getReadableDatabase().rawQuery("SELECT word_text FROM mistake_words WHERE mistake_id=? ORDER BY word_index", new String[]{id});
             while (w.moveToNext()) { if (words.length() > 0) words.append("、"); words.append(w.getString(0)); }
             w.close();
-            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "+" : "") + (c.getInt(4) == 1 ? "拼写" : "");
-            sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(1))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已经掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(5))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(6))).append("</td></tr>");
+            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "、" : "") + (c.getInt(4) == 1 ? "拼写" : "");
+            sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(7))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(5))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(6))).append("</td></tr>");
         }
         c.close();
         sb.append("</table></body></html>");
@@ -172,28 +173,28 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void play(String unitId, String resource, String text, String id, boolean next) { MainActivity.this.play(unitId, resource, text, id, next); }
         @JavascriptInterface public void downloadUnitAudio(String unitId) { packs.download(unitId, new AudioPackManager.Listener(){ public void onProgress(int percent){ js("downloadProgress", packJson(unitId,percent,null,null)); } public void onFinished(boolean ok,String message){ js("downloadFinished", packJson(unitId,-1,ok,message)); } }); }
         @JavascriptInterface public void requestPhonicsState() { dbExecutor.execute(() -> { try { js("phonicsState", packs.baseState().toString()); } catch(Exception ignored){} }); }
-        @JavascriptInterface public void downloadPhonicsBase() { js("phonicsFinished", packJson("base",-1,true,"基础音标已内置，可离线使用")); }
+        @JavascriptInterface public void downloadPhonicsBase() { js("phonicsFinished", packJson("base",-1,true,"基础音标发音已内置，无需下载")); }
         @JavascriptInterface public void requestVoiceTrials() { js("voiceTrialState", packs.trialState().toString()); }
         @JavascriptInterface public void downloadVoiceTrial(String variant) { packs.downloadTrial(variant, new AudioPackManager.Listener(){ public void onProgress(int percent){ js("voiceTrialProgress", packJson(variant,percent,null,null)); } public void onFinished(boolean ok,String message){ js("voiceTrialFinished", packJson(variant,-1,ok,message)); } }); }
         @JavascriptInterface public void selectVoiceTrial(String variant) { packs.selectVariant(variant); js("voiceTrialState", packs.trialState().toString()); js("voiceTrialSelected", variant); }
         private String packJson(String unitId,int percent,Boolean ok,String message){ try{ org.json.JSONObject o=new org.json.JSONObject(); o.put("unitId",unitId); if(percent>=0)o.put("percent",percent); if(ok!=null)o.put("ok",ok); if(message!=null)o.put("message",message); return o.toString(); }catch(Exception e){ return "{\"unitId\":\""+unitId+"\"}"; } }
         @JavascriptInterface public void requestPackState(String unitId) { dbExecutor.execute(() -> { try { js("packState", packs.state(unitId, getAppVersionCode()).toString()); } catch (Exception e) { js("packState", "{\"ready\":false}"); } }); packs.refreshCatalogAsync(() -> { try { js("packState", packs.state(unitId, getAppVersionCode()).toString()); } catch (Exception ignored) { } }); }
-        @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ js("audioDeleted",unitId); } }); }
+        @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to delete unit audio",e); js("audioDeleteFailed","本单元语音删除失败。请稍后重试。"); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }
         @JavascriptInterface public void setSpeechRate(float rate) { runOnUiThread(() -> MainActivity.this.setSpeechRate(rate)); }
         @JavascriptInterface public String getSpeechRate() { return String.valueOf(speechRate); }
         @JavascriptInterface public String getAppVersion() { try { android.content.pm.PackageInfo pi = getPackageManager().getPackageInfo(getPackageName(), 0); return pi.versionName + " (" + pi.getLongVersionCode() + ")"; } catch (Exception e) { return ""; } }
-        @JavascriptInterface public void deleteWrong(long id) { dbExecutor.execute(() -> { wrongDb.delete(id); js("wrongDeleted", "错题已永久删除"); }); }
-        @JavascriptInterface public void requestCatalog() { dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("receiveCatalog",contentDb.catalog()); } catch(Exception e){js("contentError",e.getMessage());} }); }
-        @JavascriptInterface public void requestUnit(String unitId) { dbExecutor.execute(() -> { try { contentDb.setState("last_unit_id",unitId);js("receiveUnit",contentDb.unit(unitId)); } catch(Exception e){js("contentError",e.getMessage());} }); }
+        @JavascriptInterface public void deleteWrong(long id) { dbExecutor.execute(() -> { wrongDb.delete(id); js("wrongDeleted", "这道错题已永久删除，无法恢复。"); }); }
+        @JavascriptInterface public void requestCatalog() { dbExecutor.execute(() -> { try { contentDb.ensureSeed();js("receiveCatalog",contentDb.catalog()); } catch(Exception e){android.util.Log.e("MainActivity","Unable to initialize learning content",e);js("contentError","学习内容暂时无法打开。请重新启动应用；如果仍有问题，请更新或重新安装应用。");} }); }
+        @JavascriptInterface public void requestUnit(String unitId) { dbExecutor.execute(() -> { try { contentDb.setState("last_unit_id",unitId);js("receiveUnit",contentDb.unit(unitId)); } catch(Exception e){android.util.Log.e("MainActivity","Unable to initialize learning content",e);js("contentError","学习内容暂时无法打开。请重新启动应用；如果仍有问题，请更新或重新安装应用。");} }); }
         @JavascriptInterface public void requestLastUnit() { dbExecutor.execute(() -> js("receiveLastUnit",contentDb.getState("last_unit_id","4A-Starter"))); }
-        @JavascriptInterface public void requestWrongAll(String stage,String filter,String unitId,int offset) { dbExecutor.execute(() -> { try { String scope=unitId==null?"":unitId; org.json.JSONObject o=new org.json.JSONObject(); o.put("list",new org.json.JSONObject(wrongDb.list(stage,filter,scope,50,offset))); o.put("counts",new org.json.JSONObject(wrongDb.counts(scope))); o.put("totalCounts",new org.json.JSONObject(wrongDb.counts(""))); o.put("stage",stage); o.put("filter",filter); o.put("unitId",scope); js("receiveWrongAll",o.toString()); } catch(Exception e){ js("wrongBookError",e.getMessage()); } }); }
-        @JavascriptInterface public void saveMistake(String json) { dbExecutor.execute(() -> { try { wrongDb.saveMistake(json);js("mistakeSaved","已记入错题本"); } catch(Exception e){ js("wrongBookError",e.getMessage()); } }); }
-        @JavascriptInterface public void toggleMaster(long id) { dbExecutor.execute(() -> { wrongDb.toggleMaster(id);js("wrongBookChanged","掌握状态已更新"); }); }
-        @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已放入已经掌握":"请先标记为已掌握"); }); }
-        @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已放回正在练习"); }); }
+        @JavascriptInterface public void requestWrongAll(String stage,String filter,String unitId,int offset) { dbExecutor.execute(() -> { try { String scope=unitId==null?"":unitId; org.json.JSONObject o=new org.json.JSONObject(); o.put("list",new org.json.JSONObject(wrongDb.list(stage,filter,scope,50,offset))); o.put("counts",new org.json.JSONObject(wrongDb.counts(scope))); o.put("totalCounts",new org.json.JSONObject(wrongDb.counts(""))); o.put("stage",stage); o.put("filter",filter); o.put("unitId",scope); js("receiveWrongAll",o.toString()); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to load wrong book",e); js("wrongBookError","错题本暂时无法打开。请稍后重试。"); } }); }
+        @JavascriptInterface public void saveMistake(String json) { dbExecutor.execute(() -> { try { wrongDb.saveMistake(json);js("mistakeSaved","已加入错题本，可以稍后继续练习。"); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to save mistake",e); js("wrongBookError","暂时无法加入错题本。请稍后重试。"); } }); }
+        @JavascriptInterface public void toggleMaster(long id) { dbExecutor.execute(() -> { boolean mastered=wrongDb.toggleMaster(id);js("wrongBookChanged",mastered?"已标记为“已掌握”。":"已取消“已掌握”标记。"); }); }
+        @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已移到“已掌握”。":"请先标记为“已掌握”，再移出。"); }); }
+        @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已移回“正在练习”，可以继续复习。"); }); }
         @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { wrongDb.spellResult(id,correct,entered);js("spellSaved",correct?"correct":"wrong"); }); }
         @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); String stamp=new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm",java.util.Locale.US).format(new java.util.Date()); i.putExtra(Intent.EXTRA_TITLE,"错题本_"+stamp+".xls"); startActivityForResult(i, EXPORT_WRONG); }); }
     }
@@ -201,7 +202,7 @@ public class MainActivity extends Activity {
     @Override protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
         if (result != RESULT_OK || data == null || data.getData() == null) return;
-        if (request == EXPORT_WRONG) { final Uri uri=data.getData(); dbExecutor.execute(() -> { try { String html=buildWrongBookHtml(); OutputStream out=getContentResolver().openOutputStream(uri); out.write(html.getBytes("UTF-8")); out.close(); js("exportFinished","错题已导出，可用 Excel 打开打印"); } catch (Exception e) { js("exportFinished","导出失败："+e.getMessage()); } }); }
+        if (request == EXPORT_WRONG) { final Uri uri=data.getData(); dbExecutor.execute(() -> { try { String html=buildWrongBookHtml(); OutputStream out=getContentResolver().openOutputStream(uri); out.write(html.getBytes("UTF-8")); out.close(); js("exportFinished","错题本已保存，可以用表格应用打开或打印。"); } catch (Exception e) { android.util.Log.e("MainActivity","Unable to export wrong book",e); js("exportFinished","导出失败。请重新选择保存位置，并确认设备有足够的存储空间。"); } }); }
     }
 
     @Override public void onBackPressed() {
