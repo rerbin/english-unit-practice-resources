@@ -25,6 +25,9 @@ public final class AudioPackManager {
     private final File packsRoot, baseRoot;
     private final android.content.SharedPreferences trialPrefs;
     private static final String TRIAL_PREF = "voice_trial_variant";
+    private volatile String baseUrl = "https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip";
+    private volatile long baseSize = 3127173L;
+    private volatile int baseLatest = 1;
     private final Map<String, Map<String,String>> manifestCache = new ConcurrentHashMap<>();
 
     public AudioPackManager(Context context, PrivateFileStore files) {
@@ -83,7 +86,11 @@ public final class AudioPackManager {
     }
 
     public boolean baseReady(){return new File(baseRoot,"manifest.json").isFile();}
-    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");if(!downloadResumable("https://raw.githubusercontent.com/rerbin/english-unit-practice-resources/main/phonics-base-v1.zip",part,3127173L,listener)){listener.onFinished(false,"基础发音包下载未完成");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
+    public JSONObject baseState(){JSONObject o=new JSONObject();try{o.put("ready",baseReady());o.put("installedVersion",baseReady()?manifestRootBase().optInt("packageVersion",0):0);o.put("latestVersion",baseLatest);o.put("updateAvailable",baseReady()&&baseLatest>manifestRootBase().optInt("packageVersion",0));}catch(Exception ignored){}return o;}
+    private JSONObject manifestRootBase() throws Exception{return new JSONObject(readAll(new FileInputStream(new File(baseRoot,"manifest.json"))));}
+    private void applyBaseCatalog(JSONObject c){try{JSONObject b=c.optJSONObject("phonicsBase");if(b!=null){baseLatest=b.optInt("version",1);baseSize=b.optLong("size",baseSize);baseUrl=b.optString("url",baseUrl);}}catch(Exception ignored){}}
+    public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
+    public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");if(!downloadResumable(baseUrl,part,baseSize,listener)){listener.onFinished(false,"基础发音包下载未完成");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础发音包下载成功");}catch(Exception e){listener.onFinished(false,"基础包下载失败："+e.getMessage());}},"phonics-base-download").start();}
 
     public String selectedVariant() { return trialPrefs.getString(TRIAL_PREF, "default"); }
     public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, variant).apply(); }
