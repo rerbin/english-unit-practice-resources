@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 1.49.0
+version: 2.0.0
 ---
 
 # 英语单元练-持续更新
@@ -15,7 +15,7 @@ version: 1.49.0
 - 产品边界：APK 只含程序、数据库、下载器与少量试听音；单元语音按单元在线下载，下载后完全离线；APK 不随单元数量变大（1.21.0 起约 110KB）。
 - 数据层：单一 `AppDatabase`（SQLite，WAL+外键）拥有连接；`ContentDb`/`WrongBookDb` 只是仓储。表：textbooks、units、sections、content_items、item_options、audio_assets、package_imports、app_state、mistakes、mistake_words、learning_events。开发期结构变更直接破坏性重建，不写迁移。
 - 文件层：`files/learning_content/` 私有目录存 packs、audio、images、packages；`cache/import_staging/` 临时目录用完清理；数据库只存相对路径与 SHA-256。
-- 语音策略：公开单元包用 Piper `en_GB-alba-medium`（数据集 CC BY 4.0，保留归属）；Talkify/Edge 消费者接口仅研究结论，不复制进 App、不批量公开分发；系统 TTS 仅作无包时自动后备；不再引导家长手工安装第三方 TTS APK。
+- 【历史废弃】语音策略：公开单元包用 Piper `en_GB-alba-medium`（数据集 CC BY 4.0，保留归属）；Talkify/Edge 消费者接口仅研究结论，不复制进 App、不批量公开分发；系统 TTS 仅作无包时自动后备；不再引导家长手工安装第三方 TTS APK。
 - 托管：GitHub `rerbin/english-unit-practice-resources`（main）为权威归档与国际备用；Gitee 同名仓库（master）为中国优先镜像。App 目录与下载均“Gitee 优先、GitHub 自动回退”。正式长期可再增国内对象存储。
 - 错题本：正在练习/已经掌握两区；“已掌握”只打对号不删除；“移出练习”需确认并进入已经掌握；拼写正确自动打对号并返回；删除单元语音时保留错题引用音频。
 - 历史教训（避免重犯）：WebView 内联 onclick 遇英文引号会失效，改为事件委托；`localStorage` 不存业务数据；Readify 不是系统 TTS 引擎，不能被他 App 调用；Gitee Release 有防盗链/验证码，发布用仓库 raw 文件而非 Release 附件；旧 GitHub 令牌对新仓库无权限（403），新仓库需新 fine-grained PAT；令牌不得回显（sed 脱敏）。
@@ -122,7 +122,7 @@ version: 1.49.0
 - 修复：视图切换监听与 active 切换只作用于 `.navbtn[data-view]`；设置是弹层不是视图，永不参与 tab 高亮；打开/关闭设置不改变当前视图 tab。
 - 纪律：弹层触发器不得复用视图 tab 的绑定与高亮逻辑；无 data-view 的导航按钮必须排除在视图切换之外。
 
-## 语音质量专题盘（Kokoro 换代，v5 语音包）
+## 【历史废弃】语音质量专题盘（Kokoro 换代，v5 语音包）
 
 - 选型结论：Kokoro-82M（Apache-2.0，权重与音色库均商业可用）取代 Piper en_GB-alba 作主音色；固定 bf_emma（英式女声）全 App 统一，不混用引擎/口音（共享方案评审共识：固定单一 voice 利于小学生形成稳定发音体系）。
 - 三级架构裁剪：固定试卷内容全部走“预生成+语音包携带”（零延迟/零耗电/完全离线）；端侧实时生成被否（需 APK 内嵌 325MB 模型）；缓存键思想 SHA256(text+voice+version) 与现有按内容 SHA 命名一致。
@@ -314,7 +314,7 @@ cache/import_staging/          仅解压/还原临时数据，App 启动即清�
 - 项目根：`<ws>/english-paper-reader/`；构建：`./english-paper-reader/build.sh <versionCode> <versionName>`（内部用 `<nas>/tools/jdk` 与 `<nas>/tools/android-sdk/build-tools/35.0.0`；apksigner 需 java 在 PATH：`export PATH=<nas>/tools/jdk/bin:$PATH`）。
 - 签名：`mooc-tv-work/mooc-tv-release.jks`，alias `mooc-tv`（密码已在 build.sh 内）。
 - 单元内容 JSON：`res/raw/starter_unit.json`、`res/raw/4au1_my_school.json`；新增单元放 `english-paper-reader/publish/units/<unitId>.json`（schema `english-paper/v1`，含 translation）。
-- Piper 模型（持久）：`english-paper-reader/tools/piper/en_GB-alba-medium.onnx(.json)`；piper Python 包安装到持久目录 `<ws>/tools/piper-tts`（不要装 /tmp，容器重启即失）。
+- 【历史废弃】Piper/Kokoro/Alba/Cori 已从现行工具链删除；当前正式单元语音仅 Microsoft Sonia，生成别名含 `Ms→Miz`。
 - 发布目录：`english-paper-reader/publish/`（catalog.json、units/、<unitId>-audio-v1.zip、解压包目录）。
 - 凭据：GitHub 令牌在 `<ws>/github-token-template.txt` 第 1 行；Gitee 令牌在 `<ws>/gitee-token-template.txt` 第一个非 `#` 行。缺失或 403 时让用户按模板重新生成（GitHub fine-grained：仅该仓库、Contents 读写；Gitee：projects 权限）。
 
@@ -452,4 +452,5 @@ ALWAYS use this exact template:
 - 2026-09-06：APK 1.71.0（code75）。已掌握卡片删除“已收好”，动作统一为听/拼/重练/删除图标短文案；GitHub release 383586658；skill v1.47.0。
 - 2026-09-06：APK 1.72.0（code76）。正在练习掌握/移出补图标；底部三 Tab 改统一 22x22 线性 SVG 并消除 badge 基线偏差；GitHub release 383593446；skill v1.48.0。
 - 2026-09-06：APK 1.73.0（code77）。每单元会话内记忆阅读位置并瞬间恢复；导航/筛选无平滑动画，仅连读焦点保留；GitHub release 383597990；skill v1.49.0。
+- 2026-09-06：APK 2.0.0（code78）。M3 Expressive-inspired全视觉系统重构，语义色/统一SVG/形状层级/克制动效/可访问性；保留全部1.73业务与数据；GitHub release 383618660，commit e6c56aa；skill v2.0.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
