@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.0.6
+version: 2.1.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,18 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.1.0 跟读练习（读按钮 + 离线 Vosk）
+
+- 错题卡“听”永久改为“读”（mic 图标，data-act=read）；点开“跟读练习”弹窗：听示范（readModel 焦点 ID 承担播放态）→ 开始/结束跟读 → 对比结果。拼写弹窗删除听发音，仅纯拼写检查（提示语“看中文，写出完整的英文。”）。
+- 引擎：vosk-android 0.3.45 AAR（classes.jar 16KB 进 dex；libvosk.so/libjnidispatch.so arm64 进按需引擎包，APK 不含 .so）+ JNA 5.13.0。加载顺序：`jna.boot.library.path` → System.load(libjnidispatch) → System.load(libvosk) → new Model(modelDir)。grammar 走构造器 `Recognizer(Model,float,String)`（0.3.45 无 setGrammar），并 setWords(true)。
+- 引擎包 `speech-engine-vosk-v1.zip`（44,099,422B，sha 290cc1f3e69822f144009aa3b69d4a24d9991735b3e26a3a8245d0ca007fec2f）= lib/arm64-v8a + model(vosk-model-small-en-us-0.15, sha 30f26242…498) + manifest；仅 GitHub release asset（v2.1.0），AudioPackManager.downloadEngine 断点续传+SHA+结构校验后装到 files/speech-engine。
+- 录音：AudioRecord 16k mono 16bit → cache PCM → WAV 头 → recognize；RECORD_AUDIO 运行时权限，拒绝给明确文案；音频对比后立即删除。
+- 评分（ReadAloudScorer，纯 Java 可 JVM 单测）：normalize；单词=完全匹配；句子=词级匹配率≥0.8；空=unclear（不算失败）；fail 给 phonemeHint（CMUdict 子集 phoneme_dict.json，94→130KB：教材词+教学易混词，IPA+音素近邻≤3 用于约束语法与纠音；近邻优先教材词）。
+- pass → setMastered(id,true) + 全局提示“读得很准，已标记为“已掌握”。”+ 刷新；可撤销（再点已掌握）。移出仍手动。
+- 弹窗复用拼写弹窗稳定锚点（top16px、只改高度不改位置）；引擎未下载时弹窗内显示下载面板与进度。
+- 构建：build.sh classpath/d8 增加 libs/vosk-classes.jar、libs/jna-classes.jar；APK 约 825KB。
+- 门禁：浏览器 mock 桥接全流程（engine 未就绪禁用→下载→recording/scoring→pass/fail/unclear→retry→close cancel）；JVM 单测 ReadAloudScorer；APK 解包核对 dex 含 org/vosk 与 com/sun/jna、manifest UTF-16 RECORD_AUDIO、phoneme_dict 在 raw。
+
 ## 2.0.6 拼写弹窗稳定锚点
 
 - 根因：通用 dialog 先垂直居中；输入框延迟聚焦后键盘触发 visualViewport 缩小，再切 keyboard-open 顶部定位；点听音失焦收键盘后又退出顶部定位，造成中间→顶部→中间往返。
@@ -491,4 +503,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.4（code82）。拼写听音增加正在播放态；键盘按 visualViewport 自动上移限高；顶部两行完整显示英文单元主题；GitHub release 383768702，commit 4689315；skill v2.0.4。
 - 2026-09-07：APK 2.0.5（code83）。错题本单元筛选移除全/S/1徽标，改纯文字双行卡并保留选中语义；GitHub release 383773859，commit e0b63f1；skill v2.0.5。
 - 2026-09-07：APK 2.0.6（code84）。拼写弹窗首帧固定顶部16px，键盘/听音只改高度不改位置，消除往返跳动；GitHub release 383779427，commit 69844ef；skill v2.0.6。
+- 2026-09-07：APK 2.1.0（code85）。错题“听”改“读”：跟读练习+离线Vosk引擎包按需下载+音素纠音；拼写弹窗纯化；GitHub release 384105171；skill v2.1.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
