@@ -28,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
@@ -249,11 +251,11 @@ public class MainActivity extends Activity {
             recordThread = new Thread(() -> {
                 try (FileOutputStream out = new FileOutputStream(readPcm)) {
                     while (recording) { int n = recorder.read(b, 0, b.length); if (n > 0) out.write(b, 0, n); }
-                } catch (Exception ignored) { }
+                } catch (Throwable ignored) { }
             }, "readaloud-record");
             recordThread.start();
-        } catch (Exception e) {
-            android.util.Log.e("MainActivity", "Unable to start recording", e);
+        } catch (Throwable t) {
+            android.util.Log.e("MainActivity", "Unable to start recording", t);
             js("readAloudState", "error");
         }
     }
@@ -270,8 +272,14 @@ public class MainActivity extends Activity {
             try {
                 File wav = new File(getCacheDir(), "readaloud.wav");
                 writeWav(readPcm, wav);
-                if (!SpeechEngine.isLoaded()) SpeechEngine.load(packs.engineRoot());
+                if (!SpeechEngine.isLoaded() && !SpeechEngine.load(packs.engineRoot())) {
+                    String msg = SpeechEngine.getLoadError();
+                    js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "跟读引擎加载失败。" : msg).toString());
+                    js("readAloudState", "error");
+                    return;
+                }
                 String raw = SpeechEngine.recognize(wav, grammarFor(text));
+                if (raw == null) { js("readAloudState", "error"); return; }
                 org.json.JSONObject r = new org.json.JSONObject(raw);
                 String heard = r.optString("text", "").trim();
                 double conf = avgConf(r);
@@ -286,10 +294,24 @@ public class MainActivity extends Activity {
                 o.put("id", id); o.put("state", state); o.put("heard", heard); o.put("conf", conf);
                 if (hint != null) o.put("hint", hint);
                 js("readAloudResult", o.toString());
-            } catch (Exception e) {
-                android.util.Log.e("MainActivity", "Read aloud scoring failed", e);
+            } catch (Throwable t) {
+                android.util.Log.e("MainActivity", "Read aloud scoring failed", t);
                 js("readAloudState", "error");
             }
+        });
+    }
+
+    /** Background preload so native failures surface as messages, never crashes. */
+    private void preloadEngine() {
+        readExecutor.execute(() -> {
+            if (SpeechEngine.isLoaded()) { js("engineLoadResult", "{\"ok\":true}"); return; }
+            boolean ok = SpeechEngine.load(packs.engineRoot());
+            try {
+                org.json.JSONObject o = new org.json.JSONObject();
+                o.put("ok", ok);
+                if (!ok) o.put("message", SpeechEngine.getLoadError() == null ? "跟读引擎加载失败。" : SpeechEngine.getLoadError());
+                js("engineLoadResult", o.toString());
+            } catch (Exception ignored) { }
         });
     }
 
@@ -337,8 +359,8 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to delete unit audio",e); js("audioDeleteFailed","本单元语音删除失败。请稍后重试。"); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
-        @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> js("engineState", packs.engineState().toString())); }
-        @JavascriptInterface public void downloadEngine() { packs.downloadEngine(new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); } }); }
+        @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> { js("engineState", packs.engineState().toString()); try { if (packs.engineState().optBoolean("ready")) preloadEngine(); } catch (Exception ignored) { } }); }
+        @JavascriptInterface public void downloadEngine() { packs.downloadEngine(new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); if(ok) preloadEngine(); } }); }
         @JavascriptInterface public void startReadAloud(long id, String text) { runOnUiThread(() -> startReadAloud(id, text)); }
         @JavascriptInterface public void stopReadAloud() { runOnUiThread(() -> stopReadAloud()); }
         @JavascriptInterface public void cancelReadAloud() { runOnUiThread(() -> { recording = false; try { if (recorder != null) { try { recorder.stop(); } catch (Exception ignored) { } recorder.release(); recorder = null; } } catch (Exception ignored) { } if (readPcm != null) readPcm.delete(); js("readAloudState", "cancelled"); }); }
