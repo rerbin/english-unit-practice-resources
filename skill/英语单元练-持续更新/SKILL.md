@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.0.4
+version: 2.0.5
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.0.5 错题本单元筛选纯文字卡
+
+- 错题本单元筛选中的“全/S/1”等徽标与“全部/Starter/Unit 1”重复，永久移除；禁止用首字母、序号或新图标补位。
+- 错题筛选项使用 `.unitcard.textonly` 纯文字双行卡：第一行简称，第二行范围说明或 `unitTopic(u)` 完整英文主题；最小高度72px、左右内边距18px，长主题自然换行。
+- 当前筛选项只用浅蓝色面和蓝色边框表达，不加对号；同时设置 `aria-pressed=true/false`，状态不只靠颜色。
+- “全部”和各具体单元必须使用同一布局，文字左边缘完全对齐。释放出的宽度用于完整主题。
+- 该变更仅用于错题本上下文；学习页单元列表仍可保留顺序徽标和原切换逻辑。筛选不得修改学习页 `currentUnitIndex` 或调用 `requestUnit`。
+
 ## 2.0.4 拼写弹窗、键盘与完整单元名称
 
 - 拼写弹窗的听音按钮自身就是播放焦点：原生播放 ID 固定为 `spellAudio`；播放开始后主蓝 `#315DA8` + 白色、文案“正在播放”、`aria-pressed=true`，完成/停止/失败/关闭/答对自动关闭时恢复“听发音”。禁止把焦点落到弹窗背后的错题卡。
@@ -473,4 +481,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.2（code80）。全量文案审计与统一术语，新增跨页面提示、删除分级、可恢复错误提示、导出表格可读单元；GitHub release 383749804，commit e78f149；skill v2.0.2。
 - 2026-09-07：APK 2.0.3（code81）。错题本听音与学习页统一卡片、按钮播放态及 aria，完成、停止、失败时清理；GitHub release 383763090，commit f39eb46；skill v2.0.3。
 - 2026-09-07：APK 2.0.4（code82）。拼写听音增加正在播放态；键盘按 visualViewport 自动上移限高；顶部两行完整显示英文单元主题；GitHub release 383768702，commit 4689315；skill v2.0.4。
+- 2026-09-07：APK 2.0.5（code83）。错题本单元筛选移除全/S/1徽标，改纯文字双行卡并保留选中语义；GitHub release 383773859，commit e0b63f1；skill v2.0.5。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
