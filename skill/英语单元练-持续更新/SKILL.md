@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.1.2
+version: 2.2.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,16 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.2.0 跟读模型可管理＋可选＋国内镜像
+
+- 设置新增“跟读模型”入口与独立管理页：运行库卡（约6MB，共用一次）＋模型卡（轻量版约40MB／高精度版约125MB），每卡含名称、简介、体积说明、安装状态；按钮：下载／选择此模型／删除（删除仅限非当前模型，confirm 明示可重下）。
+- 注册表 `res/raw/readaloud_models.json`：runtime+models，每 source 含 url/sha256/size；模型源 **hf-mirror.com 国内镜像优先**，HuggingFace 与 GitHub release 作回退；ModelScope 经核验无 vosk 托管（API/页面 404），不作为源。
+- 下载优化：`orderedSources` 并行 HEAD 探测（2.5s 超时）按 RTT 排序；同源断点续传；跨源失败删除 part 重新起（不同 zip 字节不可跨源续传）；进度同时更新读弹窗与管理页按钮（百分比）。
+- 存储分层：`files/speech-runtime`（lib）＋ `files/speech-models/<id>`（model）；旧 v2 合并包 `files/speech-engine` 启动时自动迁移拆分后删除。
+- SpeechEngine.load(runtimeRoot, modelRoot)；识别用所选模型；grammar 仍走构造器。
+- JS 陷阱复盘：`engineDownloadProgress/Finished` 曾重复定义，函数声明提升导致后定义覆盖前定义，管理页进度不刷新；**同名函数只能有一处定义**，合并而非新增。
+- 发布：release v2.2.0 三 asset（runtime 5,860,944 / small 41,183,169 / APK）；runtime 另推 Gitee raw 作国内源。APK asset 首次上传丢失需补传并 HEAD 复核 content-length。
+
 ## 2.1.2 Bridge 同名自委托递归闪退
 
 - 真机栈：`StackOverflowError`，帧为 `Bridge.startReadAloud → lambda → runOnUiThread → Bridge.startReadAloud` 无限循环。根因：内部类 `Bridge` 的 `@JavascriptInterface` 方法体内 `runOnUiThread(() -> startReadAloud(id,text))` 中无限定调用解析为 **Bridge 自身同名方法**，而非外层 Activity 方法；`stopReadAloud` 同病。
@@ -522,4 +532,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.1.0（code85）。错题“听”改“读”：跟读练习+离线Vosk引擎包按需下载+音素纠音；拼写弹窗纯化；GitHub release 384105171；skill v2.1.0。
 - 2026-09-07：APK 2.1.1（code86）。跟读原生加载加固：Throwable 捕获+双 ABI 引擎包 v2+预加载失败提示；GitHub release v2.1.1；skill v2.1.1。
 - 2026-09-07：APK 2.1.2（code87）。修复 Bridge 同名自委托无限递归闪退（MainActivity.this 限定+门禁）；GitHub release 384125273；skill v2.1.2。
+- 2026-09-08：APK 2.2.0（code88）。跟读模型设置可管理/可选/国内镜像（hf-mirror 优先+探测+续传+故障切换）；旧包自动迁移；GitHub release 384347373；skill v2.2.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
