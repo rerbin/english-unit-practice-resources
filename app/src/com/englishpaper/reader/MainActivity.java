@@ -9,6 +9,11 @@ import android.media.PlaybackParams;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.AudioRecord;
+import android.media.AudioFormat;
+import android.media.MediaRecorder;
+import android.Manifest;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
@@ -43,6 +48,16 @@ public class MainActivity extends Activity {
     private PrivateFileStore privateFiles;
     private AudioPackManager packs;
     private final ExecutorService dbExecutor = Executors.newSingleThreadExecutor();
+    private static final int REQ_MIC = 45;
+    private AudioRecord recorder;
+    private Thread recordThread;
+    private volatile boolean recording;
+    private File readPcm;
+    private String pendingReadText;
+    private long pendingReadId;
+    private final ExecutorService readExecutor = Executors.newSingleThreadExecutor();
+    private Map<String, String[]> phonemeIpa;
+    private Map<String, String[]> phonemeNeighbors;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -139,6 +154,145 @@ public class MainActivity extends Activity {
     }
 
 
+    private Map<String, String[]> loadPhonemeDict() {
+        if (phonemeIpa != null) return phonemeIpa;
+        Map<String, String[]> ipa = new HashMap<>();
+        Map<String, String[]> nb = new HashMap<>();
+        try {
+            int id = getResources().getIdentifier("phoneme_dict", "raw", getPackageName());
+            InputStream in = getResources().openRawResource(id);
+            java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+            byte[] b = new byte[8192]; int n;
+            while ((n = in.read(b)) != -1) bos.write(b, 0, n);
+            in.close();
+            org.json.JSONObject root = new org.json.JSONObject(new String(bos.toByteArray(), "UTF-8"));
+            for (java.util.Iterator<String> it = root.keys(); it.hasNext(); ) {
+                String w = it.next();
+                org.json.JSONObject e = root.getJSONObject(w);
+                org.json.JSONArray a = e.optJSONArray("ipa");
+                if (a != null) { String[] arr = new String[a.length()]; for (int i = 0; i < a.length(); i++) arr[i] = a.getString(i); ipa.put(w, arr); }
+                org.json.JSONArray ns = e.optJSONArray("neighbors");
+                if (ns != null) { String[] arr = new String[ns.length()]; for (int i = 0; i < ns.length(); i++) arr[i] = ns.getString(i); nb.put(w, arr); }
+            }
+        } catch (Exception e) { android.util.Log.e("MainActivity", "Unable to load phoneme dict", e); }
+        phonemeIpa = ipa; phonemeNeighbors = nb;
+        return ipa;
+    }
+
+    private String grammarFor(String text) {
+        java.util.List<String> ws = ReadAloudScorer.words(text);
+        if (ws.size() != 1) return null;
+        loadPhonemeDict();
+        String[] nb = phonemeNeighbors.get(ws.get(0));
+        if (nb == null || nb.length == 0) return null;
+        org.json.JSONArray g = new org.json.JSONArray();
+        g.put(ws.get(0));
+        for (String x : nb) g.put(x);
+        return g.toString();
+    }
+
+    private static double avgConf(org.json.JSONObject r) {
+        try {
+            org.json.JSONArray a = r.optJSONArray("result");
+            if (a == null || a.length() == 0) return -1;
+            double sum = 0; int n = 0;
+            for (int i = 0; i < a.length(); i++) { double c = a.getJSONObject(i).optDouble("conf", -1); if (c >= 0) { sum += c; n++; } }
+            return n == 0 ? -1 : sum / n;
+        } catch (Exception e) { return -1; }
+    }
+
+    private static void writeWav(File pcm, File wav) throws IOException {
+        byte[] data = java.nio.file.Files.readAllBytes(pcm.toPath());
+        try (FileOutputStream out = new FileOutputStream(wav)) {
+            out.write(new byte[]{'R','I','F','F'});
+            writeInt(out, 36 + data.length);
+            out.write(new byte[]{'W','A','V','E','f','m','t',' '});
+            writeInt(out, 16); writeShort(out, (short)1); writeShort(out, (short)1);
+            writeInt(out, 16000); writeInt(out, 32000); writeShort(out, (short)2); writeShort(out, (short)16);
+            out.write(new byte[]{'d','a','t','a'});
+            writeInt(out, data.length);
+            out.write(data);
+        }
+    }
+    private static void writeInt(OutputStream o, int v) throws IOException { o.write(v & 0xff); o.write((v >> 8) & 0xff); o.write((v >> 16) & 0xff); o.write((v >> 24) & 0xff); }
+    private static void writeShort(OutputStream o, short v) throws IOException { o.write(v & 0xff); o.write((v >> 8) & 0xff); }
+
+    private void startReadAloud(long id, String text) {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            pendingReadId = id; pendingReadText = text;
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQ_MIC);
+            return;
+        }
+        beginRecording(id, text);
+    }
+
+    @Override public void onRequestPermissionsResult(int req, String[] perms, int[] res) {
+        super.onRequestPermissionsResult(req, perms, res);
+        if (req == REQ_MIC) {
+            if (res.length > 0 && res[0] == PackageManager.PERMISSION_GRANTED && pendingReadText != null) beginRecording(pendingReadId, pendingReadText);
+            else { pendingReadText = null; js("readAloudState", "denied"); }
+        }
+    }
+
+    private void beginRecording(long id, String text) {
+        pendingReadId = id; pendingReadText = text;
+        try {
+            stopPlayback();
+            int buf = Math.max(AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), 6400);
+            recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buf);
+            if (recorder.getState() != AudioRecord.STATE_INITIALIZED) { recorder.release(); recorder = null; js("readAloudState", "error"); return; }
+            readPcm = new File(getCacheDir(), "readaloud.pcm");
+            recording = true;
+            recorder.startRecording();
+            js("readAloudState", "recording");
+            final byte[] b = new byte[3200];
+            recordThread = new Thread(() -> {
+                try (FileOutputStream out = new FileOutputStream(readPcm)) {
+                    while (recording) { int n = recorder.read(b, 0, b.length); if (n > 0) out.write(b, 0, n); }
+                } catch (Exception ignored) { }
+            }, "readaloud-record");
+            recordThread.start();
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "Unable to start recording", e);
+            js("readAloudState", "error");
+        }
+    }
+
+    private void stopReadAloud() {
+        if (!recording) return;
+        recording = false;
+        try { if (recordThread != null) recordThread.join(1500); } catch (Exception ignored) { }
+        try { if (recorder != null) { try { recorder.stop(); } catch (Exception ignored) { } recorder.release(); recorder = null; } } catch (Exception ignored) { }
+        js("readAloudState", "scoring");
+        final String text = pendingReadText;
+        final long id = pendingReadId;
+        readExecutor.execute(() -> {
+            try {
+                File wav = new File(getCacheDir(), "readaloud.wav");
+                writeWav(readPcm, wav);
+                if (!SpeechEngine.isLoaded()) SpeechEngine.load(packs.engineRoot());
+                String raw = SpeechEngine.recognize(wav, grammarFor(text));
+                org.json.JSONObject r = new org.json.JSONObject(raw);
+                String heard = r.optString("text", "").trim();
+                double conf = avgConf(r);
+                String state; String hint = null;
+                String nh = ReadAloudScorer.normalize(heard);
+                if (nh.isEmpty()) state = "unclear";
+                else if (nh.equals(ReadAloudScorer.normalize(text))) state = "pass";
+                else if (ReadAloudScorer.words(text).size() > 1 && ReadAloudScorer.wordMatchRate(text, heard) >= 0.8) state = "pass";
+                else { state = "fail"; hint = ReadAloudScorer.phonemeHint(text, heard, loadPhonemeDict()); }
+                wav.delete(); if (readPcm != null) readPcm.delete();
+                org.json.JSONObject o = new org.json.JSONObject();
+                o.put("id", id); o.put("state", state); o.put("heard", heard); o.put("conf", conf);
+                if (hint != null) o.put("hint", hint);
+                js("readAloudResult", o.toString());
+            } catch (Exception e) {
+                android.util.Log.e("MainActivity", "Read aloud scoring failed", e);
+                js("readAloudState", "error");
+            }
+        });
+    }
+
     private void js0(String function) { runOnUiThread(() -> web.evaluateJavascript("window." + function + "()", null)); }
     private void js(String function, String payload) {
         runOnUiThread(() -> web.evaluateJavascript("window." + function + "(" + org.json.JSONObject.quote(payload) + ")", null));
@@ -183,6 +337,12 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to delete unit audio",e); js("audioDeleteFailed","本单元语音删除失败。请稍后重试。"); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
+        @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> js("engineState", packs.engineState().toString())); }
+        @JavascriptInterface public void downloadEngine() { packs.downloadEngine(new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); } }); }
+        @JavascriptInterface public void startReadAloud(long id, String text) { runOnUiThread(() -> startReadAloud(id, text)); }
+        @JavascriptInterface public void stopReadAloud() { runOnUiThread(() -> stopReadAloud()); }
+        @JavascriptInterface public void cancelReadAloud() { runOnUiThread(() -> { recording = false; try { if (recorder != null) { try { recorder.stop(); } catch (Exception ignored) { } recorder.release(); recorder = null; } } catch (Exception ignored) { } if (readPcm != null) readPcm.delete(); js("readAloudState", "cancelled"); }); }
+        @JavascriptInterface public void setMastered(long id, boolean mastered) { dbExecutor.execute(() -> { wrongDb.setMastered(id, mastered); js("masteredSet", id + "|" + mastered); }); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }
         @JavascriptInterface public void setSpeechRate(float rate) { runOnUiThread(() -> MainActivity.this.setSpeechRate(rate)); }
         @JavascriptInterface public String getSpeechRate() { return String.valueOf(speechRate); }
@@ -212,6 +372,9 @@ public class MainActivity extends Activity {
 
     @Override protected void onDestroy() {
         stopPlayback();
+        recording = false;
+        try { if (recorder != null) { recorder.release(); recorder = null; } } catch (Exception ignored) { }
+        readExecutor.shutdown();
         dbExecutor.shutdown();
         
         if (web != null) web.destroy();

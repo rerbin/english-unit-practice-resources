@@ -121,6 +121,56 @@ public final class AudioPackManager {
     public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
     public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础音标发音下载暂时中断。请检查网络后重试；已下载的部分会保留。");return;}if(!sha256(part).equalsIgnoreCase(baseSha)){part.delete();listener.onFinished(false,"下载的基础音标发音文件不完整，已自动清除。请重新下载。");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础音标发音已下载，可以离线使用。");}catch(Exception e){listener.onFinished(false,"基础音标发音下载失败。请检查网络和存储空间后重试。");}},"phonics-base-download").start();}
 
+    private static final int ENGINE_VERSION = 1;
+    private static final long ENGINE_SIZE = 44099422L;
+    private static final String ENGINE_SHA = "290cc1f3e69822f144009aa3b69d4a24d9991735b3e26a3a8245d0ca007fec2f";
+    private volatile String[] engineUrls = new String[]{
+        "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.1.0/speech-engine-vosk-v1.zip"
+    };
+    public File engineRoot() { File d = new File(context.getFilesDir(), "speech-engine"); if (!d.exists()) d.mkdirs(); return d; }
+    public JSONObject engineState() {
+        JSONObject o = new JSONObject();
+        try {
+            File mf = new File(engineRoot(), "manifest.json");
+            int v = 0;
+            if (mf.isFile()) v = new JSONObject(readAll(new FileInputStream(mf))).optInt("version", 0);
+            o.put("ready", v == ENGINE_VERSION && new File(engineRoot(), "lib/arm64-v8a/libvosk.so").isFile() && new File(engineRoot(), "model/am/final.mdl").isFile());
+            o.put("version", v);
+            o.put("latestVersion", ENGINE_VERSION);
+        } catch (Exception ignored) { }
+        return o;
+    }
+    public void downloadEngine(Listener listener) {
+        new Thread(() -> {
+            try {
+                File part = new File(packsRoot, "speech-engine.part");
+                boolean ok = false;
+                for (String u : engineUrls) { if (downloadResumable(u, part, ENGINE_SIZE, listener)) { ok = true; break; } }
+                if (!ok) { listener.onFinished(false, "跟读引擎下载暂时中断。请检查网络后重试；已下载的部分会保留。"); return; }
+                if (!sha256(part).equalsIgnoreCase(ENGINE_SHA)) { part.delete(); listener.onFinished(false, "下载的跟读引擎不完整，已自动清除。请重新下载。"); return; }
+                File stage = new File(files.importStagingRoot(), "speech-engine");
+                if (stage.exists()) deleteTree(stage);
+                if (!stage.mkdirs()) throw new IOException("无法创建引擎目录");
+                try (ZipInputStream zin = new ZipInputStream(new FileInputStream(part))) {
+                    ZipEntry e; byte[] b = new byte[65536];
+                    while ((e = zin.getNextEntry()) != null) {
+                        if (e.isDirectory()) continue;
+                        File out = new File(stage, e.getName()).getCanonicalFile();
+                        if (!out.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
+                        File parent = out.getParentFile(); if (!parent.exists()) parent.mkdirs();
+                        try (OutputStream os = new FileOutputStream(out)) { int n; while ((n = zin.read(b)) != -1) os.write(b, 0, n); }
+                    }
+                }
+                if (!new File(stage, "manifest.json").isFile() || !new File(stage, "lib/arm64-v8a/libvosk.so").isFile() || !new File(stage, "model/am/final.mdl").isFile()) { deleteTree(stage); throw new IOException("引擎包结构不完整"); }
+                File dest = engineRoot(); deleteTree(dest); copyTree(stage, dest); deleteTree(stage); part.delete();
+                listener.onFinished(true, "跟读引擎已就绪，可以开始跟读。");
+            } catch (Exception e) {
+                android.util.Log.e("AudioPackManager", "Unable to install speech engine", e);
+                listener.onFinished(false, "跟读引擎安装失败。请检查存储空间后重试。");
+            }
+        }, "speech-engine-download").start();
+    }
+
     private static boolean allowedVariant(String variant) { return "default".equals(variant); }
     public String selectedVariant() { String v=trialPrefs.getString(TRIAL_PREF, "default"); return allowedVariant(v) ? v : "default"; }
     public void selectVariant(String variant) { trialPrefs.edit().putString(TRIAL_PREF, allowedVariant(variant) ? variant : "default").apply(); }

@@ -163,6 +163,16 @@ public class WrongBookDb {
         return value == 1;
     }
 
+    public synchronized void setMastered(long id, boolean mastered) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("mastered", mastered ? 1 : 0);
+        if (mastered) v.put("mastered_at", now()); else v.putNull("mastered_at");
+        v.put("updated_at", now());
+        db.update("mistakes", v, "id=? AND stage='active'", new String[]{String.valueOf(id)});
+        event(db, id, mastered ? "marked_mastered" : "mastery_cancelled", null);
+    }
+
     public synchronized boolean archive(long id) {
         SQLiteDatabase db = getWritableDatabase();
         int review = 0;
