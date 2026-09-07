@@ -37,6 +37,8 @@ public final class AudioPackManager {
         packsRoot = files.packsRoot(); baseRoot = new File(packsRoot, "phonics-base"); if (!baseRoot.exists()) baseRoot.mkdirs();
         installBundledPhonics();
         trialPrefs = context.getSharedPreferences("voice_trial", 0);
+        engineRegistry = loadEngineRegistry();
+        migrateOldEngine();
         if (!packsRoot.exists()) packsRoot.mkdirs();
         trialPrefs.edit().putString(TRIAL_PREF, "default").apply();
     }
@@ -121,54 +123,187 @@ public final class AudioPackManager {
     public JSONObject baseStateFromCatalog(JSONObject c){applyBaseCatalog(c);return baseState();}
     public void downloadBase(Listener listener){new Thread(()->{try{File part=new File(packsRoot,"phonics-base.part");boolean ok=false;for(String u:baseUrls){if(downloadResumable(u,part,baseSize,listener)){ok=true;break;}}if(!ok){listener.onFinished(false,"基础音标发音下载暂时中断。请检查网络后重试；已下载的部分会保留。");return;}if(!sha256(part).equalsIgnoreCase(baseSha)){part.delete();listener.onFinished(false,"下载的基础音标发音文件不完整，已自动清除。请重新下载。");return;}File stage=new File(files.importStagingRoot(),"phonics-base");if(stage.exists())deleteTree(stage);stage.mkdirs();try(ZipInputStream z=new ZipInputStream(new FileInputStream(part))){ZipEntry e;byte[] b=new byte[32768];while((e=z.getNextEntry())!=null){if(e.isDirectory())continue;File o=new File(stage,e.getName()).getCanonicalFile();if(!o.getPath().startsWith(stage.getCanonicalPath()+File.separator))throw new SecurityException("非法路径");o.getParentFile().mkdirs();try(OutputStream out=new FileOutputStream(o)){int n;while((n=z.read(b))!=-1)out.write(b,0,n);}}}deleteTree(baseRoot);copyTree(stage,baseRoot);deleteTree(stage);part.delete();manifestCache.remove("phonics-base");listener.onFinished(true,"基础音标发音已下载，可以离线使用。");}catch(Exception e){listener.onFinished(false,"基础音标发音下载失败。请检查网络和存储空间后重试。");}},"phonics-base-download").start();}
 
-    private static final int ENGINE_VERSION = 2;
-    private static final long ENGINE_SIZE = 47044076L;
-    private static final String ENGINE_SHA = "8b69912fd6e1ecf08ab9d4aa9fb28f7cd01924e86783f6d147aa418566c98676";
-    private volatile String[] engineUrls = new String[]{
-        "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.1.1/speech-engine-vosk-v2.zip"
-    };
-    public File engineRoot() { File d = new File(context.getFilesDir(), "speech-engine"); if (!d.exists()) d.mkdirs(); return d; }
-    public JSONObject engineState() {
-        JSONObject o = new JSONObject();
+    private final JSONObject engineRegistry;
+    private static final String ENGINE_MODEL_PREF = "engine_model";
+
+    private JSONObject loadEngineRegistry() {
         try {
-            File mf = new File(engineRoot(), "manifest.json");
-            int v = 0;
-            if (mf.isFile()) v = new JSONObject(readAll(new FileInputStream(mf))).optInt("version", 0);
-            o.put("ready", v == ENGINE_VERSION && SpeechEngine.abiLibDir(engineRoot()) != null && new File(engineRoot(), "model/am/final.mdl").isFile());
-            o.put("version", v);
-            o.put("latestVersion", ENGINE_VERSION);
-        } catch (Exception ignored) { }
-        return o;
+            int id = context.getResources().getIdentifier("readaloud_models", "raw", context.getPackageName());
+            InputStream in = context.getResources().openRawResource(id);
+            java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+            byte[] b = new byte[8192]; int n;
+            while ((n = in.read(b)) != -1) bos.write(b, 0, n);
+            in.close();
+            return new JSONObject(new String(bos.toByteArray(), "UTF-8"));
+        } catch (Exception e) {
+            android.util.Log.e("AudioPackManager", "Unable to load engine registry", e);
+            return new JSONObject();
+        }
     }
-    public void downloadEngine(Listener listener) {
+
+    public File runtimeRoot() { File d = new File(context.getFilesDir(), "speech-runtime"); if (!d.exists()) d.mkdirs(); return d; }
+    public File modelRoot(String id) { File d = new File(new File(context.getFilesDir(), "speech-models"), safe(id)); if (!d.exists()) d.mkdirs(); return d; }
+    public String firstEngineModelId() { try { return engineRegistry.getJSONArray("models").getJSONObject(0).getString("id"); } catch (Exception e) { return "vosk-en-small"; } }
+    public String selectedEngineModel() { return trialPrefs.getString(ENGINE_MODEL_PREF, firstEngineModelId()); }
+    public void selectEngineModel(String id) { trialPrefs.edit().putString(ENGINE_MODEL_PREF, id).apply(); }
+    public boolean runtimeReady() { File r = runtimeRoot(); return new File(r, "manifest.json").isFile() && SpeechEngine.abiLibDir(r) != null; }
+    public boolean modelReady(String id) { File m = modelRoot(id); return new File(m, "manifest.json").isFile() && new File(m, "model/am/final.mdl").isFile(); }
+    public boolean engineReady() { return runtimeReady() && modelReady(selectedEngineModel()); }
+
+    public JSONObject engineCatalog() {
+        JSONObject out = new JSONObject();
+        try {
+            JSONObject rt = new JSONObject(engineRegistry.getJSONObject("runtime").toString());
+            rt.put("installed", runtimeReady());
+            out.put("runtime", rt);
+            JSONArray ms = engineRegistry.getJSONArray("models");
+            JSONArray arr = new JSONArray();
+            for (int i = 0; i < ms.length(); i++) {
+                JSONObject m = new JSONObject(ms.getJSONObject(i).toString());
+                String id = m.getString("id");
+                m.put("installed", modelReady(id));
+                m.put("selected", id.equals(selectedEngineModel()));
+                arr.put(m);
+            }
+            out.put("models", arr);
+            out.put("selected", selectedEngineModel());
+            out.put("ready", engineReady());
+        } catch (Exception ignored) { }
+        return out;
+    }
+
+    public void deleteEngineModel(String id) {
+        if (id.equals(selectedEngineModel())) return;
+        deleteTree(modelRoot(id));
+    }
+
+    /** Migrate the old combined engine pack (v2) into runtime + small model layout. */
+    private void migrateOldEngine() {
+        try {
+            File old = new File(context.getFilesDir(), "speech-engine");
+            File mf = new File(old, "manifest.json");
+            if (!mf.isFile()) return;
+            int v = new JSONObject(readAll(new FileInputStream(mf))).optInt("version", 0);
+            if (v < 2) { deleteTree(old); return; }
+            File oldLib = new File(old, "lib");
+            File oldModel = new File(old, "model");
+            if (oldLib.isDirectory() && !runtimeReady()) { File rt = runtimeRoot(); copyTree(oldLib, new File(rt, "lib")); JSONObject m = new JSONObject(); m.put("id", "vosk-runtime"); m.put("version", 1); try (FileWriter w = new FileWriter(new File(rt, "manifest.json"))) { w.write(m.toString()); } }
+            if (oldModel.isDirectory() && !modelReady("vosk-en-small")) { File md = modelRoot("vosk-en-small"); copyTree(oldModel, new File(md, "model")); JSONObject m = new JSONObject(); m.put("id", "vosk-en-small"); m.put("version", 1); try (FileWriter w = new FileWriter(new File(md, "manifest.json"))) { w.write(m.toString()); } }
+            deleteTree(old);
+        } catch (Exception e) { android.util.Log.e("AudioPackManager", "Engine migration failed", e); }
+    }
+
+    /** Probe sources with parallel HEAD and return them ordered by latency. */
+    private JSONArray orderedSources(JSONArray sources) {
+        final long[] rtt = new long[sources.length()];
+        Thread[] ts = new Thread[sources.length()];
+        for (int i = 0; i < sources.length(); i++) {
+            final String url = sources.optJSONObject(i).optString("url");
+            final int idx = i;
+            rtt[i] = Long.MAX_VALUE;
+            ts[i] = new Thread(() -> {
+                long t0 = System.currentTimeMillis();
+                HttpURLConnection c = null;
+                try {
+                    c = (HttpURLConnection) new URL(url).openConnection();
+                    c.setRequestMethod("HEAD");
+                    c.setConnectTimeout(2500);
+                    c.setReadTimeout(2500);
+                    c.setInstanceFollowRedirects(true);
+                    if (c.getResponseCode() < 500) rtt[idx] = System.currentTimeMillis() - t0;
+                } catch (Exception ignored) { } finally { if (c != null) c.disconnect(); }
+            }, "probe-" + idx);
+            ts[i].start();
+        }
+        for (Thread t : ts) { try { t.join(3000); } catch (Exception ignored) { } }
+        Integer[] order = new Integer[sources.length()];
+        for (int i = 0; i < order.length; i++) order[i] = i;
+        java.util.Arrays.sort(order, (a, b2) -> Long.compare(rtt[a], rtt[b2]));
+        JSONArray out = new JSONArray();
+        for (int i = 0; i < order.length; i++) out.put(sources.optJSONObject(order[i]));
+        return out;
+    }
+
+    public void downloadRuntime(Listener listener) { downloadItem(engineRegistry.optJSONObject("runtime"), runtimeRoot(), listener, "跟读运行库", true); }
+    public void downloadEngineModel(String id, Listener listener) {
+        try {
+            JSONArray ms = engineRegistry.getJSONArray("models");
+            for (int i = 0; i < ms.length(); i++) {
+                JSONObject m = ms.getJSONObject(i);
+                if (id.equals(m.getString("id"))) { downloadItem(m, modelRoot(id), listener, m.optString("name", "跟读模型"), false); return; }
+            }
+        } catch (Exception e) { }
+        listener.onFinished(false, "未找到所选模型。");
+    }
+    /** Sequential helper for the read-aloud dialog: runtime first when missing, then selected model. */
+    public void downloadSelectedEngine(final Listener listener) {
+        if (!runtimeReady()) {
+            downloadRuntime(new Listener() {
+                public void onProgress(int percent) { listener.onProgress(percent); }
+                public void onFinished(boolean ok, String message) {
+                    if (!ok) { listener.onFinished(false, message); return; }
+                    downloadEngineModel(selectedEngineModel(), listener);
+                }
+            });
+        } else {
+            downloadEngineModel(selectedEngineModel(), listener);
+        }
+    }
+
+    private void downloadItem(final JSONObject item, final File dest, final Listener listener, final String label, final boolean isRuntime) {
         new Thread(() -> {
             try {
-                File part = new File(packsRoot, "speech-engine.part");
-                boolean ok = false;
-                for (String u : engineUrls) { if (downloadResumable(u, part, ENGINE_SIZE, listener)) { ok = true; break; } }
-                if (!ok) { listener.onFinished(false, "跟读引擎下载暂时中断。请检查网络后重试；已下载的部分会保留。"); return; }
-                if (!sha256(part).equalsIgnoreCase(ENGINE_SHA)) { part.delete(); listener.onFinished(false, "下载的跟读引擎不完整，已自动清除。请重新下载。"); return; }
-                File stage = new File(files.importStagingRoot(), "speech-engine");
-                if (stage.exists()) deleteTree(stage);
-                if (!stage.mkdirs()) throw new IOException("无法创建引擎目录");
-                try (ZipInputStream zin = new ZipInputStream(new FileInputStream(part))) {
-                    ZipEntry e; byte[] b = new byte[65536];
-                    while ((e = zin.getNextEntry()) != null) {
-                        if (e.isDirectory()) continue;
-                        File out = new File(stage, e.getName()).getCanonicalFile();
-                        if (!out.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
-                        File parent = out.getParentFile(); if (!parent.exists()) parent.mkdirs();
-                        try (OutputStream os = new FileOutputStream(out)) { int n; while ((n = zin.read(b)) != -1) os.write(b, 0, n); }
+                if (item == null) { listener.onFinished(false, label + "配置缺失。"); return; }
+                JSONArray sources = orderedSources(item.getJSONArray("sources"));
+                for (int i = 0; i < sources.length(); i++) {
+                    JSONObject src = sources.optJSONObject(i);
+                    File part = new File(packsRoot, safe(item.getString("id")) + ".part");
+                    if (downloadResumable(src.getString("url"), part, src.optLong("size", -1), listener)) {
+                        if (!sha256(part).equalsIgnoreCase(src.getString("sha256"))) { part.delete(); continue; }
+                        File stage = new File(files.importStagingRoot(), safe(item.getString("id")));
+                        if (stage.exists()) deleteTree(stage);
+                        if (!stage.mkdirs()) throw new IOException("无法创建目录");
+                        try (ZipInputStream zin = new ZipInputStream(new FileInputStream(part))) {
+                            ZipEntry e; byte[] b = new byte[65536]; String top = null;
+                            while ((e = zin.getNextEntry()) != null) {
+                                if (e.isDirectory()) continue;
+                                String nm = e.getName();
+                                if (top == null) { int ix = nm.indexOf('/'); top = ix > 0 ? nm.substring(0, ix + 1) : ""; }
+                                String rel = nm.startsWith(top) ? nm.substring(top.length()) : nm;
+                                if (rel.isEmpty()) continue;
+                                File o = new File(stage, rel).getCanonicalFile();
+                                if (!o.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
+                                File pr = o.getParentFile(); if (!pr.exists()) pr.mkdirs();
+                                try (OutputStream os = new FileOutputStream(o)) { int n2; while ((n2 = zin.read(b)) != -1) os.write(b, 0, n2); }
+                            }
+                        }
+                        if (!isRuntime && new File(stage, "am").isDirectory() && !new File(stage, "model").isDirectory()) {
+                            File md = new File(stage, "model");
+                            if (!md.mkdirs()) throw new IOException("无法创建模型目录");
+                            for (String sub : new String[]{"am", "conf", "graph", "ivector"}) {
+                                File f = new File(stage, sub);
+                                if (f.isDirectory()) { File t = new File(md, sub); if (!f.renameTo(t)) copyTree(f, t); deleteTree(f); }
+                            }
+                        }
+                        if (!new File(stage, "manifest.json").isFile()) {
+                            JSONObject m = new JSONObject();
+                            m.put("id", item.getString("id")); m.put("version", item.optInt("version", 1));
+                            try (FileWriter w = new FileWriter(new File(stage, "manifest.json"))) { w.write(m.toString()); }
+                        }
+                        if (isRuntime ? SpeechEngine.abiLibDir(stage) == null : !new File(stage, "model/am/final.mdl").isFile()) { deleteTree(stage); part.delete(); continue; }
+                        if (dest.exists()) deleteTree(dest);
+                        copyTree(stage, dest); deleteTree(stage); part.delete();
+                        listener.onFinished(true, label + "已就绪。");
+                        return;
                     }
+                    part.delete();
                 }
-                if (!new File(stage, "manifest.json").isFile() || !new File(stage, "model/am/final.mdl").isFile() || (new File(stage, "lib/arm64-v8a/libvosk.so").isFile() == false && new File(stage, "lib/armeabi-v7a/libvosk.so").isFile() == false)) { deleteTree(stage); throw new IOException("引擎包结构不完整"); }
-                File dest = engineRoot(); deleteTree(dest); copyTree(stage, dest); deleteTree(stage); part.delete();
-                listener.onFinished(true, "跟读引擎已就绪，可以开始跟读。");
+                listener.onFinished(false, label + "下载失败。已尝试全部镜像，请检查网络后重试。");
             } catch (Exception e) {
-                android.util.Log.e("AudioPackManager", "Unable to install speech engine", e);
-                listener.onFinished(false, "跟读引擎安装失败。请检查存储空间后重试。");
+                android.util.Log.e("AudioPackManager", "Engine download failed", e);
+                listener.onFinished(false, label + "安装失败。请检查存储空间后重试。");
             }
-        }, "speech-engine-download").start();
+        }, "engine-download").start();
     }
 
     private static boolean allowedVariant(String variant) { return "default".equals(variant); }

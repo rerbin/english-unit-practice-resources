@@ -25,14 +25,14 @@ public final class SpeechEngine {
         return null;
     }
 
-    public static synchronized boolean load(File engineRoot) {
+    public static synchronized boolean load(File runtimeRoot, File modelRoot) {
         if (model != null) return true;
         loadError = null;
         try {
-            libDir = abiLibDir(engineRoot);
-            if (libDir == null) { loadError = "跟读引擎与本机 CPU 架构不兼容。"; return false; }
-            File modelDir = new File(engineRoot, "model");
-            if (!modelDir.isDirectory()) { loadError = "跟读引擎包不完整。"; return false; }
+            libDir = abiLibDir(runtimeRoot);
+            if (libDir == null) { loadError = "跟读运行库与本机 CPU 架构不兼容。"; return false; }
+            File modelDir = new File(modelRoot, "model");
+            if (!modelDir.isDirectory()) { loadError = "跟读模型包不完整。"; return false; }
             System.setProperty("jna.boot.library.path", libDir.getAbsolutePath());
             System.load(new File(libDir, "libjnidispatch.so").getAbsolutePath());
             System.load(new File(libDir, "libvosk.so").getAbsolutePath());

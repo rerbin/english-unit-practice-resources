@@ -272,7 +272,7 @@ public class MainActivity extends Activity {
             try {
                 File wav = new File(getCacheDir(), "readaloud.wav");
                 writeWav(readPcm, wav);
-                if (!SpeechEngine.isLoaded() && !SpeechEngine.load(packs.engineRoot())) {
+                if (!SpeechEngine.isLoaded() && !SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()))) {
                     String msg = SpeechEngine.getLoadError();
                     js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "跟读引擎加载失败。" : msg).toString());
                     js("readAloudState", "error");
@@ -305,7 +305,7 @@ public class MainActivity extends Activity {
     private void preloadEngine() {
         readExecutor.execute(() -> {
             if (SpeechEngine.isLoaded()) { js("engineLoadResult", "{\"ok\":true}"); return; }
-            boolean ok = SpeechEngine.load(packs.engineRoot());
+            boolean ok = SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()));
             try {
                 org.json.JSONObject o = new org.json.JSONObject();
                 o.put("ok", ok);
@@ -359,10 +359,15 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void deleteUnitAudio(String unitId) { dbExecutor.execute(() -> { try { java.util.Set<String> keep=new java.util.HashSet<>(); android.database.Cursor c=appDatabase.getReadableDatabase().rawQuery("SELECT DISTINCT ci.audio_key FROM content_items ci WHERE ci.id IN (SELECT source_item_id FROM mistakes WHERE source_item_id IS NOT NULL)",null); while(c.moveToNext())keep.add(c.getString(0)); c.close(); packs.delete(unitId,keep); js("audioDeleted",unitId); } catch(Exception e){ android.util.Log.e("MainActivity","Unable to delete unit audio",e); js("audioDeleteFailed","本单元语音删除失败。请稍后重试。"); } }); }
         private int getAppVersionCode(){ try { return getPackageManager().getPackageInfo(getPackageName(), 0).versionCode; } catch (Exception e) { return 0; } }
     private AppDatabase appDatabase(){ return AppDatabase.get(MainActivity.this); }
-        @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> { js("engineState", packs.engineState().toString()); try { if (packs.engineState().optBoolean("ready")) preloadEngine(); } catch (Exception ignored) { } }); }
-        @JavascriptInterface public void downloadEngine() { packs.downloadEngine(new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); if(ok) preloadEngine(); } }); }
-        @JavascriptInterface public void startReadAloud(long id, String text) { runOnUiThread(() -> startReadAloud(id, text)); }
-        @JavascriptInterface public void stopReadAloud() { runOnUiThread(() -> stopReadAloud()); }
+        @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> { try { org.json.JSONObject o = new org.json.JSONObject(); o.put("ready", packs.engineReady()); o.put("selected", packs.selectedEngineModel()); js("engineState", o.toString()); if (packs.engineReady()) preloadEngine(); } catch (Exception ignored) { } }); }
+        @JavascriptInterface public void downloadEngine() { packs.downloadSelectedEngine(engineListener()); }
+        @JavascriptInterface public void requestEngineCatalog() { dbExecutor.execute(() -> js("engineCatalog", packs.engineCatalog().toString())); }
+        @JavascriptInterface public void downloadEnginePart(String kind, String id) { dbExecutor.execute(() -> { AudioPackManager.Listener l = engineListener(); if ("runtime".equals(kind)) packs.downloadRuntime(l); else packs.downloadEngineModel(id, l); }); }
+        @JavascriptInterface public void selectEngineModel(String id) { dbExecutor.execute(() -> { packs.selectEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); js("engineState", new org.json.JSONObject().put("ready", packs.engineReady()).put("selected", packs.selectedEngineModel()).toString()); preloadEngine(); }); }
+        @JavascriptInterface public void deleteEngineModel(String id) { dbExecutor.execute(() -> { packs.deleteEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); }); }
+        private AudioPackManager.Listener engineListener() { return new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); if(ok){ js("engineCatalog", packs.engineCatalog().toString()); preloadEngine(); } } }; }
+        @JavascriptInterface public void startReadAloud(long id, String text) { runOnUiThread(() -> MainActivity.this.startReadAloud(id, text)); }
+        @JavascriptInterface public void stopReadAloud() { runOnUiThread(() -> MainActivity.this.stopReadAloud()); }
         @JavascriptInterface public void cancelReadAloud() { runOnUiThread(() -> { recording = false; try { if (recorder != null) { try { recorder.stop(); } catch (Exception ignored) { } recorder.release(); recorder = null; } } catch (Exception ignored) { } if (readPcm != null) readPcm.delete(); js("readAloudState", "cancelled"); }); }
         @JavascriptInterface public void setMastered(long id, boolean mastered) { dbExecutor.execute(() -> { wrongDb.setMastered(id, mastered); js("masteredSet", id + "|" + mastered); }); }
         @JavascriptInterface public void stop() { runOnUiThread(() -> stopPlayback()); }

@@ -1,0 +1,65 @@
+{
+  "runtime": {
+    "id": "vosk-runtime",
+    "version": 1,
+    "name": "Vosk 运行库",
+    "sizeLabel": "约 6MB",
+    "sources": [
+      {
+        "url": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/speech-runtime-vosk-v1.zip",
+        "sha256": "d3e61b97ccd5a253da46bb8b3ca007e8763adb806d170b74777969119fc426ad",
+        "size": 5860944
+      },
+      {
+        "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.2.0/speech-runtime-vosk-v1.zip",
+        "sha256": "d3e61b97ccd5a253da46bb8b3ca007e8763adb806d170b74777969119fc426ad",
+        "size": 5860944
+      }
+    ]
+  },
+  "models": [
+    {
+      "id": "vosk-en-small",
+      "name": "Vosk 英语·轻量版",
+      "intro": "响应快、占用小，适合单词和短句跟读；老旧手机推荐。",
+      "sizeLabel": "约 40MB",
+      "version": 1,
+      "sources": [
+        {
+          "url": "https://hf-mirror.com/ambind/vosk-model-small-en-us-0.15/resolve/main/vosk-model-small-en-us-0.15_c_.zip",
+          "sha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+          "size": 41205931
+        },
+        {
+          "url": "https://huggingface.co/ambind/vosk-model-small-en-us-0.15/resolve/main/vosk-model-small-en-us-0.15_c_.zip",
+          "sha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+          "size": 41205931
+        },
+        {
+          "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.2.0/speech-model-vosk-en-small-v1.zip",
+          "sha256": "03856579371838ae102d496822dffa732fad2c5c26444eacb64e975e38b26286",
+          "size": 41183169
+        }
+      ]
+    },
+    {
+      "id": "vosk-en-large",
+      "name": "Vosk 英语·高精度版",
+      "intro": "更大模型，对长句、连读和发音不清的识别更准；下载更大、识别稍慢。",
+      "sizeLabel": "约 125MB",
+      "version": 1,
+      "sources": [
+        {
+          "url": "https://hf-mirror.com/VigneshSK17/vosk-model-en-us-0.22-lgraph/resolve/main/vosk-model-en-us-0.22-lgraph.zip",
+          "sha256": "d9838b4aaa82a75c4a17f5aca300eaca129aaab2a7cbf951bafbb500eb9c4334",
+          "size": 130557655
+        },
+        {
+          "url": "https://huggingface.co/VigneshSK17/vosk-model-en-us-0.22-lgraph/resolve/main/vosk-model-en-us-0.22-lgraph.zip",
+          "sha256": "d9838b4aaa82a75c4a17f5aca300eaca129aaab2a7cbf951bafbb500eb9c4334",
+          "size": 130557655
+        }
+      ]
+    }
+  ]
+}
