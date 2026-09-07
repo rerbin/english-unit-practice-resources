@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.0.2
+version: 2.0.3
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,15 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.0.3 跨页面播放反馈一致性
+
+- 所有播放入口必须共用 `markPlaying()/clearPlaying()` 的视觉与语义状态，不得只调用原生播放而无反馈。
+- 错题卡 article 的 id 必须与传给原生播放器的焦点 ID 一致：`w+错题ID`；否则原生播放开始时无法找到对应卡片。
+- 错题“听”按钮与学习播放按钮共用播放态：最终计算色为主蓝 `#315DA8` 加白色；卡片使用浅蓝高亮和左侧蓝条。颜色验收应等待 160ms 过渡结束。
+- 两类播放按钮初始 `aria-pressed=false`；播放当前项时设为 true，并先清除上一项；完成、停止、失败和切换页面时恢复 class 与 aria。
+- 错题单条播放不触发自动滚动；焦点跟随仍只允许在连续朗读时执行。
+- `clearPlaying` 必须直接遍历播放节点并删除 playing class，禁止递归调用自己；该错误曾在实现期被浏览器测试拦截。
+
 ## 注意事项
 
 - 不向 App 或仓库写入任何云厂商密钥；在线 TTS 如需正式音色，走服务端中转。
@@ -455,4 +464,5 @@ ALWAYS use this exact template:
 - 2026-09-06：APK 2.0.0（code78）。M3 Expressive-inspired全视觉系统重构，语义色/统一SVG/形状层级/克制动效/可访问性；保留全部1.73业务与数据；GitHub release 383618660，最终 commit 7066257；APK SHA-256 581f25b7d17b8d43a69145175f22cb4198be84f73960ab6900a6ad8760e0ba96；skill v2.0.0。
 - 2026-09-07：APK 2.0.1（code79）。未掌握空心圆/掌握，已掌握对号/已掌握；物理删除改专用永久删除危险弹窗；GitHub release 383737615，commit 4d79751；skill v2.0.1。
 - 2026-09-07：APK 2.0.2（code80）。全量文案审计与统一术语，新增跨页面提示、删除分级、可恢复错误提示、导出表格可读单元；GitHub release 383749804，commit e78f149；skill v2.0.2。
+- 2026-09-07：APK 2.0.3（code81）。错题本听音与学习页统一卡片、按钮播放态及 aria，完成、停止、失败时清理；GitHub release 383763090，commit f39eb46；skill v2.0.3。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
