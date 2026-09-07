@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.0.5
+version: 2.0.6
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.0.6 拼写弹窗稳定锚点
+
+- 根因：通用 dialog 先垂直居中；输入框延迟聚焦后键盘触发 visualViewport 缩小，再切 keyboard-open 顶部定位；点听音失焦收键盘后又退出顶部定位，造成中间→顶部→中间往返。
+- 拼写弹窗必须从打开第一帧起固定顶部安全区16px；键盘弹出/收起只能更新 `--spell-height`，禁止切换定位 class、top 或 transform。手机固定 left/right16；平板固定水平居中。
+- 拼写弹窗禁止复用通用 pop 位移/缩放动画，只允许 `spellFade` 120ms 透明度淡入；首帧及0/16/50/120/250ms top必须完全一致。
+- 听音按钮 pointerdown 必须 preventDefault 保留输入框焦点，尽量不收输入法；即使特定输入法仍收起，弹窗也保持top16。
+- visualViewport resize/scroll 只计算可用高度和必要的内部 scrollIntoView；底部操作行 sticky。实测844→430→844→430全序列top=16，输入框与操作按钮均在可视区域内。
+
 ## 2.0.5 错题本单元筛选纯文字卡
 
 - 错题本单元筛选中的“全/S/1”等徽标与“全部/Starter/Unit 1”重复，永久移除；禁止用首字母、序号或新图标补位。
@@ -482,4 +490,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.3（code81）。错题本听音与学习页统一卡片、按钮播放态及 aria，完成、停止、失败时清理；GitHub release 383763090，commit f39eb46；skill v2.0.3。
 - 2026-09-07：APK 2.0.4（code82）。拼写听音增加正在播放态；键盘按 visualViewport 自动上移限高；顶部两行完整显示英文单元主题；GitHub release 383768702，commit 4689315；skill v2.0.4。
 - 2026-09-07：APK 2.0.5（code83）。错题本单元筛选移除全/S/1徽标，改纯文字双行卡并保留选中语义；GitHub release 383773859，commit e0b63f1；skill v2.0.5。
+- 2026-09-07：APK 2.0.6（code84）。拼写弹窗首帧固定顶部16px，键盘/听音只改高度不改位置，消除往返跳动；GitHub release 383779427，commit 69844ef；skill v2.0.6。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
