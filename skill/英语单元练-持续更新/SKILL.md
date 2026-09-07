@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.1.1
+version: 2.1.2
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.1.2 Bridge 同名自委托递归闪退
+
+- 真机栈：`StackOverflowError`，帧为 `Bridge.startReadAloud → lambda → runOnUiThread → Bridge.startReadAloud` 无限循环。根因：内部类 `Bridge` 的 `@JavascriptInterface` 方法体内 `runOnUiThread(() -> startReadAloud(id,text))` 中无限定调用解析为 **Bridge 自身同名方法**，而非外层 Activity 方法；`stopReadAloud` 同病。
+- 修复：一律 `MainActivity.this.startReadAloud(...)` / `MainActivity.this.stopReadAloud()` 限定。
+- 发布门禁（必跑）：正则扫描 Bridge 类体内 `runOnUiThread(() -> (startReadAloud|stopReadAloud|cancelReadAloud)(` 必须为零；浏览器 mock 桥接测不到 Java 委托路径，**不能替代该门禁**。
+- 教训：任何内部类桥接方法委托外层同名方法必须显式 `Outer.this.`；新增桥接方法时先检查外层是否存在同名私有/公有方法。
+
 ## 2.1.1 跟读闪退修复（原生加载加固）
 
 - 真机闪退根因族：native/JNA 抛 `Error`（UnsatisfiedLinkError 等）而代码只 `catch (Exception)`，线程未捕获即杀进程；以及单 ABI 包在 32 位设备必然加载失败。
@@ -514,4 +521,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.6（code84）。拼写弹窗首帧固定顶部16px，键盘/听音只改高度不改位置，消除往返跳动；GitHub release 383779427，commit 69844ef；skill v2.0.6。
 - 2026-09-07：APK 2.1.0（code85）。错题“听”改“读”：跟读练习+离线Vosk引擎包按需下载+音素纠音；拼写弹窗纯化；GitHub release 384105171；skill v2.1.0。
 - 2026-09-07：APK 2.1.1（code86）。跟读原生加载加固：Throwable 捕获+双 ABI 引擎包 v2+预加载失败提示；GitHub release v2.1.1；skill v2.1.1。
+- 2026-09-07：APK 2.1.2（code87）。修复 Bridge 同名自委托无限递归闪退（MainActivity.this 限定+门禁）；GitHub release 384125273；skill v2.1.2。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
