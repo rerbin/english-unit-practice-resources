@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.0.3
+version: 2.0.4
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.0.4 拼写弹窗、键盘与完整单元名称
+
+- 拼写弹窗的听音按钮自身就是播放焦点：原生播放 ID 固定为 `spellAudio`；播放开始后主蓝 `#315DA8` + 白色、文案“正在播放”、`aria-pressed=true`，完成/停止/失败/关闭/答对自动关闭时恢复“听发音”。禁止把焦点落到弹窗背后的错题卡。
+- 键盘适配双层实现：Activity 的 `windowSoftInputMode=adjustResize` 与运行时 `SOFT_INPUT_ADJUST_RESIZE`；Web 层监听 `visualViewport.resize/scroll`。可视高度比弹窗打开基线小 120px 以上时进入 keyboard-open，顶部 8px、最大高度=可视高度-16px，输入框自动滚入中部，底部操作行 sticky。
+- 禁止按固定键盘高度或机型写死偏移；必须使用 visualViewport 的 `height/offsetTop`。恢复可视高度后弹窗回到正常居中；平板 keyboard-open 需覆盖 desktop transform，只保留水平居中。
+- 顶部单元选择框采用两行 `unitcopy`：第一行 shortTitle，第二行完整英文主题；主题优先从 title 中点号后的文本提取，回退 subtitle/title。允许自然换行、容器自增高，禁止 ellipsis。Starter=`Our families and our friends`，Unit 1=`My school`。
+
 ## 2.0.3 跨页面播放反馈一致性
 
 - 所有播放入口必须共用 `markPlaying()/clearPlaying()` 的视觉与语义状态，不得只调用原生播放而无反馈。
@@ -465,4 +472,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.1（code79）。未掌握空心圆/掌握，已掌握对号/已掌握；物理删除改专用永久删除危险弹窗；GitHub release 383737615，commit 4d79751；skill v2.0.1。
 - 2026-09-07：APK 2.0.2（code80）。全量文案审计与统一术语，新增跨页面提示、删除分级、可恢复错误提示、导出表格可读单元；GitHub release 383749804，commit e78f149；skill v2.0.2。
 - 2026-09-07：APK 2.0.3（code81）。错题本听音与学习页统一卡片、按钮播放态及 aria，完成、停止、失败时清理；GitHub release 383763090，commit f39eb46；skill v2.0.3。
+- 2026-09-07：APK 2.0.4（code82）。拼写听音增加正在播放态；键盘按 visualViewport 自动上移限高；顶部两行完整显示英文单元主题；GitHub release 383768702，commit 4689315；skill v2.0.4。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
