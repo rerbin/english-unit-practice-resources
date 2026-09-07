@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.1.0
+version: 2.1.1
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,15 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.1.1 跟读闪退修复（原生加载加固）
+
+- 真机闪退根因族：native/JNA 抛 `Error`（UnsatisfiedLinkError 等）而代码只 `catch (Exception)`，线程未捕获即杀进程；以及单 ABI 包在 32 位设备必然加载失败。
+- 纪律：所有 native 加载/识别/录音路径一律 `catch (Throwable)`；失败只走 js 状态（engineLoadResult/readAloudState=error）弹窗提示，**永不闪退**。
+- 引擎包 v2：双 ABI（arm64-v8a+armeabi-v7a，47,044,076B，sha 8b69912fd6e1ecf08ab9d4aa9fb28f7cd01924e86783f6d147aa418566c98676）；运行时 `SpeechEngine.abiLibDir` 按 `Build.SUPPORTED_ABIS` 选目录；manifest version=2，旧 v1 安装自动判未就绪引导重下。
+- 预加载时机：engineState 报 ready 时、引擎下载完成时后台 preload；加载失败立即 engineLoadResult(ok=false,message) → 弹窗提示+禁用开始按钮。
+- engineState ready 判定改为 ABI 感知（任一受支持 ABI 的 libvosk.so 存在）。
+- 浏览器回归：加载失败=提示+禁用（无崩溃路径）；加载成功=全流程 pass 仍通过。
+
 ## 2.1.0 跟读练习（读按钮 + 离线 Vosk）
 
 - 错题卡“听”永久改为“读”（mic 图标，data-act=read）；点开“跟读练习”弹窗：听示范（readModel 焦点 ID 承担播放态）→ 开始/结束跟读 → 对比结果。拼写弹窗删除听发音，仅纯拼写检查（提示语“看中文，写出完整的英文。”）。
@@ -504,4 +513,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.0.5（code83）。错题本单元筛选移除全/S/1徽标，改纯文字双行卡并保留选中语义；GitHub release 383773859，commit e0b63f1；skill v2.0.5。
 - 2026-09-07：APK 2.0.6（code84）。拼写弹窗首帧固定顶部16px，键盘/听音只改高度不改位置，消除往返跳动；GitHub release 383779427，commit 69844ef；skill v2.0.6。
 - 2026-09-07：APK 2.1.0（code85）。错题“听”改“读”：跟读练习+离线Vosk引擎包按需下载+音素纠音；拼写弹窗纯化；GitHub release 384105171；skill v2.1.0。
+- 2026-09-07：APK 2.1.1（code86）。跟读原生加载加固：Throwable 捕获+双 ABI 引擎包 v2+预加载失败提示；GitHub release v2.1.1；skill v2.1.1。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
