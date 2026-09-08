@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.9
+version: 2.5.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.5.0 星级≥3 视为已掌握 + 新增“用法”错题类型
+
+- 星级≥3 即掌握：Web readAloudResult 在 pass 且 `(stars||0)>=3` 时才调 readPass（pass 本身⟺stars≥3，此为使规则显式且未来评分解耦后仍成立）。
+- 新增第三错题类型 **用法(usage)**：DB mistakes 增 `usage_error` 列（AppDatabase VERSION 7→8，onUpgrade 对 oldVersion<8 用 `ALTER TABLE ADD COLUMN` 保留数据，不再 drop；newVersion>8 才 drop+create）。
+- saveMistake/list/filter/row 支持 usage；导出 XLS 类型列含“用法”（列索引随新列右移：unit=8,text=6,translation=7）。
+- Web：加入错题弹窗与错题本筛选 chips 增“用法”（青绿 #00695c/#e0f2f1）；卡片 tag 增 `.tag.usage`；校验提示改“请选择发音、拼写或用法，至少一项”。
+- 用法无自动判定器：含 usage_error 的错题**不自动掌握**（autoMasterIfNeeded 遇 usageError 直接 return false），须手动点“掌握”；发音/拼写自动掌握逻辑不变。
+
 ## 2.4.9 发音结果改 5 级星级评价（图标，非文字）
 
 - 用户：“发音过关”不要文字，要真实星级，5 级、满分 5 颗小星星图标。
@@ -630,4 +638,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.7（code97）。sherpa 运行库 v2 双ABI+ABI感知加载+错误上浮；GitHub release（后台确认）；skill v2.4.7。
 - 2026-09-08：APK 2.4.8（code98）。补 kotlin-stdlib（sherpa Kotlin 编译缺运行时）；录音/加载失败路径带具体消息；GitHub release（后台确认）；skill v2.4.8。
 - 2026-09-08：APK 2.4.9（code99）。发音结果改 5 级星级图标评价（满分 5 金星），去掉“发音过关”文字；GitHub release（后台确认）；skill v2.4.9。
+- 2026-09-08：APK 2.5.0（code100）。星级≥3视为已掌握；新增“用法”错题类型（DB v8 增量迁移保留数据）；GitHub release（后台确认）；skill v2.5.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
