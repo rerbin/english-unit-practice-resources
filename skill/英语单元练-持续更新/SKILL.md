@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.1
+version: 2.4.2
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.2 超高精度版下载三连问题修复
+
+- 根因1「下载三次」：多文件 source 逐文件各报 0→100%，且进度无说明。修复：`downloadItem` 多文件分支按 size 加权合并为一次总进度，`downloadLabel` 标注当前文件友好名（encoder=识别编码器/decoder=解码器/tokens=词表）＋“第 X/N 部分”；单文件分支 label=运行库名；`engineDownloadLabel()` getter；MainActivity engineListener 的 onProgress 携带 label；Web 进度行显示“label：x%”，按钮下载态加 `.voiceaction.downloading`（琥珀色＋dlpulse 脉冲）。
+- 根因2「下载完仍未下载/不可选」：`modelReady(id)` 硬编码 Vosk 布局 `model/am/final.mdl`，sherpa 模型文件在根目录（3 个 onnx/txt）→ 永远 false。修复：按 `engineForModel(id)` 区分，sherpa 校验 `small.en-encoder.int8.onnx/decoder/tokens`。
+- 根因3「按钮无状态区分」：加 downloading 类 + CSS 动画；未下载=下载按钮、下载中=琥珀色脉冲+百分比、已下载=无下载按钮（只剩选择/删除）。
+- 顺带：`downloadEngineModel` 对 sherpa 模型先链式下载 sherpaRuntime 再下模型；`downloadSelectedEngine` 链式时模型已装则跳过。
+- 编译坑：匿名类引用非 final 局部变量（`total`）→ 改 final `totalBytes`；`model.getString` 的 JSONException → 匿名类外用 final 变量预取。
+
 ## 2.4.1 sherpa 运行库改按需下载（APK 瘦身）
 
 - 用户质疑 APK +23.6MB：确认为内嵌 `libsherpa-onnx-jni.so`（23,650,584B）。2.4.1 将其移出 APK，改为独立运行库包 `speech-runtime-sherpa-v1.zip`（压缩后 8,729,659B，sha 21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3），APK 回到 923,347B。
@@ -565,4 +573,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.3.0（code89）。统一发音检查引擎命名；双错误半对掌握态+分项过关事件；下载按钮即时态；弹窗右上关闭；GitHub release 384373046；skill v2.3.0。
 - 2026-09-08：APK 2.4.0（code90）。接入 sherpa-onnx Whisper small.en 超高精度版（hf-mirror 多文件断点下载；运行库入 APK）；GitHub release 384382395；skill v2.4.0。
 - 2026-09-08：APK 2.4.1（code91）。sherpa 运行库移出 APK 改按需包（8.7MB，Gitee+GitHub）；APK 回 0.9MB；GitHub release 384388257；skill v2.4.1。
+- 2026-09-08：APK 2.4.2（code92）。修复超高精度版下载三连、模型就绪判定、下载按钮动效；GitHub release（后台确认）；skill v2.4.2。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
