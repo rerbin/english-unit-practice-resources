@@ -93,6 +93,8 @@ public class WrongBookDb {
                 ids.add(id); rows.put(id, o);
                 int akc = c.getColumnIndexOrThrow("audio_key");
                 o.put("audioKey", c.isNull(akc) ? "" : c.getString(akc));
+                o.put("pronPassed", passed(id, true));
+                o.put("writePassed", passed(id, false));
             }
         }
         if (!ids.isEmpty()) {
@@ -171,6 +173,58 @@ public class WrongBookDb {
         v.put("updated_at", now());
         db.update("mistakes", v, "id=? AND stage='active'", new String[]{String.valueOf(id)});
         event(db, id, mastered ? "marked_mastered" : "mastery_cancelled", null);
+    }
+
+    public synchronized void markPassed(long id, boolean pron) {
+        SQLiteDatabase db = getWritableDatabase();
+        String ev = pron ? "pron_passed" : "write_passed";
+        try (Cursor c = db.rawQuery("SELECT 1 FROM learning_events WHERE mistake_id=? AND event_type=?", new String[]{String.valueOf(id), ev})) { if (c.moveToFirst()) return; }
+        event(db, id, ev, null);
+    }
+
+    public synchronized boolean passed(long id, boolean pron) {
+        String ev = pron ? "pron_passed" : "write_passed";
+        return scalar(getReadableDatabase(), "SELECT count(*) FROM learning_events WHERE mistake_id=? AND event_type=?", new String[]{String.valueOf(id), ev}) > 0;
+    }
+
+    public synchronized JSONObject passState(long id) throws org.json.JSONException {
+        int pe = 0, we = 0, mastered = 0;
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT pronunciation_error,writing_error,mastered FROM mistakes WHERE id=?", new String[]{String.valueOf(id)})) { if (c.moveToFirst()) { pe = c.getInt(0); we = c.getInt(1); mastered = c.getInt(2); } }
+        JSONObject o = new JSONObject();
+        o.put("pronPassed", passed(id, true)); o.put("writePassed", passed(id, false));
+        o.put("mastered", mastered != 0); o.put("pronError", pe == 1); o.put("writeError", we == 1);
+        return o;
+    }
+
+    private synchronized boolean autoMasterIfNeeded(long id) {
+        try {
+            JSONObject st = passState(id);
+            boolean needP = st.getBoolean("pronError"), needW = st.getBoolean("writeError");
+            boolean all = (!needP || st.getBoolean("pronPassed")) && (!needW || st.getBoolean("writePassed"));
+            if (all && !st.getBoolean("mastered")) {
+                SQLiteDatabase db = getWritableDatabase();
+                ContentValues v = new ContentValues();
+                v.put("mastered", 1); v.put("mastered_at", now()); v.put("updated_at", now());
+                db.update("mistakes", v, "id=?", new String[]{String.valueOf(id)});
+                event(db, id, "marked_mastered", null);
+                return true;
+            }
+        } catch (Exception ignored) { }
+        return false;
+    }
+
+    public synchronized JSONObject readPass(long id) throws org.json.JSONException {
+        markPassed(id, true);
+        autoMasterIfNeeded(id);
+        return passState(id);
+    }
+
+    public synchronized String spellResultJson(long id, boolean correct, String entered) throws org.json.JSONException {
+        spellResult(id, correct, entered);
+        if (correct) { markPassed(id, false); autoMasterIfNeeded(id); }
+        JSONObject o = passState(id);
+        o.put("result", correct ? "correct" : "wrong");
+        return o.toString();
     }
 
     public synchronized boolean archive(long id) {

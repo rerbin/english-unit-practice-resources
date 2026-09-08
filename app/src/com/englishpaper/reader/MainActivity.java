@@ -363,7 +363,8 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void downloadEngine() { packs.downloadSelectedEngine(engineListener()); }
         @JavascriptInterface public void requestEngineCatalog() { dbExecutor.execute(() -> js("engineCatalog", packs.engineCatalog().toString())); }
         @JavascriptInterface public void downloadEnginePart(String kind, String id) { dbExecutor.execute(() -> { AudioPackManager.Listener l = engineListener(); if ("runtime".equals(kind)) packs.downloadRuntime(l); else packs.downloadEngineModel(id, l); }); }
-        @JavascriptInterface public void selectEngineModel(String id) { dbExecutor.execute(() -> { packs.selectEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); js("engineState", new org.json.JSONObject().put("ready", packs.engineReady()).put("selected", packs.selectedEngineModel()).toString()); preloadEngine(); }); }
+        @JavascriptInterface public void selectEngineModel(String id) { dbExecutor.execute(() -> { packs.selectEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); js("engineState", engineStateJson()); preloadEngine(); }); }
+        private String engineStateJson() { try { return new org.json.JSONObject().put("ready", packs.engineReady()).put("selected", packs.selectedEngineModel()).toString(); } catch (Exception e) { return "{\"ready\":false}"; } }
         @JavascriptInterface public void deleteEngineModel(String id) { dbExecutor.execute(() -> { packs.deleteEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); }); }
         private AudioPackManager.Listener engineListener() { return new AudioPackManager.Listener(){ public void onProgress(int percent){ js("engineDownloadProgress", packJson("engine",percent,null,null)); } public void onFinished(boolean ok,String message){ js("engineDownloadFinished", packJson("engine",-1,ok,message)); if(ok){ js("engineCatalog", packs.engineCatalog().toString()); preloadEngine(); } } }; }
         @JavascriptInterface public void startReadAloud(long id, String text) { runOnUiThread(() -> MainActivity.this.startReadAloud(id, text)); }
@@ -383,7 +384,8 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void toggleMaster(long id) { dbExecutor.execute(() -> { boolean mastered=wrongDb.toggleMaster(id);js("wrongBookChanged",mastered?"已标记为“已掌握”。":"已取消“已掌握”标记。"); }); }
         @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已移到“已掌握”。":"请先标记为“已掌握”，再移出。"); }); }
         @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已移回“正在练习”，可以继续复习。"); }); }
-        @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { wrongDb.spellResult(id,correct,entered);js("spellSaved",correct?"correct":"wrong"); }); }
+        @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { try { js("spellSaved", wrongDb.spellResultJson(id,correct,entered)); } catch (Exception e) { js("spellSaved", "{\"result\":\""+(correct?"correct":"wrong")+"\"}"); } }); }
+        @JavascriptInterface public void readPass(long id) { dbExecutor.execute(() -> { try { js("readPassResult", wrongDb.readPass(id).toString()); } catch (Exception e) { js("readPassResult", "{\"mastered\":false}"); } }); }
         @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); String stamp=new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm",java.util.Locale.US).format(new java.util.Date()); i.putExtra(Intent.EXTRA_TITLE,"错题本_"+stamp+".xls"); startActivityForResult(i, EXPORT_WRONG); }); }
     }
 

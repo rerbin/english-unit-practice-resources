@@ -30,9 +30,9 @@ public final class SpeechEngine {
         loadError = null;
         try {
             libDir = abiLibDir(runtimeRoot);
-            if (libDir == null) { loadError = "跟读运行库与本机 CPU 架构不兼容。"; return false; }
+            if (libDir == null) { loadError = "发音检查运行库与本机 CPU 架构不兼容。"; return false; }
             File modelDir = new File(modelRoot, "model");
-            if (!modelDir.isDirectory()) { loadError = "跟读模型包不完整。"; return false; }
+            if (!modelDir.isDirectory()) { loadError = "发音检查模型包不完整。"; return false; }
             System.setProperty("jna.boot.library.path", libDir.getAbsolutePath());
             System.load(new File(libDir, "libjnidispatch.so").getAbsolutePath());
             System.load(new File(libDir, "libvosk.so").getAbsolutePath());
@@ -40,7 +40,7 @@ public final class SpeechEngine {
             return true;
         } catch (Throwable t) {
             android.util.Log.e("SpeechEngine", "Unable to load speech engine", t);
-            loadError = "跟读引擎加载失败：" + t.getClass().getSimpleName() + (t.getMessage() == null ? "" : "（" + t.getMessage() + "）");
+            loadError = "发音检查引擎加载失败：" + t.getClass().getSimpleName() + (t.getMessage() == null ? "" : "（" + t.getMessage() + "）");
             model = null;
             return false;
         }

@@ -2,7 +2,7 @@
   "runtime": {
     "id": "vosk-runtime",
     "version": 1,
-    "name": "Vosk 运行库",
+    "name": "发音检查运行库",
     "sizeLabel": "约 6MB",
     "sources": [
       {

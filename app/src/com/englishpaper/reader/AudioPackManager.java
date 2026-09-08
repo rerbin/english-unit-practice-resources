@@ -224,13 +224,13 @@ public final class AudioPackManager {
         return out;
     }
 
-    public void downloadRuntime(Listener listener) { downloadItem(engineRegistry.optJSONObject("runtime"), runtimeRoot(), listener, "跟读运行库", true); }
+    public void downloadRuntime(Listener listener) { downloadItem(engineRegistry.optJSONObject("runtime"), runtimeRoot(), listener, "发音检查运行库", true); }
     public void downloadEngineModel(String id, Listener listener) {
         try {
             JSONArray ms = engineRegistry.getJSONArray("models");
             for (int i = 0; i < ms.length(); i++) {
                 JSONObject m = ms.getJSONObject(i);
-                if (id.equals(m.getString("id"))) { downloadItem(m, modelRoot(id), listener, m.optString("name", "跟读模型"), false); return; }
+                if (id.equals(m.getString("id"))) { downloadItem(m, modelRoot(id), listener, m.optString("name", "发音检查模型"), false); return; }
             }
         } catch (Exception e) { }
         listener.onFinished(false, "未找到所选模型。");
