@@ -242,7 +242,7 @@ public class MainActivity extends Activity {
             stopPlayback();
             int buf = Math.max(AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), 6400);
             recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, 16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, buf);
-            if (recorder.getState() != AudioRecord.STATE_INITIALIZED) { recorder.release(); recorder = null; js("readAloudState", "error"); return; }
+            if (recorder.getState() != AudioRecord.STATE_INITIALIZED) { recorder.release(); recorder = null; try { js("readAloudState", new org.json.JSONObject().put("state","error").put("message","录音初始化失败：麦克风被占用或系统限制录音权限。").toString()); } catch (Exception ig) { js("readAloudState","error"); } return; }
             readPcm = new File(getCacheDir(), "readaloud.pcm");
             recording = true;
             recorder.startRecording();
@@ -277,8 +277,9 @@ public class MainActivity extends Activity {
                 if ("sherpa".equals(engine)) {
                     if (!SherpaEngine.load(packs.sherpaRuntimeLibDir())) {
                         String msg = SherpaEngine.getLoadError();
-                        js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "超高精度引擎加载失败。" : msg).toString());
-                        js("readAloudState", "error");
+                        String full = msg == null ? "超高精度引擎加载失败。" : msg;
+                        js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", full).toString());
+                        try { js("readAloudState", new org.json.JSONObject().put("state","error").put("message", full).toString()); } catch (Exception ig) { js("readAloudState","error"); }
                         return;
                     }
                     String heardText = SherpaEngine.recognize(wav, packs.selectedModelDir());
