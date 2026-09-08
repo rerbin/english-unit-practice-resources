@@ -1,0 +1,140 @@
+{
+  "runtime": {
+    "id": "vosk-runtime",
+    "version": 1,
+    "name": "发音检查运行库",
+    "sizeLabel": "约 6MB",
+    "sources": [
+      {
+        "url": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/speech-runtime-vosk-v1.zip",
+        "sha256": "d3e61b97ccd5a253da46bb8b3ca007e8763adb806d170b74777969119fc426ad",
+        "size": 5860944
+      },
+      {
+        "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.2.0/speech-runtime-vosk-v1.zip",
+        "sha256": "d3e61b97ccd5a253da46bb8b3ca007e8763adb806d170b74777969119fc426ad",
+        "size": 5860944
+      }
+    ]
+  },
+  "models": [
+    {
+      "id": "vosk-en-small",
+      "name": "Vosk 英语·轻量版",
+      "intro": "响应快、占用小，适合单词和短句跟读；老旧手机推荐。",
+      "sizeLabel": "约 40MB",
+      "version": 1,
+      "sources": [
+        {
+          "url": "https://hf-mirror.com/ambind/vosk-model-small-en-us-0.15/resolve/main/vosk-model-small-en-us-0.15_c_.zip",
+          "sha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+          "size": 41205931
+        },
+        {
+          "url": "https://huggingface.co/ambind/vosk-model-small-en-us-0.15/resolve/main/vosk-model-small-en-us-0.15_c_.zip",
+          "sha256": "30f26242c4eb449f948e42cb302dd7a686cb29a3423a8367f99ff41780942498",
+          "size": 41205931
+        },
+        {
+          "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.2.0/speech-model-vosk-en-small-v1.zip",
+          "sha256": "03856579371838ae102d496822dffa732fad2c5c26444eacb64e975e38b26286",
+          "size": 41183169
+        }
+      ],
+      "engine": "vosk"
+    },
+    {
+      "id": "vosk-en-large",
+      "name": "Vosk 英语·高精度版",
+      "intro": "更大模型，对长句、连读和发音不清的识别更准；下载更大、识别稍慢。",
+      "sizeLabel": "约 125MB",
+      "version": 1,
+      "sources": [
+        {
+          "url": "https://hf-mirror.com/VigneshSK17/vosk-model-en-us-0.22-lgraph/resolve/main/vosk-model-en-us-0.22-lgraph.zip",
+          "sha256": "d9838b4aaa82a75c4a17f5aca300eaca129aaab2a7cbf951bafbb500eb9c4334",
+          "size": 130557655
+        },
+        {
+          "url": "https://huggingface.co/VigneshSK17/vosk-model-en-us-0.22-lgraph/resolve/main/vosk-model-en-us-0.22-lgraph.zip",
+          "sha256": "d9838b4aaa82a75c4a17f5aca300eaca129aaab2a7cbf951bafbb500eb9c4334",
+          "size": 130557655
+        }
+      ],
+      "engine": "vosk"
+    },
+    {
+      "id": "sherpa-whisper-small-en",
+      "engine": "sherpa",
+      "name": "Whisper 超高精度版",
+      "intro": "whisper small.en int8：对长句、连读和发音不清的识别最准；体积最大、识别较慢，需 64 位设备。",
+      "sizeLabel": "约 375MB",
+      "version": 1,
+      "sources": [
+        {
+          "base": "https://hf-mirror.com/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/",
+          "files": [
+            {
+              "name": "small.en-encoder.int8.onnx",
+              "sha256": "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f",
+              "size": 112442483
+            },
+            {
+              "name": "small.en-decoder.int8.onnx",
+              "sha256": "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb",
+              "size": 262223042
+            },
+            {
+              "name": "small.en-tokens.txt",
+              "sha256": "306cd27f03c1a714eca7108e03d66b7dc042abe8c258b44c199a7ed9838dd930",
+              "size": 835554
+            }
+          ]
+        },
+        {
+          "base": "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/",
+          "files": [
+            {
+              "name": "small.en-encoder.int8.onnx",
+              "sha256": "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f",
+              "size": 112442483
+            },
+            {
+              "name": "small.en-decoder.int8.onnx",
+              "sha256": "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb",
+              "size": 262223042
+            },
+            {
+              "name": "small.en-tokens.txt",
+              "sha256": "306cd27f03c1a714eca7108e03d66b7dc042abe8c258b44c199a7ed9838dd930",
+              "size": 835554
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sherpaRuntime": {
+    "id": "sherpa-runtime",
+    "version": 1,
+    "name": "超高精度运行库",
+    "sizeLabel": "约 9MB",
+    "sources": [
+      {
+        "url": "https://cdn.jsdelivr.net/gh/rerbin/english-unit-practice-resources@main/speech-runtime-sherpa-v1.zip",
+        "sha256": "21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3",
+        "size": 8729659
+      },
+      {
+        "url": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/speech-runtime-sherpa-v1.zip",
+        "sha256": "21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3",
+        "size": 8729659
+      },
+      {
+        "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.4.1/speech-runtime-sherpa-v1.zip",
+        "sha256": "21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3",
+        "size": 8729659
+      }
+    ]
+  }
+}
