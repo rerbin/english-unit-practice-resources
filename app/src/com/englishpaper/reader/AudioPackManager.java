@@ -125,6 +125,8 @@ public final class AudioPackManager {
 
     private final JSONObject engineRegistry;
     private static final String ENGINE_MODEL_PREF = "engine_model";
+    private volatile String downloadLabel = "";
+    public String engineDownloadLabel() { return downloadLabel; }
 
     private JSONObject loadEngineRegistry() {
         try {
@@ -150,7 +152,16 @@ public final class AudioPackManager {
     public File sherpaRuntimeLibDir() { return new File(sherpaRuntimeRoot(), "lib/arm64-v8a"); }
     public boolean sherpaRuntimeReady() { File r = sherpaRuntimeRoot(); return new File(r, "manifest.json").isFile() && new File(r, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile(); }
     public boolean runtimeReady() { File r = runtimeRoot(); return new File(r, "manifest.json").isFile() && SpeechEngine.abiLibDir(r) != null; }
-    public boolean modelReady(String id) { File m = modelRoot(id); return new File(m, "manifest.json").isFile() && new File(m, "model/am/final.mdl").isFile(); }
+    public boolean modelReady(String id) {
+        File m = modelRoot(id);
+        if (!new File(m, "manifest.json").isFile()) return false;
+        if ("sherpa".equals(engineForModel(id))) {
+            return new File(m, "small.en-encoder.int8.onnx").isFile()
+                && new File(m, "small.en-decoder.int8.onnx").isFile()
+                && new File(m, "small.en-tokens.txt").isFile();
+        }
+        return new File(m, "model/am/final.mdl").isFile();
+    }
     public String engineForModel(String id) {
         try {
             JSONArray ms = engineRegistry.getJSONArray("models");
@@ -253,12 +264,28 @@ public final class AudioPackManager {
     public void downloadEngineModel(String id, Listener listener) {
         try {
             JSONArray ms = engineRegistry.getJSONArray("models");
+            JSONObject found = null;
             for (int i = 0; i < ms.length(); i++) {
                 JSONObject m = ms.getJSONObject(i);
-                if (id.equals(m.getString("id"))) { downloadItem(m, modelRoot(id), listener, m.optString("name", "发音检查模型"), false); return; }
+                if (id.equals(m.getString("id"))) { found = m; break; }
             }
-        } catch (Exception e) { }
-        listener.onFinished(false, "未找到所选模型。");
+            if (found == null) { listener.onFinished(false, "未找到所选模型。"); return; }
+            final JSONObject model = found;
+            final String modelId = model.getString("id");
+            final String modelName = model.optString("name", "发音检查模型");
+            if ("sherpa".equals(model.optString("engine", "vosk")) && !sherpaRuntimeReady()) {
+                Listener chain = new Listener() {
+                    public void onProgress(int percent) { listener.onProgress(percent); }
+                    public void onFinished(boolean ok, String message) {
+                        if (!ok) { listener.onFinished(false, message); return; }
+                        downloadItem(model, modelRoot(modelId), listener, modelName, false);
+                    }
+                };
+                downloadItem(engineRegistry.optJSONObject("sherpaRuntime"), sherpaRuntimeRoot(), chain, "超高精度运行库", true);
+            } else {
+                downloadItem(found, modelRoot(id), listener, found.optString("name", "发音检查模型"), false);
+            }
+        } catch (Exception e) { listener.onFinished(false, "未找到所选模型。"); }
     }
     /** Sequential helper for the read-aloud dialog: runtime first when missing, then selected model. */
     public void downloadSelectedEngine(final Listener listener) {
@@ -277,6 +304,17 @@ public final class AudioPackManager {
         } else {
             downloadEngineModel(selectedEngineModel(), listener);
         }
+    }
+
+    private static String friendlyFileName(String name) {
+        String n = name == null ? "" : name.toLowerCase();
+        if (n.contains("encoder")) return "识别编码器";
+        if (n.contains("decoder")) return "解码器";
+        if (n.contains("tokens")) return "词表";
+        if (n.contains("libvosk")) return "Vosk 运行库";
+        if (n.contains("jnidispatch")) return "JNA 运行库";
+        if (n.contains("sherpa")) return "超高精度运行库";
+        return name;
     }
 
     private static void copyFile(File src, File dst) throws IOException {
@@ -299,10 +337,26 @@ public final class AudioPackManager {
                         if (stage.exists()) deleteTree(stage);
                         if (!stage.mkdirs()) throw new IOException("无法创建目录");
                         JSONArray fs = src.getJSONArray("files");
+                        long total = 0;
+                        for (int k = 0; k < fs.length(); k++) total += fs.getJSONObject(k).optLong("size", 0);
+                        final long totalBytes = total > 0 ? total : fs.length() * 100;
+                        final long[] doneBytes = {0};
                         for (int fi = 0; fi < fs.length(); fi++) {
-                            JSONObject f = fs.getJSONObject(fi);
+                            final JSONObject f = fs.getJSONObject(fi);
+                            final long fileSize = f.optLong("size", -1);
+                            downloadLabel = label + "：" + friendlyFileName(f.getString("name")) + "（第 " + (fi + 1) + "/" + fs.length() + " 部分）";
                             File part = new File(packsRoot, safe(item.getString("id")) + "-" + f.getString("name") + ".part");
-                            if (!downloadResumable(src.getString("base") + f.getString("name"), part, f.optLong("size", -1), listener)) { allOk = false; part.delete(); break; }
+                            final int[] prev = {-1};
+                            Listener sub = new Listener() {
+                                public void onProgress(int pc) {
+                                    long got = doneBytes[0] + (pc >= 0 && fileSize > 0 ? fileSize * pc / 100 : 0);
+                                    int gp = (int) (got * 100 / totalBytes);
+                                    if (gp != prev[0]) { prev[0] = gp; listener.onProgress(gp); }
+                                }
+                                public void onFinished(boolean ok, String message) { }
+                            };
+                            if (!downloadResumable(src.getString("base") + f.getString("name"), part, fileSize, sub)) { allOk = false; part.delete(); break; }
+                            doneBytes[0] += fileSize;
                             if (!sha256(part).equalsIgnoreCase(f.getString("sha256"))) { allOk = false; part.delete(); break; }
                             File dst = new File(stage, f.getString("name"));
                             if (!part.renameTo(dst)) { copyFile(part, dst); part.delete(); }
@@ -319,6 +373,7 @@ public final class AudioPackManager {
                         return;
                     }
                     File part = new File(packsRoot, safe(item.getString("id")) + ".part");
+                    downloadLabel = label;
                     if (downloadResumable(src.getString("url"), part, src.optLong("size", -1), listener)) {
                         if (!sha256(part).equalsIgnoreCase(src.getString("sha256"))) { part.delete(); continue; }
                         File stage = new File(files.importStagingRoot(), safe(item.getString("id")));
