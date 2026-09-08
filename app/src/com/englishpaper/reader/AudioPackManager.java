@@ -395,12 +395,13 @@ public final class AudioPackManager {
                         if (stage.exists()) deleteTree(stage);
                         if (!stage.mkdirs()) throw new IOException("无法创建目录");
                         try (ZipInputStream zin = new ZipInputStream(new FileInputStream(part))) {
-                            ZipEntry e; byte[] b = new byte[65536]; String top = null;
+                            ZipEntry e; byte[] b = new byte[65536]; String top = isRuntime ? null : "";
+                            boolean strip = !isRuntime;
                             while ((e = zin.getNextEntry()) != null) {
                                 if (e.isDirectory()) continue;
                                 String nm = e.getName();
-                                if (top == null) { int ix = nm.indexOf('/'); top = ix > 0 ? nm.substring(0, ix + 1) : ""; }
-                                String rel = nm.startsWith(top) ? nm.substring(top.length()) : nm;
+                                if (strip && top.isEmpty()) { int ix = nm.indexOf('/'); top = ix > 0 ? nm.substring(0, ix + 1) : ""; }
+                                String rel = strip ? (nm.startsWith(top) ? nm.substring(top.length()) : nm) : nm;
                                 if (rel.isEmpty()) continue;
                                 File o = new File(stage, rel).getCanonicalFile();
                                 if (!o.getPath().startsWith(stage.getCanonicalPath() + File.separator)) throw new SecurityException("非法路径");
@@ -414,6 +415,15 @@ public final class AudioPackManager {
                             for (String sub : new String[]{"am", "conf", "graph", "ivector"}) {
                                 File f = new File(stage, sub);
                                 if (f.isDirectory()) { File t = new File(md, sub); if (!f.renameTo(t)) copyTree(f, t); deleteTree(f); }
+                            }
+                        }
+                        if (isRuntime && !new File(stage, "manifest.json").isFile()) {
+                            File[] kids = stage.listFiles();
+                            if (kids != null && kids.length == 1 && kids[0].isDirectory()) {
+                                File wrap = kids[0];
+                                File[] inner = wrap.listFiles();
+                                if (inner != null) for (File f : inner) { File t = new File(stage, f.getName()); if (!f.renameTo(t)) { copyTree(f, t); deleteTree(f); } }
+                                deleteTree(wrap);
                             }
                         }
                         if (!new File(stage, "manifest.json").isFile()) {
