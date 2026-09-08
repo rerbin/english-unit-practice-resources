@@ -275,7 +275,7 @@ public class MainActivity extends Activity {
                 String engine = packs.engineForModel(packs.selectedEngineModel());
                 String raw;
                 if ("sherpa".equals(engine)) {
-                    if (!SherpaEngine.ensureLoaded()) {
+                    if (!SherpaEngine.load(packs.sherpaRuntimeLibDir())) {
                         String msg = SherpaEngine.getLoadError();
                         js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "超高精度引擎加载失败。" : msg).toString());
                         js("readAloudState", "error");
@@ -319,7 +319,7 @@ public class MainActivity extends Activity {
     private void preloadEngine() {
         readExecutor.execute(() -> {
             if (SpeechEngine.isLoaded()) { js("engineLoadResult", "{\"ok\":true}"); return; }
-            boolean ok = "sherpa".equals(packs.engineForModel(packs.selectedEngineModel())) ? SherpaEngine.ensureLoaded() : SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()));
+            boolean ok = "sherpa".equals(packs.engineForModel(packs.selectedEngineModel())) ? SherpaEngine.load(packs.sherpaRuntimeLibDir()) : SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()));
             try {
                 org.json.JSONObject o = new org.json.JSONObject();
                 o.put("ok", ok);
@@ -376,7 +376,7 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void requestEngineState() { dbExecutor.execute(() -> { try { org.json.JSONObject o = new org.json.JSONObject(); o.put("ready", packs.engineReady()); o.put("selected", packs.selectedEngineModel()); js("engineState", o.toString()); if (packs.engineReady()) preloadEngine(); } catch (Exception ignored) { } }); }
         @JavascriptInterface public void downloadEngine() { packs.downloadSelectedEngine(engineListener()); }
         @JavascriptInterface public void requestEngineCatalog() { dbExecutor.execute(() -> js("engineCatalog", packs.engineCatalog().toString())); }
-        @JavascriptInterface public void downloadEnginePart(String kind, String id) { dbExecutor.execute(() -> { AudioPackManager.Listener l = engineListener(); if ("runtime".equals(kind)) packs.downloadRuntime(l); else packs.downloadEngineModel(id, l); }); }
+        @JavascriptInterface public void downloadEnginePart(String kind, String id) { dbExecutor.execute(() -> { AudioPackManager.Listener l = engineListener(); if ("runtime".equals(kind)) packs.downloadRuntime(l); else if ("sherpa-runtime".equals(kind)) packs.downloadItemPublic("sherpaRuntime", l); else packs.downloadEngineModel(id, l); }); }
         @JavascriptInterface public void selectEngineModel(String id) { dbExecutor.execute(() -> { packs.selectEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); js("engineState", engineStateJson()); preloadEngine(); }); }
         private String engineStateJson() { try { return new org.json.JSONObject().put("ready", packs.engineReady()).put("selected", packs.selectedEngineModel()).toString(); } catch (Exception e) { return "{\"ready\":false}"; } }
         @JavascriptInterface public void deleteEngineModel(String id) { dbExecutor.execute(() -> { packs.deleteEngineModel(id); js("engineCatalog", packs.engineCatalog().toString()); }); }

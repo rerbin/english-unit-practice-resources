@@ -13,10 +13,12 @@ public final class SherpaEngine {
 
     public static synchronized String getLoadError() { return loadError; }
 
-    public static synchronized boolean ensureLoaded() {
+    public static synchronized boolean load(File libDir) {
         if (loaded) return true;
         try {
-            System.loadLibrary("sherpa-onnx-jni");
+            File so = new File(libDir, "libsherpa-onnx-jni.so");
+            if (!so.isFile()) { loadError = "超高精度运行库未下载。"; return false; }
+            System.load(so.getAbsolutePath());
             loaded = true;
             return true;
         } catch (Throwable t) {

@@ -113,5 +113,23 @@
         }
       ]
     }
-  ]
+  ],
+  "sherpaRuntime": {
+    "id": "sherpa-runtime",
+    "version": 1,
+    "name": "超高精度运行库",
+    "sizeLabel": "约 9MB",
+    "sources": [
+      {
+        "url": "https://gitee.com/rerbin/english-unit-practice-resources/raw/master/speech-runtime-sherpa-v1.zip",
+        "sha256": "21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3",
+        "size": 8729659
+      },
+      {
+        "url": "https://github.com/rerbin/english-unit-practice-resources/releases/download/v2.4.1/speech-runtime-sherpa-v1.zip",
+        "sha256": "21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3",
+        "size": 8729659
+      }
+    ]
+  }
 }

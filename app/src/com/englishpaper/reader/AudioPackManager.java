@@ -146,6 +146,9 @@ public final class AudioPackManager {
     public String firstEngineModelId() { try { return engineRegistry.getJSONArray("models").getJSONObject(0).getString("id"); } catch (Exception e) { return "vosk-en-small"; } }
     public String selectedEngineModel() { return trialPrefs.getString(ENGINE_MODEL_PREF, firstEngineModelId()); }
     public void selectEngineModel(String id) { trialPrefs.edit().putString(ENGINE_MODEL_PREF, id).apply(); }
+    public File sherpaRuntimeRoot() { File d = new File(context.getFilesDir(), "sherpa-runtime"); if (!d.exists()) d.mkdirs(); return d; }
+    public File sherpaRuntimeLibDir() { return new File(sherpaRuntimeRoot(), "lib/arm64-v8a"); }
+    public boolean sherpaRuntimeReady() { File r = sherpaRuntimeRoot(); return new File(r, "manifest.json").isFile() && new File(r, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile(); }
     public boolean runtimeReady() { File r = runtimeRoot(); return new File(r, "manifest.json").isFile() && SpeechEngine.abiLibDir(r) != null; }
     public boolean modelReady(String id) { File m = modelRoot(id); return new File(m, "manifest.json").isFile() && new File(m, "model/am/final.mdl").isFile(); }
     public String engineForModel(String id) {
@@ -161,7 +164,7 @@ public final class AudioPackManager {
 
     public File selectedModelDir() { return modelRoot(selectedEngineModel()); }
 
-    public boolean engineReady() { return runtimeReady() && modelReady(selectedEngineModel()); }
+    public boolean engineReady() { boolean rt = "sherpa".equals(engineForModel(selectedEngineModel())) ? sherpaRuntimeReady() : runtimeReady(); return rt && modelReady(selectedEngineModel()); }
 
     public JSONObject engineCatalog() {
         JSONObject out = new JSONObject();
@@ -169,6 +172,9 @@ public final class AudioPackManager {
             JSONObject rt = new JSONObject(engineRegistry.getJSONObject("runtime").toString());
             rt.put("installed", runtimeReady());
             out.put("runtime", rt);
+            JSONObject srt = new JSONObject(engineRegistry.getJSONObject("sherpaRuntime").toString());
+            srt.put("installed", sherpaRuntimeReady());
+            out.put("sherpaRuntime", srt);
             JSONArray ms = engineRegistry.getJSONArray("models");
             JSONArray arr = new JSONArray();
             for (int i = 0; i < ms.length(); i++) {
@@ -238,6 +244,12 @@ public final class AudioPackManager {
     }
 
     public void downloadRuntime(Listener listener) { downloadItem(engineRegistry.optJSONObject("runtime"), runtimeRoot(), listener, "发音检查运行库", true); }
+    public void downloadItemPublic(String key, Listener listener) {
+        JSONObject item = engineRegistry.optJSONObject(key);
+        if (item == null) { listener.onFinished(false, "配置缺失。"); return; }
+        boolean isSherpa = "sherpaRuntime".equals(key);
+        downloadItem(item, isSherpa ? sherpaRuntimeRoot() : runtimeRoot(), listener, item.optString("name", "运行库"), true);
+    }
     public void downloadEngineModel(String id, Listener listener) {
         try {
             JSONArray ms = engineRegistry.getJSONArray("models");
@@ -250,14 +262,18 @@ public final class AudioPackManager {
     }
     /** Sequential helper for the read-aloud dialog: runtime first when missing, then selected model. */
     public void downloadSelectedEngine(final Listener listener) {
-        if (!runtimeReady()) {
-            downloadRuntime(new Listener() {
+        boolean needRuntime = "sherpa".equals(engineForModel(selectedEngineModel())) ? !sherpaRuntimeReady() : !runtimeReady();
+        if (needRuntime) {
+            Listener chain = new Listener() {
                 public void onProgress(int percent) { listener.onProgress(percent); }
                 public void onFinished(boolean ok, String message) {
                     if (!ok) { listener.onFinished(false, message); return; }
+                    if (modelReady(selectedEngineModel())) { listener.onFinished(true, "发音检查引擎已就绪。"); return; }
                     downloadEngineModel(selectedEngineModel(), listener);
                 }
-            });
+            };
+            if ("sherpa".equals(engineForModel(selectedEngineModel()))) downloadItem(engineRegistry.optJSONObject("sherpaRuntime"), sherpaRuntimeRoot(), chain, "超高精度运行库", true);
+            else downloadRuntime(chain);
         } else {
             downloadEngineModel(selectedEngineModel(), listener);
         }
