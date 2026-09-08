@@ -34,14 +34,15 @@ public final class SherpaEngine {
             com.k2fsa.sherpa.onnx.FeatureConfig feat = new com.k2fsa.sherpa.onnx.FeatureConfig();
             feat.setSampleRate(16000);
             feat.setFeatureDim(80);
+            File base = new File(modelDir, "small.en-encoder.int8.onnx").isFile() ? modelDir : new File(modelDir, "model");
             com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig wh = new com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig();
-            wh.setEncoder(new File(modelDir, "small.en-encoder.int8.onnx").getAbsolutePath());
-            wh.setDecoder(new File(modelDir, "small.en-decoder.int8.onnx").getAbsolutePath());
+            wh.setEncoder(new File(base, "small.en-encoder.int8.onnx").getAbsolutePath());
+            wh.setDecoder(new File(base, "small.en-decoder.int8.onnx").getAbsolutePath());
             wh.setLanguage("en");
             wh.setTask("transcribe");
             com.k2fsa.sherpa.onnx.OfflineModelConfig mc = new com.k2fsa.sherpa.onnx.OfflineModelConfig();
             mc.setWhisper(wh);
-            mc.setTokens(new File(modelDir, "small.en-tokens.txt").getAbsolutePath());
+            mc.setTokens(new File(base, "small.en-tokens.txt").getAbsolutePath());
             mc.setNumThreads(2);
             mc.setDebug(false);
             com.k2fsa.sherpa.onnx.OfflineRecognizerConfig rc = new com.k2fsa.sherpa.onnx.OfflineRecognizerConfig();

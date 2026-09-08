@@ -150,17 +150,20 @@ public final class AudioPackManager {
     public void selectEngineModel(String id) { trialPrefs.edit().putString(ENGINE_MODEL_PREF, id).apply(); }
     public File sherpaRuntimeRoot() { File d = new File(context.getFilesDir(), "sherpa-runtime"); if (!d.exists()) d.mkdirs(); return d; }
     public File sherpaRuntimeLibDir() { return new File(sherpaRuntimeRoot(), "lib/arm64-v8a"); }
-    public boolean sherpaRuntimeReady() { File r = sherpaRuntimeRoot(); return new File(r, "manifest.json").isFile() && new File(r, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile(); }
+    public boolean sherpaRuntimeReady() { File r = sherpaRuntimeRoot(); return new File(r, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile(); }
+    private String runtimeKeyFor(String engine) { return "sherpa".equals(engine) ? "sherpaRuntime" : "runtime"; }
+    private File runtimeRootFor(String engine) { return "sherpa".equals(engine) ? sherpaRuntimeRoot() : runtimeRoot(); }
+    private boolean runtimeReadyFor(String engine) { return "sherpa".equals(engine) ? sherpaRuntimeReady() : runtimeReady(); }
+    private JSONObject runtimeItemFor(String engine) { return engineRegistry.optJSONObject(runtimeKeyFor(engine)); }
+    private String runtimeLabelFor(String engine) { JSONObject r = runtimeItemFor(engine); return r == null ? "运行库" : r.optString("name", "运行库"); }
     public boolean runtimeReady() { File r = runtimeRoot(); return new File(r, "manifest.json").isFile() && SpeechEngine.abiLibDir(r) != null; }
     public boolean modelReady(String id) {
         File m = modelRoot(id);
-        if (!new File(m, "manifest.json").isFile()) return false;
         if ("sherpa".equals(engineForModel(id))) {
-            return new File(m, "small.en-encoder.int8.onnx").isFile()
-                && new File(m, "small.en-decoder.int8.onnx").isFile()
-                && new File(m, "small.en-tokens.txt").isFile();
+            return (new File(m, "small.en-encoder.int8.onnx").isFile() && new File(m, "small.en-decoder.int8.onnx").isFile() && new File(m, "small.en-tokens.txt").isFile())
+                || (new File(m, "model/small.en-encoder.int8.onnx").isFile() && new File(m, "model/small.en-decoder.int8.onnx").isFile() && new File(m, "model/small.en-tokens.txt").isFile());
         }
-        return new File(m, "model/am/final.mdl").isFile();
+        return new File(m, "model/am/final.mdl").isFile() || new File(m, "am/final.mdl").isFile();
     }
     public String engineForModel(String id) {
         try {
@@ -204,7 +207,18 @@ public final class AudioPackManager {
 
     public void deleteEngineModel(String id) {
         if (id.equals(selectedEngineModel())) return;
+        String engine = engineForModel(id);
         deleteTree(modelRoot(id));
+        boolean otherUsesRuntime = false;
+        try {
+            JSONArray ms = engineRegistry.getJSONArray("models");
+            for (int i = 0; i < ms.length(); i++) {
+                JSONObject m = ms.getJSONObject(i);
+                String mid = m.getString("id");
+                if (!mid.equals(id) && engine.equals(m.optString("engine", "vosk")) && modelReady(mid)) { otherUsesRuntime = true; break; }
+            }
+        } catch (Exception ignored) { }
+        if (!otherUsesRuntime) deleteTree(runtimeRootFor(engine));
     }
 
     /** Migrate the old combined engine pack (v2) into runtime + small model layout. */
@@ -273,7 +287,8 @@ public final class AudioPackManager {
             final JSONObject model = found;
             final String modelId = model.getString("id");
             final String modelName = model.optString("name", "发音检查模型");
-            if ("sherpa".equals(model.optString("engine", "vosk")) && !sherpaRuntimeReady()) {
+            final String engine = model.optString("engine", "vosk");
+            if (!runtimeReadyFor(engine)) {
                 Listener chain = new Listener() {
                     public void onProgress(int percent) { listener.onProgress(percent); }
                     public void onFinished(boolean ok, String message) {
@@ -281,9 +296,9 @@ public final class AudioPackManager {
                         downloadItem(model, modelRoot(modelId), listener, modelName, false);
                     }
                 };
-                downloadItem(engineRegistry.optJSONObject("sherpaRuntime"), sherpaRuntimeRoot(), chain, "超高精度运行库", true);
+                downloadItem(runtimeItemFor(engine), runtimeRootFor(engine), chain, runtimeLabelFor(engine), true);
             } else {
-                downloadItem(found, modelRoot(id), listener, found.optString("name", "发音检查模型"), false);
+                downloadItem(found, modelRoot(id), listener, modelName, false);
             }
         } catch (Exception e) { listener.onFinished(false, "未找到所选模型。"); }
     }
