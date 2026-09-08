@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.5.0
+version: 2.6.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,15 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.6.0 标签管理（自定义标签 + 内置保护标签统一）
+
+- 用户决策：发音/拼写/用法 **统一进标签体系**，作为**内置保护标签**（不可增删改）；另加用户自定义标签（可增删改）。
+- DB v9：新表 `tags(id,name UNIQUE,color,sort)` + `mistake_tags(mistake_id,tag_id) WITHOUT ROWID`（FK cascade）。onUpgrade oldVersion<9 调 `WrongBookDb.createTags(db)` 增量建表（**不 drop**，保留数据）；dropAll 增加两表。
+- WrongBookDb：listTags/addTag(CONFLICT_IGNORE 去重)/renameTag/deleteTag(先删 join)/setMistakeTag/setMistakeType(映射 pronunciation/writing/usage→对应 error 列)/tagIdsFor/syncTags(saveMistake 后按 tagIds 全量重写 join)；row() 增 tagIds。
+- 桥接：requestTags/addTag/renameTag/deleteTag/setMistakeTag/setMistakeType；Web 回调 tags/tagChanged/mistakeTagsChanged。
+- Web：设置→标签管理页（#tagPage）列 3 保护标签（锁、不可增删改）+ 自定义标签（改名/删除）+ 新增输入；加入错题弹窗增“自定义标签（可选）”chips（save 带 tagIds）；错题卡 tag 行显示自定义标签 + “＋”按钮开 #mistakeTagSheet（仅添加/移除：保护标签走 setMistakeType、自定义走 setMistakeTag）。
+- 自定义标签颜色从 TAG_PALETTE 轮询；卡片自定义 tag 用 `background:color+1a;color:color` 浅底。
+
 ## 2.5.0 星级≥3 视为已掌握 + 新增“用法”错题类型
 
 - 星级≥3 即掌握：Web readAloudResult 在 pass 且 `(stars||0)>=3` 时才调 readPass（pass 本身⟺stars≥3，此为使规则显式且未来评分解耦后仍成立）。
@@ -639,4 +648,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.8（code98）。补 kotlin-stdlib（sherpa Kotlin 编译缺运行时）；录音/加载失败路径带具体消息；GitHub release（后台确认）；skill v2.4.8。
 - 2026-09-08：APK 2.4.9（code99）。发音结果改 5 级星级图标评价（满分 5 金星），去掉“发音过关”文字；GitHub release（后台确认）；skill v2.4.9。
 - 2026-09-08：APK 2.5.0（code100）。星级≥3视为已掌握；新增“用法”错题类型（DB v8 增量迁移保留数据）；GitHub release（后台确认）；skill v2.5.0。
+- 2026-09-09：APK 2.6.0（code101）。标签管理：自定义标签增删改+发音/拼写/用法为内置保护标签统一进标签体系；错题本标签仅添加/移除；GitHub release（后台确认）；skill v2.6.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
