@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.2.0
+version: 2.3.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,15 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.3.0 发音检查引擎命名＋半对掌握态＋下载即时态＋弹窗右上关闭
+
+- 全 App 名称统一：跟读模型/跟读引擎/跟读练习 → **发音检查引擎/发音检查**（设置组、管理页、弹窗标题、按钮、帮助、原生提示、注册表 runtime 名）。卡片按钮仍为“读”，aria-label=发音检查；开始按钮文案“开始跟读”→“发音检查”。
+- 双错误（发音+拼写）错题的掌握按钮半对状态：未过=半圆+掌握；仅发音过=半圆+发音已过；仅拼写过=半圆+拼写已过；双过或 mastered=对号+已掌握。半圆图标=圆+半填充 path。
+- 分项过关用 learning_events 事件 `pron_passed`/`write_passed` 记录（**不改表结构，避免 onUpgrade drop 清掉用户数据**）；readPass(id) 标记发音过关并按需自动 mastered；spellResultJson 返回 {result,pronPassed,writePassed,mastered,...}；list() 增加 pronPassed/writePassed。
+- 下载按钮即时态：点击立即 disabled+“准备下载…”，进度变“下载中 x%”；engineDl 状态在 renderModelPage 重渲染后保持；读弹窗与管理页同步。
+- 发音检查弹窗：关闭从底部移到右上角 iconclose（40px），并支持点遮罩关闭（closeRead 会取消录音）；底部只留“再试一次”。
+- 引擎调研结论（2026-09）：ModelScope 无 vosk/sherpa 托管；hf-mirror 为可用国内镜像。更优端侧路线=sherpa-onnx（GitHub release AAR，构建期入包）+ whisper small.en/zipformer en（HF k2-fsa，hf-mirror 可下）；真·音素打分端侧无生产级开源，云端 Azure Pronunciation Assessment（21Vianet 中国区）/讯飞/驰声为商业选项，留作可选在线模式。
+
 ## 2.2.0 跟读模型可管理＋可选＋国内镜像
 
 - 设置新增“跟读模型”入口与独立管理页：运行库卡（约6MB，共用一次）＋模型卡（轻量版约40MB／高精度版约125MB），每卡含名称、简介、体积说明、安装状态；按钮：下载／选择此模型／删除（删除仅限非当前模型，confirm 明示可重下）。
@@ -533,4 +542,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.1.1（code86）。跟读原生加载加固：Throwable 捕获+双 ABI 引擎包 v2+预加载失败提示；GitHub release v2.1.1；skill v2.1.1。
 - 2026-09-07：APK 2.1.2（code87）。修复 Bridge 同名自委托无限递归闪退（MainActivity.this 限定+门禁）；GitHub release 384125273；skill v2.1.2。
 - 2026-09-08：APK 2.2.0（code88）。跟读模型设置可管理/可选/国内镜像（hf-mirror 优先+探测+续传+故障切换）；旧包自动迁移；GitHub release 384347373；skill v2.2.0。
+- 2026-09-08：APK 2.3.0（code89）。统一发音检查引擎命名；双错误半对掌握态+分项过关事件；下载按钮即时态；弹窗右上关闭；GitHub release 384373046；skill v2.3.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
