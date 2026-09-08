@@ -359,7 +359,7 @@ public final class AudioPackManager {
                         for (int fi = 0; fi < fs.length(); fi++) {
                             final JSONObject f = fs.getJSONObject(fi);
                             final long fileSize = f.optLong("size", -1);
-                            downloadLabel = label + "：" + friendlyFileName(f.getString("name")) + "（第 " + (fi + 1) + "/" + fs.length() + " 部分）";
+                            downloadLabel = friendlyFileName(f.getString("name")) + "（第 " + (fi + 1) + "/" + fs.length() + " 部分）";
                             File part = new File(packsRoot, safe(item.getString("id")) + "-" + f.getString("name") + ".part");
                             final int[] prev = {-1};
                             Listener sub = new Listener() {
