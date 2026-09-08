@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.8
+version: 2.4.9
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.9 发音结果改 5 级星级评价（图标，非文字）
+
+- 用户：“发音过关”不要文字，要真实星级，5 级、满分 5 颗小星星图标。
+- 原生算星（MainActivity stopReadAloud）：`stars` 入 payload。规则：unclear=0；pass=单词完全匹配或句子 matchRate≥1 时按 conf（<0 视为无 conf 给 5；≥0.9→5；≥0.75→4；否则 3），句子 0.9–1.0→4、0.8–0.9→3；fail=matchRate≥0.6→2 否则 1。同时回传 matchRate。
+- Web `starRow(n)` 渲染 5 个星 SVG（24 viewBox 星形 path），前 n 颗金色 #f6b021、其余灰 #d8dde6；pass 只显示星（去掉“发音过关。”文字）；fail=星+“再试一次。”；unclear 不显示星、保留“没听清…”文字。verdict 改 flex 容纳星行；aria-label="n 星，满分 5 星"。
+- 判定/自动掌握逻辑不变（pass 才 readPass）；星只是展示层。
+
 ## 2.4.8 补 kotlin-stdlib（sherpa 为 Kotlin 编译）+ 全错误路径带消息
 
 - 真根因之一：sherpa-onnx AAR 是 **Kotlin** 编译（类引用 kotlin.jvm.internal.Intrinsics/DefaultConstructorMarker），但 APK dex 只打了 sherpa-classes.jar 没打 kotlin-stdlib → 运行时 NoClassDefFoundError → recognize 失败。修复：libs/kotlin-stdlib.jar（1.9.22）加入 javac classpath 与 d8 输入。
@@ -622,4 +629,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.6（code96）。下载进度去模型名前缀；使用中模型卡差异化+“（使用中）”；GitHub release（后台确认）；skill v2.4.6。
 - 2026-09-08：APK 2.4.7（code97）。sherpa 运行库 v2 双ABI+ABI感知加载+错误上浮；GitHub release（后台确认）；skill v2.4.7。
 - 2026-09-08：APK 2.4.8（code98）。补 kotlin-stdlib（sherpa Kotlin 编译缺运行时）；录音/加载失败路径带具体消息；GitHub release（后台确认）；skill v2.4.8。
+- 2026-09-08：APK 2.4.9（code99）。发音结果改 5 级星级图标评价（满分 5 金星），去掉“发音过关”文字；GitHub release（后台确认）；skill v2.4.9。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
