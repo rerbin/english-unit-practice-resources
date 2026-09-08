@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.2
+version: 2.4.3
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.3 运行库随模型自动管理（用户三条需求）
+
+- 需求：①超高精度版下载后仍显示未下载；②运行库下载合并进模型下载；③Vosk 运行库两精度共用，不独立下载，下载任意 vosk 模型同步下载、删除最后一个 vosk 模型同步删除。
+- 设计：运行库不再是用户可点的独立下载项。`downloadEngineModel` 对任意引擎先检查 `runtimeReadyFor(engine)`，缺则链式“运行库→模型”一次完成（标签分别标注）；`deleteEngineModel` 删除模型后若无其它同引擎已装模型则 `deleteTree(runtimeRootFor(engine))`。
+- UI：模型页顶部改为只读 `.runtimestatus` 状态条（Vosk 运行库/超高精度运行库 已安装/未安装+自动下载说明），删除两个运行库下载按钮；模型下载按钮空闲标签用 `data-idle` 存“下载（含运行库）”，`applyEngineDlUi` 空闲分支从 `data-idle` 恢复（**教训：applyEngineDlUi 空闲分支曾把按钮文本重置为“下载”，覆盖 renderModelPage 的后缀**）。
+- modelReady 放宽：不再要求 manifest.json；sherpa 兼容文件在根目录或 `model/` 子目录；SherpaEngine.recognize 同样兼容两种布局。
+- 编译/发布：2.4.3/code93；dex 校验用行为字符串（runtimeReadyFor/otherUsesRuntime 为局部名不入 dex，勿用作断言）。
+
 ## 2.4.2 超高精度版下载三连问题修复
 
 - 根因1「下载三次」：多文件 source 逐文件各报 0→100%，且进度无说明。修复：`downloadItem` 多文件分支按 size 加权合并为一次总进度，`downloadLabel` 标注当前文件友好名（encoder=识别编码器/decoder=解码器/tokens=词表）＋“第 X/N 部分”；单文件分支 label=运行库名；`engineDownloadLabel()` getter；MainActivity engineListener 的 onProgress 携带 label；Web 进度行显示“label：x%”，按钮下载态加 `.voiceaction.downloading`（琥珀色＋dlpulse 脉冲）。
@@ -574,4 +582,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.0（code90）。接入 sherpa-onnx Whisper small.en 超高精度版（hf-mirror 多文件断点下载；运行库入 APK）；GitHub release 384382395；skill v2.4.0。
 - 2026-09-08：APK 2.4.1（code91）。sherpa 运行库移出 APK 改按需包（8.7MB，Gitee+GitHub）；APK 回 0.9MB；GitHub release 384388257；skill v2.4.1。
 - 2026-09-08：APK 2.4.2（code92）。修复超高精度版下载三连、模型就绪判定、下载按钮动效；GitHub release（后台确认）；skill v2.4.2。
+- 2026-09-08：APK 2.4.3（code93）。运行库随模型自动下载/删除；运行库改只读状态条；修复下载后仍显示未下载与空闲标签覆盖；GitHub release（后台确认）；skill v2.4.3。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
