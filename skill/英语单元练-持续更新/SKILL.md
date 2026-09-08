@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.3
+version: 2.4.4
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,14 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.4 修复“下到100%后报下载失败”（安装校验按引擎区分）
+
+- 症状：超高精度运行库进度到100%后弹“下载失败，已尝试全部镜像”。
+- 根因：`downloadItem` 单文件分支安装前校验用 `SpeechEngine.abiLibDir(stage)`，它只认 **Vosk** 的 `libvosk.so/libjnidispatch.so`；sherpa 运行库 zip 里是 `libsherpa-onnx-jni.so` → 校验判 null → 删除已下载文件 → 落到下一个（Gitee 404）镜像 → 报“已尝试全部镜像”。下载与 SHA 其实都成功，是安装校验误杀。
+- 修复：校验改为按引擎区分——model 看 `model/am/final.mdl|am/final.mdl|small.en-*.onnx`；`sherpa-runtime` 看 `lib/{arm64-v8a,armeabi-v7a}/libsherpa-onnx-jni.so`；vosk runtime 才用 `abiLibDir`。
+- 提速/容灾：sherpa 运行库 zip（8.7MB）提交进 repo main，注册表首选 **jsdelivr**（`cdn.jsdelivr.net/gh/rerbin/...@main/speech-runtime-sherpa-v1.zip`，国内快），其后 Gitee、GitHub release。实测 jsdelivr 206 可用、GitHub CDN 慢易超时。
+- 教训：任何“下载成功但安装失败”先查安装前校验是否认得该包的文件布局；多镜像时一个镜像校验误杀会伪装成“全部镜像失败”。
+
 ## 2.4.3 运行库随模型自动管理（用户三条需求）
 
 - 需求：①超高精度版下载后仍显示未下载；②运行库下载合并进模型下载；③Vosk 运行库两精度共用，不独立下载，下载任意 vosk 模型同步下载、删除最后一个 vosk 模型同步删除。
@@ -583,4 +591,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.1（code91）。sherpa 运行库移出 APK 改按需包（8.7MB，Gitee+GitHub）；APK 回 0.9MB；GitHub release 384388257；skill v2.4.1。
 - 2026-09-08：APK 2.4.2（code92）。修复超高精度版下载三连、模型就绪判定、下载按钮动效；GitHub release（后台确认）；skill v2.4.2。
 - 2026-09-08：APK 2.4.3（code93）。运行库随模型自动下载/删除；运行库改只读状态条；修复下载后仍显示未下载与空闲标签覆盖；GitHub release（后台确认）；skill v2.4.3。
+- 2026-09-08：APK 2.4.4（code94）。修复运行库下到100%后安装校验误杀（按引擎区分校验）；jsdelivr 首选镜像；GitHub release（后台确认）；skill v2.4.4。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
