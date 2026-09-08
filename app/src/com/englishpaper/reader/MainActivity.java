@@ -354,7 +354,7 @@ public class MainActivity extends Activity {
         sb.append("<html xmlns:x=\"urn:schemas-microsoft-com:office:excel\"><head><meta charset=\"UTF-8\"><style>td,th{border:1px solid #999;padding:6px 10px;font-size:14px}th{background:#dce8f7}h1{font-size:18px}</style></head><body>");
         String exportedAt = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.US).format(new java.util.Date());
         sb.append("<h1>英语单元练 · 错题本</h1><p>导出时间：").append(esc(exportedAt)).append("</p><table><tr><th>序号</th><th>单元</th><th>状态</th><th>练习类型</th><th>英语内容</th><th>需练单词</th><th>中文</th></tr>");
-        android.database.Cursor c = appDatabase.getReadableDatabase().rawQuery("SELECT m.id,m.unit_id,m.stage,m.pronunciation_error,m.writing_error,m.text_en,m.translation,COALESCE(c.short_title,c.title,m.unit_title,m.unit_id) FROM mistakes m LEFT JOIN units c ON c.id=m.unit_id ORDER BY COALESCE(c.sort_order,999),m.id", null);
+        android.database.Cursor c = appDatabase.getReadableDatabase().rawQuery("SELECT m.id,m.unit_id,m.stage,m.pronunciation_error,m.writing_error,m.usage_error,m.text_en,m.translation,COALESCE(c.short_title,c.title,m.unit_title,m.unit_id) FROM mistakes m LEFT JOIN units c ON c.id=m.unit_id ORDER BY COALESCE(c.sort_order,999),m.id", null);
         int n = 0;
         while (c.moveToNext()) {
             n++;
@@ -363,8 +363,8 @@ public class MainActivity extends Activity {
             android.database.Cursor w = appDatabase.getReadableDatabase().rawQuery("SELECT word_text FROM mistake_words WHERE mistake_id=? ORDER BY word_index", new String[]{id});
             while (w.moveToNext()) { if (words.length() > 0) words.append("、"); words.append(w.getString(0)); }
             w.close();
-            String types = (c.getInt(3) == 1 ? "发音" : "") + (c.getInt(3) == 1 && c.getInt(4) == 1 ? "、" : "") + (c.getInt(4) == 1 ? "拼写" : "");
-            sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(7))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(5))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(6))).append("</td></tr>");
+            StringBuilder tb = new StringBuilder(); if (c.getInt(3) == 1) tb.append("发音"); if (c.getInt(4) == 1) { if (tb.length() > 0) tb.append("、"); tb.append("拼写"); } if (c.getInt(5) == 1) { if (tb.length() > 0) tb.append("、"); tb.append("用法"); } String types = tb.toString();
+            sb.append("<tr><td>").append(n).append("</td><td>").append(esc(c.getString(8))).append("</td><td>").append("mastered".equals(c.getString(2)) ? "已掌握" : "正在练习").append("</td><td>").append(esc(types)).append("</td><td>").append(esc(c.getString(6))).append("</td><td>").append(esc(words.toString())).append("</td><td>").append(esc(c.getString(7))).append("</td></tr>");
         }
         c.close();
         sb.append("</table></body></html>");

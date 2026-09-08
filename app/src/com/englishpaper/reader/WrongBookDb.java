@@ -18,7 +18,7 @@ public class WrongBookDb {
     private SQLiteDatabase getWritableDatabase() { return database.getWritableDatabase(); }
 
     public static void create(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS mistakes (id INTEGER PRIMARY KEY AUTOINCREMENT,item_key TEXT NOT NULL UNIQUE,source_item_id TEXT,unit_id TEXT NOT NULL,unit_title TEXT,content_type TEXT,text_en TEXT NOT NULL,translation TEXT,pronunciation_error INTEGER NOT NULL DEFAULT 0 CHECK(pronunciation_error IN (0,1)),writing_error INTEGER NOT NULL DEFAULT 0 CHECK(writing_error IN (0,1)),stage TEXT NOT NULL DEFAULT 'active' CHECK(stage IN ('active','mastered')),mastered INTEGER NOT NULL DEFAULT 0 CHECK(mastered IN (0,1)),first_added_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,mastered_at INTEGER,archived_at INTEGER,last_correct_at INTEGER,last_restored_at INTEGER,attempts INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,wrong_count INTEGER NOT NULL DEFAULT 0,review_count INTEGER NOT NULL DEFAULT 0,reactivated_count INTEGER NOT NULL DEFAULT 0)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS mistakes (id INTEGER PRIMARY KEY AUTOINCREMENT,item_key TEXT NOT NULL UNIQUE,source_item_id TEXT,unit_id TEXT NOT NULL,unit_title TEXT,content_type TEXT,text_en TEXT NOT NULL,translation TEXT,pronunciation_error INTEGER NOT NULL DEFAULT 0 CHECK(pronunciation_error IN (0,1)),writing_error INTEGER NOT NULL DEFAULT 0 CHECK(writing_error IN (0,1)),usage_error INTEGER NOT NULL DEFAULT 0 CHECK(usage_error IN (0,1)),stage TEXT NOT NULL DEFAULT 'active' CHECK(stage IN ('active','mastered')),mastered INTEGER NOT NULL DEFAULT 0 CHECK(mastered IN (0,1)),first_added_at INTEGER NOT NULL,updated_at INTEGER NOT NULL,mastered_at INTEGER,archived_at INTEGER,last_correct_at INTEGER,last_restored_at INTEGER,attempts INTEGER NOT NULL DEFAULT 0,correct_count INTEGER NOT NULL DEFAULT 0,wrong_count INTEGER NOT NULL DEFAULT 0,review_count INTEGER NOT NULL DEFAULT 0,reactivated_count INTEGER NOT NULL DEFAULT 0)");
         db.execSQL("CREATE TABLE IF NOT EXISTS mistake_words (mistake_id INTEGER NOT NULL REFERENCES mistakes(id) ON DELETE CASCADE,word_index INTEGER NOT NULL,word_text TEXT NOT NULL,PRIMARY KEY(mistake_id,word_index))");
         db.execSQL("CREATE TABLE IF NOT EXISTS learning_events (id INTEGER PRIMARY KEY AUTOINCREMENT,mistake_id INTEGER NOT NULL REFERENCES mistakes(id) ON DELETE CASCADE,event_type TEXT NOT NULL,event_at INTEGER NOT NULL,details TEXT)");
         db.execSQL("CREATE INDEX IF NOT EXISTS idx_mistakes_stage_updated ON mistakes(stage,updated_at DESC,id DESC)");
@@ -52,6 +52,7 @@ public class WrongBookDb {
             JSONArray types = o.getJSONArray("types");
             v.put("pronunciation_error", contains(types, "pronunciation") ? 1 : 0);
             v.put("writing_error", contains(types, "writing") ? 1 : 0);
+            v.put("usage_error", contains(types, "usage") ? 1 : 0);
             v.put("stage", "active"); v.put("mastered", 0); v.putNull("mastered_at"); v.putNull("archived_at"); v.put("updated_at", now()); v.put("reactivated_count", oldReact);
             if (existed) db.update("mistakes", v, "id=?", new String[]{String.valueOf(id)});
             else { v.put("item_key", key); v.put("first_added_at", now()); id = db.insertOrThrow("mistakes", null, v); }
@@ -79,6 +80,7 @@ public class WrongBookDb {
         args.add("mastered".equals(stage) ? "mastered" : "active");
         if ("pronunciation".equals(filter)) where.append(" AND m.pronunciation_error=1");
         else if ("writing".equals(filter)) where.append(" AND m.writing_error=1");
+        else if ("usage".equals(filter)) where.append(" AND m.usage_error=1");
         if (unitId != null && !unitId.isEmpty()) { where.append(" AND m.unit_id=?"); args.add(unitId); }
         String sql = "SELECT m.*,ci.audio_key AS audio_key FROM mistakes m LEFT JOIN content_items ci ON ci.id=m.source_item_id WHERE " + where + " ORDER BY m.updated_at DESC,m.id DESC LIMIT ? OFFSET ?";
         args.add(String.valueOf(limit)); args.add(String.valueOf(offset));
@@ -130,6 +132,7 @@ public class WrongBookDb {
         JSONArray t = new JSONArray();
         if (c.getInt(c.getColumnIndexOrThrow("pronunciation_error")) != 0) t.put("pronunciation");
         if (c.getInt(c.getColumnIndexOrThrow("writing_error")) != 0) t.put("writing");
+        if (c.getInt(c.getColumnIndexOrThrow("usage_error")) != 0) t.put("usage");
         o.put("types", t);
         o.put("stage", c.getString(c.getColumnIndexOrThrow("stage")));
         o.put("mastered", c.getInt(c.getColumnIndexOrThrow("mastered")) != 0);
@@ -188,17 +191,18 @@ public class WrongBookDb {
     }
 
     public synchronized JSONObject passState(long id) throws org.json.JSONException {
-        int pe = 0, we = 0, mastered = 0;
-        try (Cursor c = getReadableDatabase().rawQuery("SELECT pronunciation_error,writing_error,mastered FROM mistakes WHERE id=?", new String[]{String.valueOf(id)})) { if (c.moveToFirst()) { pe = c.getInt(0); we = c.getInt(1); mastered = c.getInt(2); } }
+        int pe = 0, we = 0, ue = 0, mastered = 0;
+        try (Cursor c = getReadableDatabase().rawQuery("SELECT pronunciation_error,writing_error,usage_error,mastered FROM mistakes WHERE id=?", new String[]{String.valueOf(id)})) { if (c.moveToFirst()) { pe = c.getInt(0); we = c.getInt(1); ue = c.getInt(2); mastered = c.getInt(3); } }
         JSONObject o = new JSONObject();
         o.put("pronPassed", passed(id, true)); o.put("writePassed", passed(id, false));
-        o.put("mastered", mastered != 0); o.put("pronError", pe == 1); o.put("writeError", we == 1);
+        o.put("mastered", mastered != 0); o.put("pronError", pe == 1); o.put("writeError", we == 1); o.put("usageError", ue == 1);
         return o;
     }
 
     private synchronized boolean autoMasterIfNeeded(long id) {
         try {
             JSONObject st = passState(id);
+            if (st.optBoolean("usageError")) return false;
             boolean needP = st.getBoolean("pronError"), needW = st.getBoolean("writeError");
             boolean all = (!needP || st.getBoolean("pronPassed")) && (!needW || st.getBoolean("writePassed"));
             if (all && !st.getBoolean("mastered")) {

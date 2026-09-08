@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** The single owner of the application's SQLite connection and schema. */
 public final class AppDatabase extends SQLiteOpenHelper {
     private static final String NAME = "english_unit_practice_v2.db";
-    private static final int VERSION = 7;
+    private static final int VERSION = 8;
     private static volatile AppDatabase instance;
 
     public static AppDatabase get(Context context) {
@@ -34,6 +34,10 @@ public final class AppDatabase extends SQLiteOpenHelper {
 
     /** Development policy: schema changes intentionally recreate an empty database. */
     @Override public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        if (oldVersion < 8) {
+            try { db.execSQL("ALTER TABLE mistakes ADD COLUMN usage_error INTEGER NOT NULL DEFAULT 0 CHECK(usage_error IN (0,1))"); } catch (Exception ignored) { }
+            if (newVersion == 8) return;
+        }
         dropAll(db);
         onCreate(db);
     }
