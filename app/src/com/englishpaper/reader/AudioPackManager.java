@@ -149,8 +149,21 @@ public final class AudioPackManager {
     public String selectedEngineModel() { return trialPrefs.getString(ENGINE_MODEL_PREF, firstEngineModelId()); }
     public void selectEngineModel(String id) { trialPrefs.edit().putString(ENGINE_MODEL_PREF, id).apply(); }
     public File sherpaRuntimeRoot() { File d = new File(context.getFilesDir(), "sherpa-runtime"); if (!d.exists()) d.mkdirs(); return d; }
-    public File sherpaRuntimeLibDir() { return new File(sherpaRuntimeRoot(), "lib/arm64-v8a"); }
-    public boolean sherpaRuntimeReady() { File r = sherpaRuntimeRoot(); return new File(r, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile(); }
+    public File sherpaRuntimeLibDir() {
+        File r = sherpaRuntimeRoot();
+        for (String abi : android.os.Build.SUPPORTED_ABIS) {
+            File d = new File(r, "lib/" + abi);
+            if (new File(d, "libsherpa-onnx-jni.so").isFile()) return d;
+        }
+        return new File(r, "lib/arm64-v8a");
+    }
+    public boolean sherpaRuntimeReady() {
+        File r = sherpaRuntimeRoot();
+        for (String abi : android.os.Build.SUPPORTED_ABIS) {
+            if (new File(r, "lib/" + abi + "/libsherpa-onnx-jni.so").isFile()) return true;
+        }
+        return false;
+    }
     private String runtimeKeyFor(String engine) { return "sherpa".equals(engine) ? "sherpaRuntime" : "runtime"; }
     private File runtimeRootFor(String engine) { return "sherpa".equals(engine) ? sherpaRuntimeRoot() : runtimeRoot(); }
     private boolean runtimeReadyFor(String engine) { return "sherpa".equals(engine) ? sherpaRuntimeReady() : runtimeReady(); }
