@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.6
+version: 2.4.7
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.7 超高精度“无法使用/报错”修复（双ABI运行库+真实错误上浮）
+
+- 症状：下载成功后点发音检查报“发音检查暂时不可用”。根因之一：sherpa 运行库 v1 只含 arm64，32 位设备 System.load 失败；且 sherpaRuntimeLibDir/Ready 硬编码 arm64-v8a。
+- 修复：运行库升 **v2**（arm64-v8a+armeabi-v7a，16,659,045B，sha f1b0860a…4726）；`sherpaRuntimeLibDir()/sherpaRuntimeReady()` 改为遍历 `Build.SUPPORTED_ABIS` 选首个含 libsherpa-onnx-jni.so 的 ABI；注册表 sherpaRuntime version=2、sources 指向 v2（jsdelivr/gitee/github release v2.4.7）。
+- 错误上浮：stopReadAloud 的 sherpa 分支 recognize 返回 null 或 catch Throwable 时，readAloudState 改传 JSON `{state:"error",message:<原生错误>}`；Web readAloudState 兼容字符串/对象，error 时优先显示真实 message（无则回退通用文案）。便于真机定位。
+- 教训：native 库包必须覆盖设备 ABI；“下载成功但运行失败”要区分 load 失败与 recognize 失败并把原生异常透出，否则只能猜。
+
 ## 2.4.6 下载进度去模型名前缀 + 使用中模型差异化
 
 - 多文件下载进度标签去掉模型名前缀：`downloadLabel` 不再拼 `label+"："+`，只保留 `friendlyFileName(文件)+（第 X/N 部分）`（如“识别编码器（第 1/3 部分）”），避免冗长的“Whisper 超高精度版：…”前缀。运行库（单文件）标签仍为运行库名。
@@ -606,4 +613,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.4（code94）。修复运行库下到100%后安装校验误杀（按引擎区分校验）；jsdelivr 首选镜像；GitHub release（后台确认）；skill v2.4.4。
 - 2026-09-08：APK 2.4.5（code95）。修复 zip 顶层剥离误剥 lib/（runtime 改 verbatim 解压+unwrap 兜底），彻底解决 100% 后失败；GitHub release（后台确认）；skill v2.4.5。
 - 2026-09-08：APK 2.4.6（code96）。下载进度去模型名前缀；使用中模型卡差异化+“（使用中）”；GitHub release（后台确认）；skill v2.4.6。
+- 2026-09-08：APK 2.4.7（code97）。sherpa 运行库 v2 双ABI+ABI感知加载+错误上浮；GitHub release（后台确认）；skill v2.4.7。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
