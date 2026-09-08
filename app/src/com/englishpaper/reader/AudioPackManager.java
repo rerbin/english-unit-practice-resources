@@ -421,7 +421,16 @@ public final class AudioPackManager {
                             m.put("id", item.getString("id")); m.put("version", item.optInt("version", 1));
                             try (FileWriter w = new FileWriter(new File(stage, "manifest.json"))) { w.write(m.toString()); }
                         }
-                        if (isRuntime ? SpeechEngine.abiLibDir(stage) == null : !new File(stage, "model/am/final.mdl").isFile()) { deleteTree(stage); part.delete(); continue; }
+                        boolean okContent;
+                        if (!isRuntime) {
+                            okContent = new File(stage, "model/am/final.mdl").isFile() || new File(stage, "am/final.mdl").isFile()
+                                || new File(stage, "small.en-encoder.int8.onnx").isFile() || new File(stage, "model/small.en-encoder.int8.onnx").isFile();
+                        } else if ("sherpa-runtime".equals(item.optString("id"))) {
+                            okContent = new File(stage, "lib/arm64-v8a/libsherpa-onnx-jni.so").isFile() || new File(stage, "lib/armeabi-v7a/libsherpa-onnx-jni.so").isFile();
+                        } else {
+                            okContent = SpeechEngine.abiLibDir(stage) != null;
+                        }
+                        if (!okContent) { deleteTree(stage); part.delete(); continue; }
                         if (dest.exists()) deleteTree(dest);
                         copyTree(stage, dest); deleteTree(stage); part.delete();
                         listener.onFinished(true, label + "已就绪。");
