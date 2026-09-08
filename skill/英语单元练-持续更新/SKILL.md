@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.5
+version: 2.4.6
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,11 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.6 下载进度去模型名前缀 + 使用中模型差异化
+
+- 多文件下载进度标签去掉模型名前缀：`downloadLabel` 不再拼 `label+"："+`，只保留 `friendlyFileName(文件)+（第 X/N 部分）`（如“识别编码器（第 1/3 部分）”），避免冗长的“Whisper 超高精度版：…”前缀。运行库（单文件）标签仍为运行库名。
+- 模型页“使用中”差异化：选中卡 `.voicecard.selected` 改为主色浅底 `var(--primary-c)`+主色边框+`inset 4px 0 0 var(--primary)` 左侧强调条；状态文字由“（当前）”改“（使用中）”。非选中卡无强调条。
+
 ## 2.4.5 真根因：zip 顶层目录剥离启发式误剥 lib/（2.4.4 仍复发的原因）
 
 - 2.4.4 只修了“校验认不认识文件”，但下载解压阶段还有第二个 bug：单文件分支用“首条目首段作为 wrapper 目录剥离”的启发式。sherpa 运行库 zip 根就是 `lib/…`+`manifest.json`（无 wrapper），首条目 `lib/arm64-v8a/…` 的首段 `lib/` 被当 wrapper 剥掉 → 解出 `stage/arm64-v8a/libsherpa-onnx-jni.so`（丢 lib/ 前缀）→ 校验仍找不到 `lib/arm64-v8a/…` → 删 → 换镜像 → 报失败。所以 2.4.4 仍复发。
@@ -600,4 +605,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.3（code93）。运行库随模型自动下载/删除；运行库改只读状态条；修复下载后仍显示未下载与空闲标签覆盖；GitHub release（后台确认）；skill v2.4.3。
 - 2026-09-08：APK 2.4.4（code94）。修复运行库下到100%后安装校验误杀（按引擎区分校验）；jsdelivr 首选镜像；GitHub release（后台确认）；skill v2.4.4。
 - 2026-09-08：APK 2.4.5（code95）。修复 zip 顶层剥离误剥 lib/（runtime 改 verbatim 解压+unwrap 兜底），彻底解决 100% 后失败；GitHub release（后台确认）；skill v2.4.5。
+- 2026-09-08：APK 2.4.6（code96）。下载进度去模型名前缀；使用中模型卡差异化+“（使用中）”；GitHub release（后台确认）；skill v2.4.6。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
