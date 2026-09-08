@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.0
+version: 2.4.1
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,16 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.1 sherpa 运行库改按需下载（APK 瘦身）
+
+- 用户质疑 APK +23.6MB：确认为内嵌 `libsherpa-onnx-jni.so`（23,650,584B）。2.4.1 将其移出 APK，改为独立运行库包 `speech-runtime-sherpa-v1.zip`（压缩后 8,729,659B，sha 21b62b13f6f6d6bf729266afcbdef1ea47c7bfdc173fb9e2e4acae40130de5a3），APK 回到 923,347B。
+- 注册表新增顶层 `sherpaRuntime`；源=Gitee raw（国内）+GitHub release v2.4.1；管理页新增“超高精度运行库”卡（约 9MB），选择 Whisper 模型时 `downloadSelectedEngine` 自动链式：运行库→（模型未装才下模型）。
+- SherpaEngine.load(File libDir) 改为 System.load(私有目录绝对路径)，与 Vosk 同机制（真机已验证可行）；build.sh 移除 lib 追加；libs/jni 删除。
+- engineReady 按所选引擎分别要求对应运行库；downloadEnginePart 支持 kind=runtime|sherpa-runtime|model。
+- Web 修复：engineDownloadProgress 残留的“全量 forEach 改所有 dl 按钮文案”与 applyEngineDlUi 精确匹配冲突，删除全量分支；非匹配按钮下载期间保持原文案仅禁用。
+- 迁移：2.4.0 已装用户升级后 sherpa 档需重新下载运行库（提示自动出现）；Vosk 档不受影响。
+- 教训：release asset 上传后立即下载 URL 可能短暂 404（CDN 传播），用 assets API 状态+range GET 复核；GitHub release APK asset 本会话两次首传丢失，需补传并复核。
+
 ## 2.4.0 sherpa-onnx Whisper 超高精度版接入
 
 - 新模型 `sherpa-whisper-small-en`（engine=sherpa）：whisper small.en int8（encoder 112,442,483B sha 8bdac288…e462f；decoder 262,223,042B sha 710ccf89…877fb；tokens 835,554B sha 306cd27f…d930），注册表 sizeLabel 约 375MB。
@@ -554,4 +564,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.2.0（code88）。跟读模型设置可管理/可选/国内镜像（hf-mirror 优先+探测+续传+故障切换）；旧包自动迁移；GitHub release 384347373；skill v2.2.0。
 - 2026-09-08：APK 2.3.0（code89）。统一发音检查引擎命名；双错误半对掌握态+分项过关事件；下载按钮即时态；弹窗右上关闭；GitHub release 384373046；skill v2.3.0。
 - 2026-09-08：APK 2.4.0（code90）。接入 sherpa-onnx Whisper small.en 超高精度版（hf-mirror 多文件断点下载；运行库入 APK）；GitHub release 384382395；skill v2.4.0。
+- 2026-09-08：APK 2.4.1（code91）。sherpa 运行库移出 APK 改按需包（8.7MB，Gitee+GitHub）；APK 回 0.9MB；GitHub release 384388257；skill v2.4.1。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
