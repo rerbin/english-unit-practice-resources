@@ -411,6 +411,12 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void archiveWrong(long id) { dbExecutor.execute(() -> { boolean ok=wrongDb.archive(id);js("archiveFinished",ok?"已移到“已掌握”。":"请先标记为“已掌握”，再移出。"); }); }
         @JavascriptInterface public void restoreWrong(long id) { dbExecutor.execute(() -> { wrongDb.restore(id);js("wrongBookChanged","已移回“正在练习”，可以继续复习。"); }); }
         @JavascriptInterface public void spellResult(long id,boolean correct,String entered) { dbExecutor.execute(() -> { try { js("spellSaved", wrongDb.spellResultJson(id,correct,entered)); } catch (Exception e) { js("spellSaved", "{\"result\":\""+(correct?"correct":"wrong")+"\"}"); } }); }
+        @JavascriptInterface public void requestTags() { dbExecutor.execute(() -> js("tags", wrongDb.listTags().toString())); }
+        @JavascriptInterface public void addTag(String name, String color) { dbExecutor.execute(() -> { long id = wrongDb.addTag(name, color); js("tagChanged", String.valueOf(id)); }); }
+        @JavascriptInterface public void renameTag(long id, String name) { dbExecutor.execute(() -> { wrongDb.renameTag(id, name); js("tagChanged", String.valueOf(id)); }); }
+        @JavascriptInterface public void deleteTag(long id) { dbExecutor.execute(() -> { wrongDb.deleteTag(id); js("tagChanged", "-1"); }); }
+        @JavascriptInterface public void setMistakeTag(long mistakeId, long tagId, boolean on) { dbExecutor.execute(() -> { wrongDb.setMistakeTag(mistakeId, tagId, on); js("mistakeTagsChanged", String.valueOf(mistakeId)); }); }
+        @JavascriptInterface public void setMistakeType(long mistakeId, String type, boolean on) { dbExecutor.execute(() -> { wrongDb.setMistakeType(mistakeId, type, on); js("mistakeTagsChanged", String.valueOf(mistakeId)); }); }
         @JavascriptInterface public void readPass(long id) { dbExecutor.execute(() -> { try { js("readPassResult", wrongDb.readPass(id).toString()); } catch (Exception e) { js("readPassResult", "{\"mastered\":false}"); } }); }
         @JavascriptInterface public void exportWrongBook() { runOnUiThread(() -> { Intent i=new Intent(Intent.ACTION_CREATE_DOCUMENT); i.addCategory(Intent.CATEGORY_OPENABLE); i.setType("application/vnd.ms-excel"); String stamp=new java.text.SimpleDateFormat("yyyy-MM-dd_HH-mm",java.util.Locale.US).format(new java.util.Date()); i.putExtra(Intent.EXTRA_TITLE,"错题本_"+stamp+".xls"); startActivityForResult(i, EXPORT_WRONG); }); }
     }

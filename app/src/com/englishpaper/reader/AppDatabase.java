@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 /** The single owner of the application's SQLite connection and schema. */
 public final class AppDatabase extends SQLiteOpenHelper {
     private static final String NAME = "english_unit_practice_v2.db";
-    private static final int VERSION = 8;
+    private static final int VERSION = 9;
     private static volatile AppDatabase instance;
 
     public static AppDatabase get(Context context) {
@@ -38,6 +38,10 @@ public final class AppDatabase extends SQLiteOpenHelper {
             try { db.execSQL("ALTER TABLE mistakes ADD COLUMN usage_error INTEGER NOT NULL DEFAULT 0 CHECK(usage_error IN (0,1))"); } catch (Exception ignored) { }
             if (newVersion == 8) return;
         }
+        if (oldVersion < 9) {
+            WrongBookDb.createTags(db);
+            if (newVersion == 9) return;
+        }
         dropAll(db);
         onCreate(db);
     }
@@ -49,7 +53,7 @@ public final class AppDatabase extends SQLiteOpenHelper {
 
     private static void dropAll(SQLiteDatabase db) {
         db.execSQL("PRAGMA foreign_keys=OFF");
-        for (String table : new String[]{"learning_events","mistake_words","mistakes","item_options","content_items","sections","units","textbooks","app_state"}) {
+        for (String table : new String[]{"mistake_tags","tags","learning_events","mistake_words","mistakes","item_options","content_items","sections","units","textbooks","app_state"}) {
             db.execSQL("DROP TABLE IF EXISTS " + table);
         }
         db.execSQL("PRAGMA foreign_keys=ON");
