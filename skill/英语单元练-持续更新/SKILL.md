@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.4.7
+version: 2.4.8
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.8 补 kotlin-stdlib（sherpa 为 Kotlin 编译）+ 全错误路径带消息
+
+- 真根因之一：sherpa-onnx AAR 是 **Kotlin** 编译（类引用 kotlin.jvm.internal.Intrinsics/DefaultConstructorMarker），但 APK dex 只打了 sherpa-classes.jar 没打 kotlin-stdlib → 运行时 NoClassDefFoundError → recognize 失败。修复：libs/kotlin-stdlib.jar（1.9.22）加入 javac classpath 与 d8 输入。
+- 其余“只报通用文案”的路径补消息：beginRecording AudioRecord 初始化失败 → “录音初始化失败：麦克风被占用或系统限制录音权限。”；sherpa load 失败 → readAloudState 也带 message（不再只发裸 "error"）。
+- Web readAloudState 已兼容对象 payload，error 优先显示 message。
+- 教训：引入 Kotlin 编译的 AAR 必须同时把 kotlin-stdlib 打进 dex；javap 看到 DefaultConstructorMarker/kotlin.jvm.internal 即信号。
+
 ## 2.4.7 超高精度“无法使用/报错”修复（双ABI运行库+真实错误上浮）
 
 - 症状：下载成功后点发音检查报“发音检查暂时不可用”。根因之一：sherpa 运行库 v1 只含 arm64，32 位设备 System.load 失败；且 sherpaRuntimeLibDir/Ready 硬编码 arm64-v8a。
@@ -614,4 +621,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.5（code95）。修复 zip 顶层剥离误剥 lib/（runtime 改 verbatim 解压+unwrap 兜底），彻底解决 100% 后失败；GitHub release（后台确认）；skill v2.4.5。
 - 2026-09-08：APK 2.4.6（code96）。下载进度去模型名前缀；使用中模型卡差异化+“（使用中）”；GitHub release（后台确认）；skill v2.4.6。
 - 2026-09-08：APK 2.4.7（code97）。sherpa 运行库 v2 双ABI+ABI感知加载+错误上浮；GitHub release（后台确认）；skill v2.4.7。
+- 2026-09-08：APK 2.4.8（code98）。补 kotlin-stdlib（sherpa Kotlin 编译缺运行时）；录音/加载失败路径带具体消息；GitHub release（后台确认）；skill v2.4.8。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
