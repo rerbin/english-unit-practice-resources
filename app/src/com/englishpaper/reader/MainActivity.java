@@ -305,8 +305,19 @@ public class MainActivity extends Activity {
                 else if (ReadAloudScorer.words(text).size() > 1 && ReadAloudScorer.wordMatchRate(text, heard) >= 0.8) state = "pass";
                 else { state = "fail"; hint = ReadAloudScorer.phonemeHint(text, heard, loadPhonemeDict()); }
                 wav.delete(); if (readPcm != null) readPcm.delete();
+                double mr = ReadAloudScorer.wordMatchRate(text, heard);
+                boolean single = ReadAloudScorer.words(text).size() == 1;
+                int stars;
+                if ("unclear".equals(state)) stars = 0;
+                else if ("pass".equals(state)) {
+                    int base = (single || mr >= 1.0) ? ((conf < 0) ? 5 : (conf >= 0.9 ? 5 : (conf >= 0.75 ? 4 : 3))) : (mr >= 0.9 ? 4 : 3);
+                    stars = base;
+                } else {
+                    stars = mr >= 0.6 ? 2 : 1;
+                }
                 org.json.JSONObject o = new org.json.JSONObject();
                 o.put("id", id); o.put("state", state); o.put("heard", heard); o.put("conf", conf);
+                o.put("stars", stars); o.put("matchRate", mr);
                 if (hint != null) o.put("hint", hint);
                 js("readAloudResult", o.toString());
             } catch (Throwable t) {
