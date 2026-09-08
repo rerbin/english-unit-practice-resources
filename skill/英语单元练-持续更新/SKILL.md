@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.3.0
+version: 2.4.0
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,16 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.4.0 sherpa-onnx Whisper 超高精度版接入
+
+- 新模型 `sherpa-whisper-small-en`（engine=sherpa）：whisper small.en int8（encoder 112,442,483B sha 8bdac288…e462f；decoder 262,223,042B sha 710ccf89…877fb；tokens 835,554B sha 306cd27f…d930），注册表 sizeLabel 约 375MB。
+- 源：hf-mirror.com（国内）+ huggingface.co 的 csukuangfj/sherpa-onnx-whisper-small.en；**多文件 source**（base+files[]，逐文件断点续传+SHA，跨源失败重起），AudioPackManager.downloadItem 支持 files 模式；不重打包。
+- 运行库：sherpa-onnx v1.13.7 `sherpa-onnx-static-link-onnxruntime` AAR（classes.jar 238KB 入 dex；arm64 libsherpa-onnx-jni.so 23,650,584B 入 APK lib/，ZIP_STORED+zipalign -p 对齐）；APK 增至约 24.6MB；32 位设备不可用该档（Vosk 档不受影响）。
+- SherpaEngine：System.loadLibrary("sherpa-onnx-jni")；OfflineRecognizer(null, config) 走文件路径；FeatureConfig(16000,80)+OfflineWhisperModelConfig(encoder/decoder/language=en/task=transcribe)+tokens+numThreads=2+greedy_search；recognize 返回文本，失败 null+loadError；全 Throwable 捕获。
+- 分发：MainActivity 按 packs.engineForModel(selected) 分流 sherpa/vosk；sherpa 无 grammar（自由识别），评分规则与 Vosk 相同（完全匹配/句≥0.8/空=unclear）。
+- 坑复盘：AAR 的 android.tar.bz2 只含 jniLibs 无 classes；kotlin-api 目录不存在（Java API 在 AAR classes.jar）；配置类均有无参构造+setter；cp 相对层数算错会把文件落到 tools/ 下。
+- ModelScope 仍无 sherpa/vosk 托管；hf-mirror 为唯一实测可用国内镜像。
+
 ## 2.3.0 发音检查引擎命名＋半对掌握态＋下载即时态＋弹窗右上关闭
 
 - 全 App 名称统一：跟读模型/跟读引擎/跟读练习 → **发音检查引擎/发音检查**（设置组、管理页、弹窗标题、按钮、帮助、原生提示、注册表 runtime 名）。卡片按钮仍为“读”，aria-label=发音检查；开始按钮文案“开始跟读”→“发音检查”。
@@ -543,4 +553,5 @@ ALWAYS use this exact template:
 - 2026-09-07：APK 2.1.2（code87）。修复 Bridge 同名自委托无限递归闪退（MainActivity.this 限定+门禁）；GitHub release 384125273；skill v2.1.2。
 - 2026-09-08：APK 2.2.0（code88）。跟读模型设置可管理/可选/国内镜像（hf-mirror 优先+探测+续传+故障切换）；旧包自动迁移；GitHub release 384347373；skill v2.2.0。
 - 2026-09-08：APK 2.3.0（code89）。统一发音检查引擎命名；双错误半对掌握态+分项过关事件；下载按钮即时态；弹窗右上关闭；GitHub release 384373046；skill v2.3.0。
+- 2026-09-08：APK 2.4.0（code90）。接入 sherpa-onnx Whisper small.en 超高精度版（hf-mirror 多文件断点下载；运行库入 APK）；GitHub release 384382395；skill v2.4.0。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
