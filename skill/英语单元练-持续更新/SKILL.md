@@ -3,7 +3,7 @@ description: 'Use this skill when updating, building, publishing or verifying th
   英语单元练 Android app: add a unit, generate British English audio packs, build/sign
   the APK, push resources to GitHub+Gitee, verify upload integrity. 更新/发布/校验英语单元练。'
 name: 英语单元练-持续更新
-version: 2.6.0
+version: 2.6.1
 ---
 
 # 英语单元练-持续更新
@@ -388,6 +388,13 @@ ALWAYS use this exact template:
 5. 校验：`scripts/verify_mirrors.py <gitee_catalog_url> <github_catalog_url>`；github 全量下载复算 SHA-256+大小；gitee 先取目录，ZIP 做状态+大小核对，网络允许时全量复算；返回 JSON 报告。
 6. APK：`build.sh` 后 `apksigner verify --verbose`、`aapt list | grep -c 'res/raw/gb_\\|res/raw/st_'` 应为 0、`sha256sum` 与 `ls -lh` 一并回报。
 
+## 2.6.1 标签加1变2/0 修复 + 内联改名/删除 + 添加体验
+
+- Bug 根因：标签浮层点选后 mistakeTagsChanged 同步 renderMistakeTagSheet 读到**未更新**的 wrongItems → 浮层显示旧态 → 用户重复点击 → 加 2 个或 0 个。修复：点选后**乐观更新**本地 wrongItems.tagIds/types 并立即重渲染浮层；一次点击=一次 setMistakeTag/setMistakeType。
+- 移除标签管理里的原生 prompt()/confirm()（WebView 显示“网址为 file://…”行）：改名=内联输入行（#renameIn+保存/取消）；删除=内联两步（删除→确认删除/取消）。
+- 添加体验（调研落地）：回车提交；重名/空名内联红字提示；输入框旁颜色预览点（下一 palette 色）；添加后清空+聚焦便于连加。
+- 教训：任何“点选→异步回包→重渲染”的开关列表，必须乐观更新本地状态再重渲染，否则旧态误导用户重复点击造成双写/双删。
+
 ## 2.6.0 标签管理（自定义标签 + 内置保护标签统一）
 
 - 用户决策：发音/拼写/用法 **统一进标签体系**，作为**内置保护标签**（不可增删改）；另加用户自定义标签（可增删改）。
@@ -649,4 +656,5 @@ ALWAYS use this exact template:
 - 2026-09-08：APK 2.4.9（code99）。发音结果改 5 级星级图标评价（满分 5 金星），去掉“发音过关”文字；GitHub release（后台确认）；skill v2.4.9。
 - 2026-09-08：APK 2.5.0（code100）。星级≥3视为已掌握；新增“用法”错题类型（DB v8 增量迁移保留数据）；GitHub release（后台确认）；skill v2.5.0。
 - 2026-09-09：APK 2.6.0（code101）。标签管理：自定义标签增删改+发音/拼写/用法为内置保护标签统一进标签体系；错题本标签仅添加/移除；GitHub release（后台确认）；skill v2.6.0。
+- 2026-09-09：APK 2.6.1（code102）。修复加标签1变2/0（乐观更新）；内联改名/删除去原生弹窗网址行；添加回车/重名提示/颜色预览；GitHub release（后台确认）；skill v2.6.1。
 - 2026-09-05：APK 1.45.0（code49）。设置 tab 高亮修复（navbtn[data-view] 限定）；release：GitHub 383136982、Gitee 1124758；skill v1.24.0。
