@@ -148,6 +148,19 @@ public final class AudioPackManager {
     public void selectEngineModel(String id) { trialPrefs.edit().putString(ENGINE_MODEL_PREF, id).apply(); }
     public boolean runtimeReady() { File r = runtimeRoot(); return new File(r, "manifest.json").isFile() && SpeechEngine.abiLibDir(r) != null; }
     public boolean modelReady(String id) { File m = modelRoot(id); return new File(m, "manifest.json").isFile() && new File(m, "model/am/final.mdl").isFile(); }
+    public String engineForModel(String id) {
+        try {
+            JSONArray ms = engineRegistry.getJSONArray("models");
+            for (int i = 0; i < ms.length(); i++) {
+                JSONObject m = ms.getJSONObject(i);
+                if (id.equals(m.getString("id"))) return m.optString("engine", "vosk");
+            }
+        } catch (Exception ignored) { }
+        return "vosk";
+    }
+
+    public File selectedModelDir() { return modelRoot(selectedEngineModel()); }
+
     public boolean engineReady() { return runtimeReady() && modelReady(selectedEngineModel()); }
 
     public JSONObject engineCatalog() {
@@ -250,6 +263,13 @@ public final class AudioPackManager {
         }
     }
 
+    private static void copyFile(File src, File dst) throws IOException {
+        try (FileInputStream in = new FileInputStream(src); FileOutputStream out = new FileOutputStream(dst)) {
+            byte[] b = new byte[65536]; int n;
+            while ((n = in.read(b)) != -1) out.write(b, 0, n);
+        }
+    }
+
     private void downloadItem(final JSONObject item, final File dest, final Listener listener, final String label, final boolean isRuntime) {
         new Thread(() -> {
             try {
@@ -257,6 +277,31 @@ public final class AudioPackManager {
                 JSONArray sources = orderedSources(item.getJSONArray("sources"));
                 for (int i = 0; i < sources.length(); i++) {
                     JSONObject src = sources.optJSONObject(i);
+                    if (src.has("files")) {
+                        boolean allOk = true;
+                        File stage = new File(files.importStagingRoot(), safe(item.getString("id")));
+                        if (stage.exists()) deleteTree(stage);
+                        if (!stage.mkdirs()) throw new IOException("无法创建目录");
+                        JSONArray fs = src.getJSONArray("files");
+                        for (int fi = 0; fi < fs.length(); fi++) {
+                            JSONObject f = fs.getJSONObject(fi);
+                            File part = new File(packsRoot, safe(item.getString("id")) + "-" + f.getString("name") + ".part");
+                            if (!downloadResumable(src.getString("base") + f.getString("name"), part, f.optLong("size", -1), listener)) { allOk = false; part.delete(); break; }
+                            if (!sha256(part).equalsIgnoreCase(f.getString("sha256"))) { allOk = false; part.delete(); break; }
+                            File dst = new File(stage, f.getString("name"));
+                            if (!part.renameTo(dst)) { copyFile(part, dst); part.delete(); }
+                        }
+                        if (!allOk) continue;
+                        if (!new File(stage, "manifest.json").isFile()) {
+                            JSONObject m = new JSONObject();
+                            m.put("id", item.getString("id")); m.put("version", item.optInt("version", 1)); m.put("engine", item.optString("engine", "vosk"));
+                            try (FileWriter w = new FileWriter(new File(stage, "manifest.json"))) { w.write(m.toString()); }
+                        }
+                        if (dest.exists()) deleteTree(dest);
+                        copyTree(stage, dest); deleteTree(stage);
+                        listener.onFinished(true, item.optString("name", "发音检查模型") + "已就绪。");
+                        return;
+                    }
                     File part = new File(packsRoot, safe(item.getString("id")) + ".part");
                     if (downloadResumable(src.getString("url"), part, src.optLong("size", -1), listener)) {
                         if (!sha256(part).equalsIgnoreCase(src.getString("sha256"))) { part.delete(); continue; }

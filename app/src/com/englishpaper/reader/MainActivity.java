@@ -272,14 +272,28 @@ public class MainActivity extends Activity {
             try {
                 File wav = new File(getCacheDir(), "readaloud.wav");
                 writeWav(readPcm, wav);
-                if (!SpeechEngine.isLoaded() && !SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()))) {
-                    String msg = SpeechEngine.getLoadError();
-                    js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "跟读引擎加载失败。" : msg).toString());
-                    js("readAloudState", "error");
-                    return;
+                String engine = packs.engineForModel(packs.selectedEngineModel());
+                String raw;
+                if ("sherpa".equals(engine)) {
+                    if (!SherpaEngine.ensureLoaded()) {
+                        String msg = SherpaEngine.getLoadError();
+                        js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "超高精度引擎加载失败。" : msg).toString());
+                        js("readAloudState", "error");
+                        return;
+                    }
+                    String heardText = SherpaEngine.recognize(wav, packs.selectedModelDir());
+                    if (heardText == null) { js("readAloudState", "error"); return; }
+                    raw = new org.json.JSONObject().put("text", heardText).toString();
+                } else {
+                    if (!SpeechEngine.isLoaded() && !SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()))) {
+                        String msg = SpeechEngine.getLoadError();
+                        js("engineLoadResult", new org.json.JSONObject().put("ok", false).put("message", msg == null ? "发音检查引擎加载失败。" : msg).toString());
+                        js("readAloudState", "error");
+                        return;
+                    }
+                    raw = SpeechEngine.recognize(wav, grammarFor(text));
+                    if (raw == null) { js("readAloudState", "error"); return; }
                 }
-                String raw = SpeechEngine.recognize(wav, grammarFor(text));
-                if (raw == null) { js("readAloudState", "error"); return; }
                 org.json.JSONObject r = new org.json.JSONObject(raw);
                 String heard = r.optString("text", "").trim();
                 double conf = avgConf(r);
@@ -305,7 +319,7 @@ public class MainActivity extends Activity {
     private void preloadEngine() {
         readExecutor.execute(() -> {
             if (SpeechEngine.isLoaded()) { js("engineLoadResult", "{\"ok\":true}"); return; }
-            boolean ok = SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()));
+            boolean ok = "sherpa".equals(packs.engineForModel(packs.selectedEngineModel())) ? SherpaEngine.ensureLoaded() : SpeechEngine.load(packs.runtimeRoot(), packs.modelRoot(packs.selectedEngineModel()));
             try {
                 org.json.JSONObject o = new org.json.JSONObject();
                 o.put("ok", ok);

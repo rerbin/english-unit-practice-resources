@@ -40,7 +40,8 @@
           "sha256": "03856579371838ae102d496822dffa732fad2c5c26444eacb64e975e38b26286",
           "size": 41183169
         }
-      ]
+      ],
+      "engine": "vosk"
     },
     {
       "id": "vosk-en-large",
@@ -58,6 +59,57 @@
           "url": "https://huggingface.co/VigneshSK17/vosk-model-en-us-0.22-lgraph/resolve/main/vosk-model-en-us-0.22-lgraph.zip",
           "sha256": "d9838b4aaa82a75c4a17f5aca300eaca129aaab2a7cbf951bafbb500eb9c4334",
           "size": 130557655
+        }
+      ],
+      "engine": "vosk"
+    },
+    {
+      "id": "sherpa-whisper-small-en",
+      "engine": "sherpa",
+      "name": "Whisper 超高精度版",
+      "intro": "whisper small.en int8：对长句、连读和发音不清的识别最准；体积最大、识别较慢，需 64 位设备。",
+      "sizeLabel": "约 375MB",
+      "version": 1,
+      "sources": [
+        {
+          "base": "https://hf-mirror.com/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/",
+          "files": [
+            {
+              "name": "small.en-encoder.int8.onnx",
+              "sha256": "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f",
+              "size": 112442483
+            },
+            {
+              "name": "small.en-decoder.int8.onnx",
+              "sha256": "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb",
+              "size": 262223042
+            },
+            {
+              "name": "small.en-tokens.txt",
+              "sha256": "306cd27f03c1a714eca7108e03d66b7dc042abe8c258b44c199a7ed9838dd930",
+              "size": 835554
+            }
+          ]
+        },
+        {
+          "base": "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-small.en/resolve/main/",
+          "files": [
+            {
+              "name": "small.en-encoder.int8.onnx",
+              "sha256": "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f",
+              "size": 112442483
+            },
+            {
+              "name": "small.en-decoder.int8.onnx",
+              "sha256": "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb",
+              "size": 262223042
+            },
+            {
+              "name": "small.en-tokens.txt",
+              "sha256": "306cd27f03c1a714eca7108e03d66b7dc042abe8c258b44c199a7ed9838dd930",
+              "size": 835554
+            }
+          ]
         }
       ]
     }
